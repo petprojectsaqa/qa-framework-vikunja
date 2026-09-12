@@ -75,44 +75,28 @@ The one file that shows the design: [`src/vikunja_qa/testing/plugin.py`](src/vik
 
 ```mermaid
 flowchart LR
-    subgraph suite["the suite"]
+    subgraph S["the suite"]
         direction TB
-        U["unit<br/>the framework's own tests<br/>no stand, network refused"]
-        A["api<br/>HTTP, both versions<br/>and the CalDAV door"]
-        B["ui<br/>Playwright, signed in<br/>over the API"]
-        R["resilience<br/>stops containers<br/>its own run"]
+        U["unit · no stand"]
+        A["api · v1, v2, CalDAV"]
+        B["ui · Playwright"]
+        R["resilience"]
     end
 
-    V["Vikunja v2.6.0<br/>API v1 · API v2 · CalDAV"]
-
-    subgraph around["what the product touches"]
-        direction TB
-        PG[("PostgreSQL<br/>row-level checks")]
-        RD[("Redis")]
-        S3["MinIO<br/>attachments"]
-        MAIL["Mailpit<br/>confirmation and reset mail"]
-        HOOK["webhook sink<br/>one path per test"]
-        PROM["Prometheus<br/>counters"]
-    end
+    V["Vikunja v2.6.0"]
+    PG[("PostgreSQL")]
+    S3["MinIO"]
+    MAIL["Mailpit"]
+    HOOK["webhook sink"]
+    PROM["Prometheus"]
 
     A --> V
     B --> V
-    R -. "takes one away" .-> around
-    V --> PG
-    V --> RD
-    V --> S3
-    V --> MAIL
-    V --> HOOK
-    V --> PROM
-    A -. "verifies directly" .-> PG
-    A -. "reads" .-> MAIL
-    A -. "reads" .-> HOOK
-    A -. "reads" .-> S3
-    A -. "reads" .-> PROM
+    R -->|"stops one of these"| V
+    V --> PG & S3 & MAIL & HOOK & PROM
+    A -.->|"checks the effect itself"| PG & S3 & MAIL & HOOK & PROM
 
     style V fill:#4c7fd4,stroke:#2f5596,color:#fff
-    style suite fill:#f6f8fa,stroke:#d0d7de
-    style around fill:#f6f8fa,stroke:#d0d7de
 ```
 
 Every response the suite receives, from any test, is validated against the schema for its operation on the way past. That is why contract coverage reaches 99% of both API versions without a single contract test being written.

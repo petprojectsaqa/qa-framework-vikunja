@@ -75,44 +75,28 @@
 
 ```mermaid
 flowchart LR
-    subgraph suite["набор"]
+    subgraph S["набор"]
         direction TB
-        U["unit<br/>собственные тесты фреймворка<br/>без стенда, сеть запрещена"]
-        A["api<br/>HTTP, обе версии<br/>и дверь CalDAV"]
-        B["ui<br/>Playwright, вход<br/>подставляется через API"]
-        R["resilience<br/>гасит контейнеры<br/>отдельный прогон"]
+        U["unit · без стенда"]
+        A["api · v1, v2, CalDAV"]
+        B["ui · Playwright"]
+        R["resilience"]
     end
 
-    V["Vikunja v2.6.0<br/>API v1 · API v2 · CalDAV"]
-
-    subgraph around["с чем работает продукт"]
-        direction TB
-        PG[("PostgreSQL<br/>проверки по строкам")]
-        RD[("Redis")]
-        S3["MinIO<br/>вложения"]
-        MAIL["Mailpit<br/>письма подтверждения и сброса"]
-        HOOK["приёмник вебхуков<br/>свой путь у каждого теста"]
-        PROM["Prometheus<br/>счётчики"]
-    end
+    V["Vikunja v2.6.0"]
+    PG[("PostgreSQL")]
+    S3["MinIO"]
+    MAIL["Mailpit"]
+    HOOK["приёмник вебхуков"]
+    PROM["Prometheus"]
 
     A --> V
     B --> V
-    R -. "убирает одно из них" .-> around
-    V --> PG
-    V --> RD
-    V --> S3
-    V --> MAIL
-    V --> HOOK
-    V --> PROM
-    A -. "проверяет напрямую" .-> PG
-    A -. "читает" .-> MAIL
-    A -. "читает" .-> HOOK
-    A -. "читает" .-> S3
-    A -. "читает" .-> PROM
+    R -->|"гасит одно из них"| V
+    V --> PG & S3 & MAIL & HOOK & PROM
+    A -.->|"сам проверяет эффект"| PG & S3 & MAIL & HOOK & PROM
 
     style V fill:#4c7fd4,stroke:#2f5596,color:#fff
-    style suite fill:#f6f8fa,stroke:#d0d7de
-    style around fill:#f6f8fa,stroke:#d0d7de
 ```
 
 Каждый ответ, который набор получает в любом тесте, по дороге проверяется против схемы своей операции. Именно поэтому контрактное покрытие доходит до 99% обеих версий API, и при этом не написано ни одного контрактного теста.
