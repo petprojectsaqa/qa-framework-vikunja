@@ -94,7 +94,8 @@ flowchart LR
     B --> V
     R -->|"гасит одно из них"| V
     V --> PG & S3 & MAIL & HOOK & PROM
-    A -.->|"сам проверяет эффект"| PG & S3 & MAIL & HOOK & PROM
+    A -.->|"сам проверяет эффект"| PG
+    A -.-> S3 & MAIL & HOOK & PROM
 
     style V fill:#4c7fd4,stroke:#2f5596,color:#fff
 ```

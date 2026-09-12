@@ -94,7 +94,8 @@ flowchart LR
     B --> V
     R -->|"stops one of these"| V
     V --> PG & S3 & MAIL & HOOK & PROM
-    A -.->|"checks the effect itself"| PG & S3 & MAIL & HOOK & PROM
+    A -.->|"checks the effect itself"| PG
+    A -.-> S3 & MAIL & HOOK & PROM
 
     style V fill:#4c7fd4,stroke:#2f5596,color:#fff
 ```
