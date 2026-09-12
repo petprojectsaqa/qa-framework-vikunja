@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "countedtraisestheusercountergw50c8023bc",
+  "password": "VikunjaQA123!"
+}
+status: 200  (187 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTIzMTMsImlkIjoxOTEsImlzX2FkbWluIjpmYWxzZSwianRpIjoiYTEwOTJmNDktMDg3NC00YjQ2LWIzOTQtMjRhZjc2MDRlNGJkIiwic2lkIjoiMDZiNDdkNjAtMTQ3Ni00Yjk5LWJjOGUtN2Q4YWI2YTdmMWM1IiwidHlwZSI6MSwidXNlcm5hbWUiOiJjb3VudGVkdHJhaXNlc3RoZXVzZXJjb3VudGVyZ3c1MGM4MDIzYmMifQ.9_sJKT9RXCgwXMhjZMMXJ_rBUpxUpEYlcAdZuqyxwoI"
+}

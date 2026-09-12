@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerregettasksattachmentsgw24607c90d",
+  "password": "VikunjaQA123!"
+}
+status: 200  (199 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTIzMDMsImlkIjoxMTcsImlzX2FkbWluIjpmYWxzZSwianRpIjoiODdjYTc3ODktMTNjOS00NTgyLWI3ZjgtODhjODBmNzYzMDMwIiwic2lkIjoiYTM3Y2M1NDgtNjQzMC00MGRkLTliMmEtNzAzM2Y0OGUwNGIyIiwidHlwZSI6MSwidXNlcm5hbWUiOiJvd25lcnJlZ2V0dGFza3NhdHRhY2htZW50c2d3MjQ2MDdjOTBkIn0.BXr_IUwRcEk_OQoSVy0bNE7d3BeM0BqqgoOkQ1-njYA"
+}

@@ -1,8 +1,0 @@
-PUT http://localhost:3456/api/v1/projects/999999999/teams
-as: api-token:projects_teams.read_all
-status: 401  (32 ms)
-domain code: 11
-body: {
-  "code": 11,
-  "message": "missing, malformed, expired or otherwise invalid token provided"
-}

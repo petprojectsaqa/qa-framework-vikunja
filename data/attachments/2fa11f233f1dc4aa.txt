@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/7/users
+as: session:ownerddtaskcontrolchromiumgw03db42ad2
+sent: {
+  "username": "readerddtaskcontrolchromiumgw00928ca27",
+  "permission": 0
+}
+status: 201  (13 ms)
+body: {
+  "id": 1,
+  "username": "readerddtaskcontrolchromiumgw00928ca27",
+  "permission": 0,
+  "created": "2026-09-12T22:21:43.722686967Z",
+  "updated": "2026-09-12T22:21:43.722691475Z"
+}

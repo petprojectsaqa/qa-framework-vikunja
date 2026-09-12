@@ -1,0 +1,24 @@
+GET http://localhost:3456/api/v1/tasks/65/attachments
+as: session:ownerroughsomeoneelsestaskgw54a5198e6
+status: 200  (168 ms)
+body: [
+  {
+    "id": 2,
+    "task_id": 65,
+    "created_by": {
+      "id": 168,
+      "name": "",
+      "username": "ownerroughsomeoneelsestaskgw54a5198e6",
+      "created": "2026-09-12T22:21:49Z",
+      "updated": "2026-09-12T22:21:49Z"
+    },
+    "file": {
+      "id": 2,
+      "name": "secret.txt",
+      "mime": "text/plain; charset=utf-8",
+      "size": 17,
+      "created": "2026-09-12T22:21:50Z"
+    },
+    "created": "2026-09-12T22:21:50Z"
+  }
+]

@@ -1,0 +1,27 @@
+PUT http://localhost:3456/api/v1/tasks/86/attachments
+as: session:ownerentsurvivesaroundtripgw7ecc7c867
+status: 200  (19 ms)
+body: {
+  "errors": null,
+  "success": [
+    {
+      "id": 4,
+      "task_id": 86,
+      "created_by": {
+        "id": 195,
+        "name": "",
+        "username": "ownerentsurvivesaroundtripgw7ecc7c867",
+        "created": "2026-09-12T22:21:53Z",
+        "updated": "2026-09-12T22:21:53Z"
+      },
+      "file": {
+        "id": 4,
+        "name": "payload.bin",
+        "mime": "application/octet-stream",
+        "size": 40,
+        "created": "2026-09-12T22:21:53.866646825Z"
+      },
+      "created": "2026-09-12T22:21:53.87244018Z"
+    }
+  ]
+}

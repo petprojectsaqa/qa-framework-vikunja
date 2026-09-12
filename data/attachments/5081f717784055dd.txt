@@ -1,0 +1,12 @@
+PUT http://localhost:3456/api/v1/projects/89/users
+as: session:ownerotalevelisrefusednullgw483533a25
+sent: {
+  "username": "outsiderotalevelisrefusednullgw44935eea1",
+  "permission": null
+}
+status: 400  (12 ms)
+domain code: 9001
+body: {
+  "code": 9001,
+  "message": "The permission is invalid."
+}

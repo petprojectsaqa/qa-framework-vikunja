@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/72/tasks
+as: session:ownertesterrorcodespygw24d263822
+sent: {
+  "title": "task task"
+}
+status: 201  (145 ms)
+body: {
+  "id": 31,
+  "title": "task task",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 72,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-12T22:21:36.607699608Z",
+  "updated": "2026-09-12T22:21:36.607703345Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 57,
+    "name": "",
+    "username": "ownertesterrorcodespygw24d263822",
+    "created": "2026-09-12T22:21:34Z",
+    "updated": "2026-09-12T22:21:35Z"
+  }
+}

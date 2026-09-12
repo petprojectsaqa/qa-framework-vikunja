@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "outsidertalevelisrefusedalistgw48c1244a9",
+  "password": "VikunjaQA123!"
+}
+status: 200  (234 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTIzMTIsImlkIjoxODMsImlzX2FkbWluIjpmYWxzZSwianRpIjoiOTM3ZjE1NDAtZmJlNC00Y2QzLWE5Y2EtMzc0N2I0NDMzYzZiIiwic2lkIjoiMDZiNDQ5ZTQtMTFiOC00MTFmLThiYTgtZDIyNzY1M2MwYWU1IiwidHlwZSI6MSwidXNlcm5hbWUiOiJvdXRzaWRlcnRhbGV2ZWxpc3JlZnVzZWRhbGlzdGd3NDhjMTI0NGE5In0.BVPeMlIQLXQltY9As1zthrU3YLNGMyeNWDENKWRQ1eI"
+}

@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerrgecalendarpropertiesgw7ed8a85b3",
+  "password": "VikunjaQA123!"
+}
+status: 200  (186 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTIzMDksImlkIjoxNjcsImlzX2FkbWluIjpmYWxzZSwianRpIjoiMDA3ZTUzNmItMDBlOS00YTEyLWFlZjMtNjM0ZjhjN2I4OGNlIiwic2lkIjoiNDI4NGJmODUtOTI5Ni00MDFlLWJlY2YtYmE2ZWE3YWU4NmFhIiwidHlwZSI6MSwidXNlcm5hbWUiOiJvd25lcnJnZWNhbGVuZGFycHJvcGVydGllc2d3N2VkOGE4NWIzIn0.L7o_YXTJBOF0dD41YUt92a3HPBD6kabNdZp1669QG_U"
+}

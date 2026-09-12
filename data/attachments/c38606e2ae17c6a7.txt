@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/projects/99999999
-as: session:outsiderexistencedisclosurepygw62d25b5d1
-status: 404  (29 ms)
-domain code: 3001
-body: {
-  "code": 3001,
-  "message": "This project does not exist."
-}
