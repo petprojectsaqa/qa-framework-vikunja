@@ -93,6 +93,28 @@ class HttpClient:
             hooks=self._hooks,
         )
 
+    def unshared(self) -> HttpClient:
+        """The same client, on a connection pool of its own.
+
+        `requests.Session` is not meant to be driven from several threads at
+        once, so a test that fires calls simultaneously gives every caller a
+        client of its own. Sharing one would risk measuring the suite rather
+        than the product.
+
+        Traffic attachment is off here for the same reason: Allure's recorder
+        is not built for several threads writing steps at the same moment.
+        What the calls did is asserted in the test and printed in its failure
+        message instead.
+        """
+        return HttpClient(
+            self._base_url,
+            self._auth,
+            timeout=self._timeout,
+            session=requests.Session(),
+            attach_traffic=False,
+            hooks=self._hooks,
+        )
+
     def add_hook(self, hook: ResponseHook) -> None:
         self._hooks.append(hook)
 

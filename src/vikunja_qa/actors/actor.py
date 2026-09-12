@@ -47,6 +47,26 @@ class Actor:
             extra=dict(self.extra),
         )
 
+    def on_its_own_connection(self, role: str | None = None) -> Actor:
+        """The same identity, with a connection pool of its own.
+
+        For callers meant to act at the same instant as each other: a
+        `requests.Session` is not built to be driven from several threads
+        at once, and sharing one would risk measuring the suite rather than
+        the product.
+        """
+        return Actor(
+            role=role or self.role,
+            auth=self.auth,
+            v1=self.v1.unshared(),
+            v2=self.v2.unshared(),
+            username=self.username,
+            email=self.email,
+            password=self.password,
+            user_id=self.user_id,
+            extra=dict(self.extra),
+        )
+
     def raw(self, version: str) -> HttpClient:
         """Version-indexed transport, for tests parameterised over both."""
         if version in ("v1", "1"):

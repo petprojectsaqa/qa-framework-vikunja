@@ -21,6 +21,8 @@ Every finding reproduces in two minutes and asks for no trust in the author: eac
 | [VKJ-011](VKJ-011-redis-outage-hangs-every-request/) | with Redis gone, requests hang instead of failing | high | dependency outage |
 | [VKJ-012](VKJ-012-calendar-home-get-500/) | GET on the CalDAV calendar home answers 500 with an empty body | low | CalDAV slice |
 | [VKJ-013](VKJ-013-mail-daemon-stale-connection/) | after the mail server restarts, mail is lost until traffic pauses for 30 seconds | high | dependency outage |
+| VKJ-014 | held until the product's maintainers respond | low | CalDAV slice |
+| [VKJ-015](VKJ-015-simultaneous-task-creation-500/) | two tasks created in one project at the same moment: one caller gets a 500 | high | simultaneous writes |
 
 ## Running the reproductions
 
@@ -62,12 +64,12 @@ Before reporting anything, the product's tracker was searched for matches. The r
 
 - **VKJ-001 partly overlaps [issue #3316](https://github.com/go-vikunja/vikunja/issues/3316)**, closed on 29 July 2026. The same root cause was fixed there for the second version of the API. The first version's description was left as it was, so the finding stands, but it should be reported as a continuation of a closed issue rather than as something new.
 - **VKJ-013 is adjacent to [issue #48](https://github.com/go-vikunja/vikunja/issues/48)**, closed, which reported the same log line, `not connected to SMTP server`, from the connection-closing path while mail was still being delivered. The loss of messages after a restart is not in that report.
-- The rest have no match in the tracker. The searches covered the API description, the error format, statuses 401, 403, 404 and 405, field nullability, parse failures in generated clients, CalDAV, and mail delivery after an outage.
+- The rest have no match in the tracker. The searches covered the API description, the error format, statuses 401, 403, 404 and 405, field nullability, parse failures in generated clients, CalDAV, mail delivery after an outage, and the unique constraint behind VKJ-015.
 - Version 2.6.0 was the latest release at the time of the check, so everything here applies to the current one.
 
 ## Status: not filed in the tracker
 
-The findings are deliberately not raised as issues. The reason is the project's contribution rules, described below: they are reasonable, and following them for a dozen reports costs more time than it is worth right now. Short drafts are written and sit in a backlog.
+The findings are deliberately not raised as issues. The reason is the project's contribution rules, described below: they are reasonable, and following them for fourteen reports costs more time than it is worth right now. Short drafts are written and sit in a backlog.
 
 That does not affect what the findings are worth. Each is confirmed by running one command against a clean stand, so a reader needs nobody's approval to believe it.
 
@@ -82,11 +84,13 @@ Vikunja's `CONTRIBUTING.md` has a section on AI participation, and it frames any
 
 So the detailed write-ups in this folder are for a reader of this repository, not for the tracker. What goes to a tracker is short, and every reproduction is run by hand before it is sent.
 
-## About VKJ-006
+## About the two held findings
 
-The finding concerns an authorization boundary, so by the rule adopted here the details are not published until the product's maintainers have responded. In the suite it is pinned by two tests in `tests/api/authorization/test_existence_disclosure.py`, marked as expected failures: they state the position without breaking the build, and turn into an unexpected pass if the product changes its behaviour.
+VKJ-006 and VKJ-014 both concern an authorization boundary, so by the rule adopted here their details are not published until the product's maintainers have responded.
 
-The severity is low: nothing leaks but the existence of an identifier, and the behaviour is common in APIs and sometimes chosen deliberately. The private notice is about procedure, not danger.
+Both are low severity: nothing leaks but the existence of an identifier, behaviour that is common in APIs and sometimes chosen deliberately. The private notice is about procedure, not danger.
+
+VKJ-006 is pinned in the suite by two tests in `tests/api/authorization/test_existence_disclosure.py`, marked as expected failures: they state the position without breaking the build, and turn into an unexpected pass if the product changes its behaviour. VKJ-014 has no folder and no test here at all, because the product's own source says plainly that the thing it leaks was meant to stay hidden.
 
 ## How this is wired
 

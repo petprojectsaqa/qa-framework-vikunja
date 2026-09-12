@@ -99,6 +99,15 @@ class ProjectsClient(DomainClient):
     def create_bucket(self, project_id: int, view_id: int, title: str) -> ApiResponse:
         return self._put(f"/projects/{project_id}/views/{view_id}/buckets", json={"title": title})
 
+    def move_task_to_bucket(
+        self, project_id: int, view_id: int, bucket_id: int, task_id: int
+    ) -> ApiResponse:
+        """Drag a card into a column, as the board does it."""
+        return self._post(
+            f"/projects/{project_id}/views/{view_id}/buckets/{bucket_id}/tasks",
+            json={"task_id": task_id},
+        )
+
     def delete_bucket(self, project_id: int, view_id: int, bucket_id: int) -> ApiResponse:
         """The operation CVE-2026-55065 was about: it must refuse a caller
         with no rights on the owning project."""

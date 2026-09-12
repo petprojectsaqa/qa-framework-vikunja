@@ -9,23 +9,23 @@ A reference API and UI test framework in Python, exercised against a real produc
 
 This is not a collection of CRUD checks against a public sandbox. It is about the parts that usually get skipped: isolation that survives full parallelism, contract validation that costs nothing per test, an access matrix driven by data, verification through the database and the services around the product, a comparison of the two API versions the product ships side by side, and a second door into the same data over CalDAV.
 
-**Thirteen defects found in the product**, each with a reproduction that runs in seconds and imports nothing from this framework. See [docs/findings](docs/findings/).
+**Fifteen defects found in the product**, each with a reproduction that runs in seconds and imports nothing from this framework. See [docs/findings](docs/findings/).
 
-**AI-first engineering.** This framework was built the way I work: with AI in the loop. AI speeds up implementation and widens the search for defects, while the architecture, the test strategy and every trade-off are engineering decisions, each written down in [docs/strategy.md](docs/strategy.md) with the alternatives it was chosen over. That combination is what lets one engineer deliver this depth of coverage: most of the suite is generated from the product's own API descriptions, and it has already found thirteen real defects.
+**AI-first engineering.** This framework was built the way I work: with AI in the loop. AI speeds up implementation and widens the search for defects, while the architecture, the test strategy and every trade-off are engineering decisions, each written down in [docs/strategy.md](docs/strategy.md) with the alternatives it was chosen over. That combination is what lets one engineer deliver this depth of coverage: most of the suite is generated from the product's own API descriptions, and it has already found fifteen real defects.
 
 ## Status
 
 | | |
 |---|---|
-| Main run | 1016 passing, 16 skipped, 3 expected failures |
-| Generated from the product's own descriptions | 744 of 830 matrix-bound tests |
-| Run time on eight workers | about 47 seconds |
+| Main run | 1035 passing, 16 skipped, 4 expected failures |
+| Generated from the product's own descriptions | 744 of 843 matrix-bound tests |
+| Run time on eight workers | about 40 seconds |
 | API operations exercised | 99% of both versions |
-| The framework's own tests, no stand needed | 177 in 12 seconds |
+| The framework's own tests, no stand needed | 184 in 12 seconds |
 | Resilience layer, run on its own | 6 |
-| Defects found in the product | 13 |
+| Defects found in the product | 15 |
 
-Two rows of the [coverage matrix](docs/coverage-matrix.md) are still empty, and the run says so at the end of every run: business rules (`FUN`) and concurrency (`CNC`) have no tests yet. Everything else is covered to the depth the matrix describes.
+Every row of the [coverage matrix](docs/coverage-matrix.md) has tests behind it, and the run prints the table at the end so a gap cannot open quietly. The thin ones are error codes and negative input, where the intent is a family rather than the handful written so far.
 
 ## Quick start
 
@@ -93,7 +93,7 @@ uv run pytest tests/resilience --resilience
 
 **What happens outside the response is checked too.** Mail is read from the trap, outgoing webhooks from a dedicated sink, files through object storage, counters from the metrics scrape, and data integrity through direct PostgreSQL queries. That is why the stand runs eight containers.
 
-**There is not a single fixed pause.** Waiting polls a condition against an explicit deadline, and a timeout says what it was waiting for. The one exception is named in the test that holds it, and a unit test fails the build on any other.
+**There is not a single fixed pause.** Waiting polls a condition against an explicit deadline, and a timeout says what it was waiting for. The two exceptions are named in the tests that hold them, and a unit test fails the build on any other.
 
 **The browser never signs in through the form.** The account is prepared over the API and its token placed in browser storage before the application boots, so a page opens directly where the test needs it. A test fails only when the thing it checks is broken.
 
@@ -117,8 +117,9 @@ The suite is laid out by what a test needs to run, then by what it covers:
 
 ```
 tests/unit/            the framework testing itself; runs with the stand off
-tests/api/<area>/      framework, authorization, contracts, integrity,
-                       side_effects, calendar, regressions
+tests/api/<area>/      framework, authorization, contracts, rules,
+                       integrity, side_effects, calendar, concurrency,
+                       regressions
 tests/ui/<area>/       framework, tasks, views, permissions, localisation
 tests/resilience/      dependency outages, on its own run
 ```
@@ -127,7 +128,7 @@ Layers inside `src` depend in one direction only, and a unit test parses the sou
 
 ## Findings
 
-Thirteen defects, each in its own folder with a write-up in both languages and a reproduction:
+Fifteen defects, each in its own folder with a write-up in both languages and a reproduction. Two of them are held back from publication until the product's maintainers have answered, so thirteen are here:
 
 ```bash
 python scripts/verify_findings.py

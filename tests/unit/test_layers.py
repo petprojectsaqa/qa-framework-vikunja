@@ -149,11 +149,16 @@ def test_the_suite_contains_no_fixed_pause_in_place_of_waiting() -> None:
     """`time.sleep` is both slower and less reliable than waiting on a
     condition, so the suite waits on conditions instead.
 
-    One module is allowed it, and the reason is written there: the mail
-    layer has to let a timer inside the product elapse, and a timer is not
-    something a poll can observe.
+    Two modules are allowed it, and neither is waiting for the product.
+    The mail resilience module lets a timer inside the product elapse, and
+    a timer is not something a poll can observe. The concurrency helper's
+    own test sleeps to make a caller slow on purpose, because staging that
+    is what it exists to check.
     """
-    allowed = {TESTS / "resilience" / "dependencies" / "test_mail.py"}
+    allowed = {
+        TESTS / "resilience" / "dependencies" / "test_mail.py",
+        TESTS / "unit" / "test_concurrency.py",
+    }
     offences = []
     for module in _modules(TESTS):
         if module in allowed:

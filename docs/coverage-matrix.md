@@ -75,19 +75,19 @@ Each row is a kind of check. A test declares the ones it provides with `@pytest.
 | <a id="acl"></a>`ACL` | Access matrix | table-driven | P0 | 37 |
 | <a id="int"></a>`INT` | Data integrity, verified in the database | hand-written | P0 | 6 |
 | <a id="cve"></a>`CVE` | Regressions for published vulnerabilities | hand-written | P0 | 5 |
-| <a id="fun"></a>`FUN` | Business rules | hand-written | P1 | 0 |
+| <a id="fun"></a>`FUN` | Business rules | hand-written | P1 | 8 |
 | <a id="neg"></a>`NEG` | Boundaries and invalid input | hand-written | P1 | 1 |
 | <a id="asy"></a>`ASY` | Asynchronous side effects | hand-written | P1 | 6 |
 | <a id="xvr"></a>`XVR` | Consistency across API versions | hand-written | P1 | 9 |
 | <a id="ui"></a>`UI` | Behaviour only a browser can check | Playwright | P1 | 4 |
-| <a id="cnc"></a>`CNC` | Concurrency and idempotency | hand-written | P2 | 0 |
+| <a id="cnc"></a>`CNC` | Concurrency and idempotency | hand-written | P2 | 5 |
 | <a id="i18"></a>`I18` | Languages, time zones and formats | Playwright | P2 | 4 |
 | <a id="dav"></a>`DAV` | Calendar protocol, a thin slice | hand-written | P2 | 16 |
 | <a id="res"></a>`RES` | Behaviour when a dependency fails | separate run | P2 | 6 |
 
 Priority reads as severity in the report: P0 is critical, P1 normal, P2 minor.
 
-**Where the suite stands.** Two rows are empty, and they are the honest gaps: `FUN` and `CNC` have no tests yet. `ERR` and `NEG` have one or two each where the intent is a family. The generated families carry most of the count, which is the design working as intended rather than a distortion: they cover every operation the product publishes, and they cost nothing to maintain.
+**Where the suite stands.** Every row has tests behind it. The thin ones are `ERR` and `NEG`, with two checks and one, where the intent is a family; section 7 says what generating `ERR` would take. The generated families carry most of the count, which is the design working as intended rather than a distortion: they cover every operation the product publishes, and they cost nothing to maintain.
 
 The api job runs with `--fail-uncovered P0`, so a P0 row falling to zero turns the build red. That is not hypothetical. `SCP` sat at zero for weeks without anyone noticing, because the family was skipped at collection by a `KeyError` one line long.
 
@@ -168,6 +168,10 @@ Three families that nobody writes by hand, and one that is meant to join them.
 **The API token format.** The token is a `tk_` prefix and forty hexadecimal characters, looked up by its last eight with a hash comparison after. The code guards against a value too short to slice. Checked: short, empty, wrong prefix, and right prefix with rubbish inside.
 
 **The generated partial-update endpoints.** v2 derives them automatically from read and write pairs. Along the backbone, partial update is compared against full update.
+
+**What a task promises.** The rules a user would describe without mentioning HTTP, and which no status code checks: finishing a task records when and reopening it forgets, a repeating task moves its due date instead of closing, a task carries a number of its own that counts up inside its project and starts again in the next, moving a card into the Done column is the same act as ticking the box, an archived project refuses writes and stays readable, an assignee has to be someone who can open the task, a relation is visible from both of its ends, and one label goes onto one task once.
+
+**Two callers at the same instant.** The ordinary case for a shared product, and the one a sequential suite never reaches. The callers are released together by a barrier, because work handed to a thread pool staggers, and staggered calls do not collide. What must hold whoever wins: the tasks that are accepted keep distinct numbers, simultaneous updates keep one of the writes whole, and neither a double delete nor a double label add answers with a server error. What does not hold is [VKJ-015](findings/VKJ-015-simultaneous-task-creation-500/): two tasks created in one project at the same moment collide on that number, and every caller but one gets a 500.
 
 ---
 
