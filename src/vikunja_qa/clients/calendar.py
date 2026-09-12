@@ -12,10 +12,8 @@ whether an answer is right.
 
 from __future__ import annotations
 
-from typing import Protocol
 from urllib.parse import quote
 
-from vikunja_qa.actors.actor import Actor
 from vikunja_qa.auth.strategies import BasicAuth
 from vikunja_qa.config import Settings
 from vikunja_qa.transport.client import HttpClient
@@ -86,10 +84,3 @@ class CalendarClient:
     @staticmethod
     def _todo_path(project_id: int, uid: str) -> str:
         return f"/projects/{project_id}/{quote(uid, safe='')}.ics"
-
-
-class CalendarOpener(Protocol):
-    """Opens the calendar door as an actor. The secret defaults to the
-    account password; a CalDAV token or an API token goes in its place."""
-
-    def __call__(self, actor: Actor, secret: str | None = None) -> CalendarClient: ...

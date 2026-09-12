@@ -17,10 +17,10 @@ from __future__ import annotations
 import pytest
 
 from vikunja_qa.actors.factory import ActorFactory
-from vikunja_qa.clients.calendar import CalendarOpener
 from vikunja_qa.domain import icalendar
 from vikunja_qa.domain.permissions import Permission
 from vikunja_qa.scenes import SceneBuilder, build
+from vikunja_qa.testing.fixtures import CalendarOpener
 
 pytestmark = pytest.mark.covers("CVE")
 

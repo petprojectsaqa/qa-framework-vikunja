@@ -1,25 +1,27 @@
-# VKJ-001. Описание v1 объявляет `Subscription.entity` целым числом, а продукт возвращает строку
+# VKJ-001. The v1 specification declares `Subscription.entity` an integer, and the product returns a string
 
-**Серьёзность:** средняя
-**Версия:** Vikunja v2.6.0
-**Компонент:** описание API первой версии, `models.Subscription`
-**Окружение:** официальный образ `vikunja/vikunja:2.6.0`, PostgreSQL 18, стенд из `docker/docker-compose.yml`
+English | [Русский](README.ru.md)
 
-## Суть
+**Severity:** medium
+**Version:** Vikunja v2.6.0
+**Component:** the first-version API specification, `models.Subscription`
+**Environment:** official image `vikunja/vikunja:2.6.0`, PostgreSQL 18, the stand from `docker/docker-compose.yml`
 
-Спецификация первой версии API описывает поле `entity` объекта подписки как целое число:
+## Summary
+
+The first version of the API specification describes the `entity` field of the subscription object as an integer:
 
 ```json
 { "type": "integer" }
 ```
 
-Продукт возвращает в этом поле строку: `"task"` или `"project"`.
+The product returns a string in that field: `"task"` or `"project"`.
 
-Объект подписки встроен в ответы задач и проектов, то есть расхождение затрагивает не одну служебную ручку, а основные сущности продукта.
+The subscription object is embedded in task and project responses, so the discrepancy does not touch one auxiliary endpoint but the main entities of the product.
 
-## Почему это именно дефект описания, а не придирка
+## Why this is a specification defect and not a quibble
 
-Спецификация второй версии API, которую продукт генерирует из собственного кода, описывает то же самое поле правильно:
+The second version of the API specification, which the product generates from its own code, describes the same field correctly:
 
 ```json
 {
@@ -30,46 +32,46 @@
 }
 ```
 
-Две спецификации одного продукта описывают одно поле несовместимо. Вторая совпадает с фактическим поведением, первая нет.
+Two specifications of one product describe one field incompatibly. The second matches the actual behaviour, the first does not.
 
-## Проверка на дубликаты
+## Duplicate check
 
-В трекере продукта есть [issue #3316](https://github.com/go-vikunja/vikunja/issues/3316), закрытая 29 июля 2026 года. В ней сообщалось о том же несоответствии, но **только для второй версии API**: там движок выводил схему из внутреннего целочисленного типа, а сериализация отдавала строку. Починка добавила переопределение схемы на строковое перечисление.
+The product's tracker has [issue #3316](https://github.com/go-vikunja/vikunja/issues/3316), closed on 29 July 2026. It reported the same mismatch, but **only for the second version of the API**: there the engine derived the schema from the internal integer type while serialisation returned a string. The fix added a schema override to a string enumeration.
 
-Первой версии описания это исправление не коснулось. Настоящая находка это остаток той же причины, не устранённый в старом описании, и сообщать о ней следует со ссылкой на закрытую issue.
+That fix did not touch the first version of the specification. This finding is what is left of the same cause in the old specification, and it should be reported with a reference to the closed issue.
 
-## Влияние
+## Impact
 
-Клиент, сгенерированный из описания первой версии на строго типизированном языке, не сможет разобрать ответ любой задачи, у которой есть подписка. В Java, C#, Swift, Kotlin и Rust это ошибка разбора, а не предупреждение. Подписка на задачу создаётся автоматически при её создании автором, поэтому случай не краевой, а основной.
+A client generated from the first-version specification in a strictly typed language cannot parse the response for any task that has a subscription. In Java, C#, Swift, Kotlin and Rust that is a parse error, not a warning. A task subscription is created automatically when the author creates the task, so this is not an edge case but the main one.
 
-## Шаги воспроизведения
+## Steps to reproduce
 
-1. Поднять стенд.
-2. Зарегистрировать пользователя и подтвердить адрес.
-3. Создать проект и в нём задачу.
-4. Запросить задачу и посмотреть на поле `subscription.entity`.
-5. Сравнить с типом из описания.
+1. Bring the stand up.
+2. Register a user and confirm the address.
+3. Create a project and a task in it.
+4. Request the task and look at the `subscription.entity` field.
+5. Compare with the type from the specification.
 
 ```bash
 ./reproduce.sh
 ```
 
-## Ожидаемый результат
+## Expected
 
-Тип поля в описании совпадает с типом в ответе.
+The type of the field in the specification matches the type in the response.
 
-## Фактический результат
+## Actual
 
 ```
-описание v1: {"type": "integer"}
-ответ:       "entity": "task"
-описание v2: {"type": "string", "enum": ["project", "task"]}
+v1 specification: {"type": "integer"}
+response:         "entity": "task"
+v2 specification: {"type": "string", "enum": ["project", "task"]}
 ```
 
-## Что чинить
+## What to fix
 
-Привести аннотацию поля `Entity` структуры `Subscription` в описании первой версии к строковому перечислению, как это уже сделано во второй.
+Bring the annotation of the `Entity` field of the `Subscription` struct in the first-version specification to a string enumeration, as is already done in the second.
 
-## Связанный тест
+## Related test
 
-Расхождение ловится автоматически контрактной проверкой в транспортном слое набора. В базовой линии записано как `VKJ-001`.
+The discrepancy is caught automatically by the contract check in the suite's transport layer. Recorded in the baseline as `VKJ-001`.

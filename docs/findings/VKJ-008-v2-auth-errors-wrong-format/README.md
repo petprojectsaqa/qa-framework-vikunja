@@ -1,17 +1,19 @@
-# VKJ-008. Ошибки авторизации во второй версии API приходят в формате, который эта версия не описывает
+# VKJ-008. Authorisation errors in the second version of the API arrive in a format that version does not describe
 
-**Серьёзность:** высокая
-**Версия:** Vikunja v2.6.0
-**Компонент:** обработка ошибок второй версии API
-**Окружение:** официальный образ `vikunja/vikunja:2.6.0`, стенд из `docker/docker-compose.yml`
+English | [Русский](README.ru.md)
 
-## Суть
+**Severity:** high
+**Version:** Vikunja v2.6.0
+**Component:** error handling in the second version of the API
+**Environment:** official image `vikunja/vikunja:2.6.0`, the stand from `docker/docker-compose.yml`
 
-Вторая версия API описывает для **каждой** операции ответ `default` со схемой `VikunjaErrorModel` и типом содержимого `application/problem+json`. Схема закрытая: `additionalProperties: false`.
+## Summary
 
-Продукт отдаёт ошибки в двух несовместимых форматах в зависимости от того, где они возникли.
+The second version of the API describes, for **every** operation, a `default` response with the `VikunjaErrorModel` schema and the `application/problem+json` content type. The schema is closed: `additionalProperties: false`.
 
-**Доменные ошибки идут правильно.** Пример, запрос несуществующей задачи:
+The product returns errors in two incompatible formats, depending on where they arose.
+
+**Domain errors come back correctly.** An example, a request for a task that does not exist:
 
 ```
 Content-Type: application/problem+json
@@ -24,7 +26,7 @@ Content-Type: application/problem+json
 }
 ```
 
-**Ошибки промежуточного слоя идут в старом формате первой версии.** Пример, запрос без токена:
+**Middleware errors come back in the old first-version format.** An example, a request with no token:
 
 ```
 Content-Type: application/json
@@ -34,42 +36,42 @@ Content-Type: application/json
 }
 ```
 
-Второй ответ противоречит описанию дважды: тип содержимого не тот, и поле `message` схемой не предусмотрено, а закрытая схема лишние поля запрещает.
+The second response contradicts the description twice over: the content type is not the declared one, and the `message` field is not provided for by the schema, which is closed and so forbids extra fields.
 
-То же касается ответа 405, который тоже формируется промежуточным слоем.
+The same goes for the 405 response, which the middleware also produces.
 
-## Масштаб
+## Scale
 
-Обход всех операций второй версии показал расхождение примерно на 180 из 196. Причина одна: ошибки, не дошедшие до обработчика, не проходят через преобразователь ошибок и отдаются напрямую.
+A walk over every operation of the second version showed the discrepancy on roughly 180 out of 196. There is a single cause: errors that do not reach a handler never pass through the error converter, and are returned directly.
 
-## Влияние
+## Impact
 
-Это не косметика. Ответ 401 возникает при каждом истечении токена, то есть в обычной работе любого клиента, а не в краевом случае.
+This is not cosmetic. A 401 arises on every token expiry, that is, in the ordinary work of any client, not in an edge case.
 
-Клиент второй версии, написанный по описанию, разбирает `application/problem+json` и читает поле `detail`. При истечении сессии он получает другой тип содержимого, отсутствующее `detail` и незадокументированное `message`. В строгой реализации это ошибка разбора, в мягкой пустое сообщение. В обоих случаях пользователь не узнает, что ему нужно войти заново.
+A second-version client written to the description parses `application/problem+json` and reads the `detail` field. When the session expires it gets a different content type, a missing `detail` and an undocumented `message`. In a strict implementation that is a parse error, in a lenient one an empty message. In both cases the user is never told to sign in again.
 
-Отдельно: поскольку поле `detail` отсутствует, для таких ошибок ломается и локализация, о которой сказано в [VKJ-005](../VKJ-005-permission-errors-carry-no-code/).
+Separately: since the `detail` field is missing, localisation breaks for these errors too, the localisation described in [VKJ-005](../VKJ-005-permission-errors-carry-no-code/).
 
-## Шаги воспроизведения
+## Steps to reproduce
 
 ```bash
 python reproduce.py
 ```
 
-Скрипт печатает рядом описание, доменную ошибку и ошибку промежуточного слоя.
+The script prints the description, a domain error and a middleware error side by side.
 
-## Ожидаемый результат
+## Expected
 
-Все ошибки второй версии отдаются в объявленном формате и с объявленным типом содержимого.
+Every error in the second version is returned in the declared format and with the declared content type.
 
-## Фактический результат
+## Actual
 
-Ошибки промежуточного слоя отдаются в формате первой версии.
+Middleware errors are returned in the first version's format.
 
-## Что чинить
+## What to fix
 
-Пропустить ошибки промежуточного слоя через тот же преобразователь, которым пользуются обработчики, либо описать второй формат в спецификации как допустимый для соответствующих статусов. Первое предпочтительнее: закрытая схема и единый формат это как раз то, ради чего вводилась вторая версия.
+Put middleware errors through the same converter the handlers use, or describe the second format in the specification as permitted for the statuses concerned. The first is preferable: a closed schema and a single format are exactly what the second version was introduced for.
 
-## Связанные тесты
+## Related tests
 
-Ловится автоматически контрактной проверкой на любом обращении к второй версии без токена. Обход `tests/api/authorization/test_credentials_required.py` показывает полный масштаб. В базовой линии записано как `VKJ-008`.
+Caught automatically by the contract check on any request to the second version without a token. The walk in `tests/api/authorization/test_credentials_required.py` shows the full scale. Recorded in the baseline as `VKJ-008`.

@@ -1,46 +1,48 @@
-# VKJ-009. Ручки, отдающие двоичные данные, описаны в v1 как возвращающие JSON
+# VKJ-009. Endpoints that return binary data are described in v1 as returning JSON
 
-**Серьёзность:** низкая
-**Версия:** Vikunja v2.6.0
-**Компонент:** описание API первой версии
-**Окружение:** официальный образ `vikunja/vikunja:2.6.0`, стенд из `docker/docker-compose.yml`
+English | [Русский](README.ru.md)
 
-## Суть
+**Severity:** low
+**Version:** Vikunja v2.6.0
+**Component:** the first-version API description
+**Environment:** official image `vikunja/vikunja:2.6.0`, the stand from `docker/docker-compose.yml`
 
-Две операции первой версии отдают не JSON, а картинку с кодом и архив выгрузки, но в описании у них стоит `produces: application/json`. Описание второй версии тех же самых операций называет настоящие типы, и это решает, какая сторона неправа.
+## Summary
 
-| Операция | Что отдаёт | Объявлено в v1 | Объявлено в v2 |
+Two first-version operations return something other than JSON, an image with the code in it and an export archive, but their description carries `produces: application/json`. The second-version description of the same two operations names the real types, and that settles which side is wrong.
+
+| Operation | What it returns | Declared in v1 | Declared in v2 |
 |---|---|---|---|
-| `GET /user/settings/totp/qrcode` | изображение с кодом | `application/json`, тело типа `file` | `image/jpeg` |
-| `POST /user/export/download` | архив выгрузки | `application/json`, тело `models.Message` | `application/zip` |
+| `GET /user/settings/totp/qrcode` | an image with the code | `application/json`, a body of type `file` | `image/jpeg` |
+| `POST /user/export/download` | an export archive | `application/json`, a body of `models.Message` | `application/zip` |
 
-Первая строка противоречит сама себе внутри одного описания: заявлено, что операция производит `application/json`, и тут же тело ответа типизировано как `file`.
+The first row contradicts itself inside a single description: the operation is declared to produce `application/json`, and right there the response body is typed as `file`.
 
-## Влияние
+## Impact
 
-Клиент, сгенерированный по описанию первой версии, объявит этим операциям возвращаемый тип JSON и попытается разобрать двоичный ответ. Обход не сложен, но обнаруживается он во время выполнения, а не при чтении описания.
+A client generated from the first-version description gives these operations a JSON return type and then tries to parse a binary response. The way round it is not hard, but it is found at run time rather than while reading the description.
 
-Ошибка того же рода, что и остальные расхождения описания: продукт ведёт себя разумно, описание врёт. И, как в [VKJ-002](../VKJ-002-v1-nullable-collections/), спор решается не мнением, а вторым описанием того же продукта.
+This is an error of the same kind as the other description mismatches: the product behaves sensibly, the description lies. And, as in [VKJ-002](../VKJ-002-v1-nullable-collections/), the argument is settled not by opinion but by a second description of the same product.
 
-## Воспроизведение
+## Reproduction
 
 ```bash
 py docs/findings/VKJ-009-binary-endpoints-described-as-json/reproduce.py
 ```
 
-Скрипт читает оба описания с работающего стенда и печатает их рядом. Учётная запись не нужна: расхождение видно в самих описаниях.
+The script reads both descriptions from a running stand and prints them side by side. No account is needed: the mismatch is visible in the descriptions themselves.
 
-## Что чинить
+## What to fix
 
-Проставить этим операциям в описании первой версии настоящие типы содержимого, `image/jpeg` и `application/zip`, как это уже сделано во второй.
+Give these operations their real content types in the first-version description, `image/jpeg` and `application/zip`, as the second version already does.
 
-## Границы находки
+## Scope of the finding
 
-Соседние двоичные ручки описаны честно, и это стоит сказать прямо, чтобы находку не приняли за более широкую, чем она есть:
+The neighbouring binary endpoints are described honestly, and that is worth saying plainly so the finding is not taken for a wider one than it is:
 
-- `GET /api/v1/{username}/avatar` объявляет `application/octet-stream`;
-- `GET /api/v2/avatar/{username}` объявляет `application/octet-stream`.
+- `GET /api/v1/{username}/avatar` declares `application/octet-stream`;
+- `GET /api/v2/avatar/{username}` declares `application/octet-stream`.
 
-## Связанный тест
+## Related test
 
-Отдельного теста нет, и на то есть причина. Контрактная проверка в наборе валидирует ответы, а до двоичных ответов этих двух операций тест не доходит: одна требует включённой двухфакторной аутентификации, вторая подготовленной выгрузки. Находка доказывается сравнением двух описаний, что и делает скрипт воспроизведения.
+There is no test of its own, and there is a reason for that. The contract check in the suite validates responses, and it never reaches the binary responses of these two operations: one needs two-factor authentication switched on, the other a prepared export. The finding is proved by comparing the two descriptions, which is what the reproduction script does.

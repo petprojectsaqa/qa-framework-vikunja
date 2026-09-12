@@ -1,37 +1,39 @@
-# VKJ-004. Операции отвечают статусами, которых нет в их описании
+# VKJ-004. Operations answer with statuses that are not in their specification
 
-**Серьёзность:** низкая
-**Версия:** Vikunja v2.6.0
-**Компонент:** описание API
-**Окружение:** официальный образ `vikunja/vikunja:2.6.0`, стенд из `docker/docker-compose.yml`
+English | [Русский](README.ru.md)
 
-## Суть
+**Severity:** low
+**Version:** Vikunja v2.6.0
+**Component:** the API specification
+**Environment:** official image `vikunja/vikunja:2.6.0`, the stand from `docker/docker-compose.yml`
 
-Часть операций возвращает коды ответа, не перечисленные в их описании. Найдено на выборке из 32 вызовов, то есть встречается часто.
+## Summary
 
-| Операция | Статус | Что объявлено |
+Some operations return response codes that are not listed in their specification. Found on a sample of 32 calls, so it happens often.
+
+| Operation | Status | What is declared |
 |---|---|---|
 | `GET /api/v1/user` | 401 | 200, 404, 500 |
-| `GET /api/v1/user/settings/totp` | 412 | без 412 |
+| `GET /api/v1/user/settings/totp` | 412 | no 412 |
 
-Случай с `GET /user` показателен: это защищённая ручка, и 401 для неё не краевой случай, а нормальная реакция на отсутствующий или протухший токен.
+The `GET /user` case is telling: it is a protected endpoint, and 401 on it is not an edge case but the normal answer to a missing or expired token.
 
-## Влияние
+## Impact
 
-Потребитель описания не знает, какие ошибки ему обрабатывать. Сгенерированный клиент попадает в ветку «неожиданный ответ» на самом обычном сценарии протухшей сессии. Документация API вводит в заблуждение в той части, которая нужнее всего при интеграции.
+A consumer of the specification does not know which errors to handle. A generated client lands in its "unexpected response" branch on the most ordinary scenario there is, an expired session. The API documentation misleads in exactly the part that is needed most during integration.
 
-## Воспроизведение
+## Reproduction
 
 ```bash
 python reproduce.py
 ```
 
-## Что чинить
+## What to fix
 
-Добавить 401 во все защищённые операции описания и 412 туда, где предусловие проверяется. Поскольку 401 применим ко всему защищённому контуру, разумнее описать его один раз общим ответом, а не перечислять в каждой операции.
+Add 401 to every protected operation in the specification, and 412 where a precondition is checked. Since 401 applies to the whole protected surface, it makes more sense to describe it once as a shared response than to list it in every operation.
 
-## Связанный тест
+## Related test
 
-Ловится контрактной проверкой в транспортном слое, вид нарушения «undeclared status». В базовой линии записано как `VKJ-004`.
+Caught by the contract check in the transport layer, violation kind "undeclared status". Recorded in the baseline as `VKJ-004`.
 
-Важная оговорка: это единственная запись базовой линии, охватывающая целый вид нарушения, а не конкретный шаблон. Значит новые случаи того же вида не будут роняться. Запись сузится до перечня конкретных операций, когда набор обойдёт все операции порождаемым семейством и полный список станет известен.
+An important caveat: this is the only baseline entry that covers a whole kind of violation rather than a specific pattern. New cases of the same kind will therefore not break the build. The entry will narrow to a list of specific operations once the suite walks every operation with a generated family and the full list is known.

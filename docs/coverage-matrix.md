@@ -1,96 +1,103 @@
-# Матрица покрытия
+# Coverage matrix
 
-Объект тестирования: Vikunja v2.6.0, развёрнутая локально в Docker Compose.
-Документ фиксирует, что именно проверяется, на каком уровне и почему. Черновик на русском для внутренней работы, в репозиторий уедет английская версия.
+English | [Русский](coverage-matrix.ru.md)
 
-Редакция 2. Учтены решения по CalDAV, по группировке проверок устойчивости и по оформлению находок, а также факты, вытащенные из исходного кода продукта.
+System under test: Vikunja v2.6.0, run locally from `docker/docker-compose.yml`.
 
----
-
-## 1. Принцип, из которого всё следует
-
-Перебирать 170 операций умножением на 11 ролей и 13 типов проверок бессмысленно: получится десятки тысяч комбинаций, половина из которых ничего не проверяет. Вместо этого покрытие разделено на два слоя с разной природой.
-
-**Широкий и мелкий слой порождается из спецификации.** Контрактная валидация, проверка обязательности авторизации, инвариант доменного кода ошибки и матрица прав API-токенов применяются ко всем операциям автоматически. Руками здесь не пишется ничего, и новая ручка в продукте попадает под проверку сама.
-
-**Узкий и глубокий слой пишется руками по хребту.** Хребет это ресурсы, вокруг которых сосредоточена логика прав и где исторически находили уязвимости. Только по ним строится полная матрица доступа, сверка через базу, конкурентность и побочные эффекты.
-
-Такое разделение и есть главное содержательное решение документа. Оно же объясняет, почему набор из восьмисот проверок покрывает продукт лучше, чем набор из трёх тысяч.
+This document says what is checked, at which level, and why. Every test in the suite declares the checks it provides, the report links back to the rows below, and a check with no tests shows up in the run summary. The document and the suite cannot drift apart quietly: `tests/unit/test_documentation.py` fails the build if they do.
 
 ---
 
-## 2. Хребет
+## 1. The principle everything follows
 
-| Ресурс | Почему в хребте |
+Multiplying 170 operations by 12 actors by 16 kinds of check gives tens of thousands of combinations, half of which check nothing. Coverage is split into two layers of a different nature instead.
+
+**A wide, shallow layer, generated from the product's own descriptions.** Contract validation, the demand for a credential on every operation and the API token scope matrix apply to every operation automatically. Nothing there is written by hand, and a new endpoint in the product is covered the day it appears.
+
+**A narrow, deep layer, written by hand along the backbone.** The backbone is the set of resources where the permission logic lives and where published vulnerabilities have landed. Only for those is there a full access matrix, database-level verification, and side-effect checking.
+
+That split is the main decision in this document. It is also why a suite of roughly a thousand checks covers the product better than one of three thousand would.
+
+---
+
+## 2. The backbone
+
+| Resource | Why it is on the backbone |
 |---|---|
-| project | корень модели прав, от него наследуется всё остальное |
-| task | основная сущность, доступ вычисляется через проект |
-| attachment | место CVE-2026-33678, чтение шло по одному идентификатору |
-| comment | вложенный ресурс с собственной проверкой прав |
-| bucket и view | место CVE-2026-55065, разрушение чужих канбан-колонок |
-| link share | звено цепочки GHSA-2pv8-4c52-mf8j |
-| api token | место CVE-2026-68581, захват чужих токенов |
-| team | второй путь получения доступа помимо прямой выдачи |
-| relation | связь задач между проектами, классическая точка утечки |
-| reaction | полиморфная ручка с типом сущности в пути |
+| project | the root of the permission model; everything else inherits from it |
+| task | the main entity, its access computed through the project |
+| attachment | where CVE-2026-33678 landed: reads keyed on a single identifier |
+| comment | a nested resource with a permission check of its own |
+| bucket and view | where CVE-2026-55065 landed: destroying someone else's board |
+| link share | the link in the GHSA-2pv8-4c52-mf8j chain |
+| api token | where CVE-2026-68581 landed: taking over someone else's tokens |
+| team | the second route to access, beside a direct grant |
+| relation | ties tasks across projects, a classic leak |
+| reaction | a polymorphic endpoint with the entity type in the path |
 
-Вне хребта: миграции, администрирование инстанса, фоны из фотостока, аватары. По ним только дымовые проверки.
+Off the backbone: migrations, instance administration, stock photo backgrounds, avatars. Those get smoke coverage only.
 
 ---
 
-## 3. Действующие лица
+## 3. The actors
 
-| Код | Кто это | Как получается |
+| Code | Who | How it is obtained |
 |---|---|---|
-| `owner` | создатель проекта | регистрация и создание |
-| `admin_member` | выдан уровень Admin | прямая выдача пользователю |
-| `write_member` | выдан уровень Write | прямая выдача пользователю |
-| `read_member` | выдан уровень Read | прямая выдача пользователю |
-| `team_write` | доступ через команду | членство в команде с уровнем Write |
-| `outsider` | авторизован, отношения к проекту нет | отдельная регистрация |
-| `anon` | без авторизации | запрос без заголовка |
-| `share_read` | публичная ссылка на чтение | обмен хеша на токен |
-| `share_write` | публичная ссылка на запись | обмен хеша на токен |
-| `share_pwd` | ссылка под паролем | обмен хеша и пароля на токен |
-| `token_narrow` | API-токен с узким набором прав | выдача токена на одну область |
-| `instance_admin` | администратор инстанса | подготовка через служебный API |
+| `owner` | created the project | registration, then creation |
+| `admin_member` | granted Admin | direct grant to a user |
+| `write_member` | granted Write | direct grant to a user |
+| `read_member` | granted Read | direct grant to a user |
+| `team_write` | access through a team | membership of a team with Write |
+| `outsider` | signed in, no relationship to the project | a separate registration |
+| `anon` | no credential | a request with no header |
+| `share_read` | public link, read | a hash traded for a token |
+| `share_write` | public link, write | a hash traded for a token |
+| `share_pwd` | link behind a password | a hash and a password traded for a token |
+| `token_narrow` | an API token with one narrow permission | a token issued for a single area |
+| `instance_admin` | instance administrator | prepared through the product's testing API |
 
-Уровни прав в продукте: чтение равно нулю, запись единице, администрирование двойке, отдельно состояние «неизвестно» со значением минус один. В модели прав есть защита от того, чтобы пустое значение в JSON молча превращалось в право чтения. Граница разбора этого поля проверяется отдельно.
+Permission levels in the product: read is zero, write is one, admin is two, and there is a fourth state, "not determined", which is minus one. The model guards against an empty JSON value quietly becoming read access. The boundary of that field's parsing is checked separately.
 
-Публичные ссылки имеют две независимые оси: уровень права ноль, один или два, и наличие пароля. Обе оси перебираются.
+Public links have two independent axes, the permission level and whether a password is set. Both are enumerated.
 
 ---
 
-## 4. Типы проверок
+## 4. The checks <a id="checks"></a>
 
-| Код | Тип | Слой | Приоритет | Объём |
+Each row is a kind of check. A test declares the ones it provides with `@pytest.mark.covers("ACL")`, which gives it the matching selection marker (`pytest -m acl`), a severity derived from the priority below, and a report link back to this row. "Tests" is what the suite runs today, counted from a full run.
+
+| Code | Check | How | Priority | Tests |
 |---|---|---|---|---|
-| `CON` | соответствие ответа контракту | порождается | P0 | ~200 |
-| `AUT` | обязательность авторизации на каждой ручке | порождается | P0 | ~170 |
-| `ERR` | инвариант доменного кода ошибки | порождается | P0 | ~120 |
-| `SCP` | матрица прав API-токенов | порождается | P0 | ~60 |
-| `ACL` | матрица доступа по хребту | таблица | P0 | ~140 |
-| `FUN` | функциональные сценарии и бизнес-правила | руками | P1 | ~120 |
-| `NEG` | границы, неверные типы, переполнения | руками | P1 | ~60 |
-| `INT` | целостность данных через SQL | руками | P0 | ~25 |
-| `ASY` | асинхронные побочные эффекты | руками | P1 | ~20 |
-| `XVR` | согласованность первой и второй версий API | руками | P1 | ~35 |
-| `CVE` | регрессии на опубликованные уязвимости | руками | P0 | ~6 |
-| `CNC` | конкурентность и идемпотентность | руками | P2 | ~10 |
-| `I18` | языки, часовые пояса, форматы | руками | P2 | ~15 |
-| `DAV` | календарный протокол, тонкий срез | руками | P2 | ~8 |
-| `RES` | поведение при отказе зависимости | отдельный прогон | P2 | ~8 |
-| `UI` | сценарии, не проверяемые через API | Playwright | P1 | ~15 |
+| <a id="con"></a>`CON` | Responses match their contract | generated | P0 | 362 |
+| <a id="aut"></a>`AUT` | Every operation demands a credential | generated | P0 | 349 |
+| <a id="err"></a>`ERR` | Domain error codes are preserved | hand-written | P0 | 2 |
+| <a id="scp"></a>`SCP` | API token scopes hold | generated | P0 | 37 |
+| <a id="acl"></a>`ACL` | Access matrix | table-driven | P0 | 37 |
+| <a id="int"></a>`INT` | Data integrity, verified in the database | hand-written | P0 | 6 |
+| <a id="cve"></a>`CVE` | Regressions for published vulnerabilities | hand-written | P0 | 5 |
+| <a id="fun"></a>`FUN` | Business rules | hand-written | P1 | 0 |
+| <a id="neg"></a>`NEG` | Boundaries and invalid input | hand-written | P1 | 1 |
+| <a id="asy"></a>`ASY` | Asynchronous side effects | hand-written | P1 | 6 |
+| <a id="xvr"></a>`XVR` | Consistency across API versions | hand-written | P1 | 9 |
+| <a id="ui"></a>`UI` | Behaviour only a browser can check | Playwright | P1 | 4 |
+| <a id="cnc"></a>`CNC` | Concurrency and idempotency | hand-written | P2 | 0 |
+| <a id="i18"></a>`I18` | Languages, time zones and formats | Playwright | P2 | 4 |
+| <a id="dav"></a>`DAV` | Calendar protocol, a thin slice | hand-written | P2 | 16 |
+| <a id="res"></a>`RES` | Behaviour when a dependency fails | separate run | P2 | 6 |
 
-Ориентир: около тысячи проверок, из которых больше половины порождаются и не требуют ручного сопровождения.
+Priority reads as severity in the report: P0 is critical, P1 normal, P2 minor.
+
+**Where the suite stands.** Two rows are empty, and they are the honest gaps: `FUN` and `CNC` have no tests yet. `ERR` and `NEG` have one or two each where the intent is a family. The generated families carry most of the count, which is the design working as intended rather than a distortion: they cover every operation the product publishes, and they cost nothing to maintain.
+
+The api job runs with `--fail-uncovered P0`, so a P0 row falling to zero turns the build red. That is not hypothetical. `SCP` sat at zero for weeks without anyone noticing, because the family was skipped at collection by a `KeyError` one line long.
 
 ---
 
-## 5. Покрытие по областям
+## 5. Coverage by area
 
-Области из тегов спецификации первой версии. Цифра это число операций.
+Areas come from the tags in the v1 description. The number is the count of operations.
 
-| Область | Опер. | CON | AUT | ERR | SCP | ACL | FUN | NEG | INT | ASY | XVR | CVE | Приоритет |
+| Area | Ops | CON | AUT | ERR | SCP | ACL | FUN | NEG | INT | ASY | XVR | CVE | Priority |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | auth (6) | 6 | + | + | + | | | + | + | + | | + | | **P0** |
 | user (27) | 27 | + | + | + | + | | + | + | + | + | | + | **P0** |
@@ -105,219 +112,217 @@
 | subscriptions (5) | 5 | + | + | + | + | | + | | | + | | | P2 |
 | filter (4) | 4 | + | + | + | + | + | + | + | | | | | P2 |
 | admin (8) | 8 | + | + | + | + | + | | | | | | | P2 |
-| migration (19) | 19 | + | + | + | | | | | | | | | P3 смоук |
+| migration (19) | 19 | + | + | + | | | | | | | | | P3, smoke |
+
+A `+` in a generated column (CON, AUT, SCP) is a fact: those families walk every operation. A `+` in a hand-written column, `ERR` included, is the intent for that area, and section 4 says how far the suite has got.
 
 ---
 
-## 6. Матрица доступа
+## 6. The access matrix
 
-Строится один раз как таблица данных и исполняется параметризованно. Строка: ресурс, операция, действующее лицо, ожидаемый код.
+Built once as a table of data and executed as parameters. A row is a resource, an operation, an actor and the expected status.
 
-Ожидания на примере задачи внутри проекта:
+One project is built once per module and reached through every route the product offers: a direct grant at each level, a team, a public read link, an outsider and an anonymous caller. The rows as the suite runs them today:
 
-| Операция | owner | admin_member | write_member | read_member | team_write | outsider | anon | share_read | share_write |
-|---|---|---|---|---|---|---|---|---|---|
-| читать задачу | 200 | 200 | 200 | 200 | 200 | 404 | 401 | 200 | 200 |
-| создать задачу | 201 | 201 | 201 | 403 | 201 | 404 | 401 | 403 | 201 |
-| изменить задачу | 200 | 200 | 200 | 403 | 200 | 404 | 401 | 403 | 200 |
-| удалить задачу | 200 | 200 | 200 | 403 | 200 | 404 | 401 | 403 | 200 |
-| выдать права на проект | 200 | 200 | 403 | 403 | 403 | 404 | 401 | 403 | 403 |
-| удалить проект | 200 | 200 | 403 | 403 | 403 | 404 | 401 | 403 | 403 |
+| Operation | owner | admin | writer | reader | teammate | share_read | outsider | anon |
+|---|---|---|---|---|---|---|---|---|
+| read the task | 200 | 200 | 200 | 200 | 200 | 200 | 403 | 401 |
+| update the task | 200 | 200 | 200 | 403 | 200 | 403 | 403 | 401 |
+| delete the task | 200 | 200 | 200 | 403 | 200 | 403 | 403 | 401 |
+| delete the project | 200 | 200 | 403 | 403 | 403 | 403 | 403 | 401 |
 
-**Различие кодов 403 и 404 вынесено в отдельный класс дефектов.** Когда посторонний получает запрет вместо «не найдено», система подтверждает ему существование чужого объекта. Ожидание фиксируется явно по каждой ручке хребта.
+Deleting the project is split in two. The refusals are replayed against the shared project, because a refused call changes nothing; the two rows that succeed get a world of their own, since a project made just for the row would carry none of the shared grants. A row that mutates gets a spare task, for the same reason.
 
----
+The actors this matrix does not yet enumerate are in the table above and remain intent: a write link, a link behind a password, a narrow API token and an instance administrator.
 
-## 7. Порождаемые проверки
-
-Четыре семейства, которые не пишутся руками.
-
-**CON, соответствие контракту.** Спецификация забирается с работающего инстанса: первая версия отдаёт Swagger второй редакции, вторая версия отдаёт OpenAPI третьей редакции, сгенерированный движком Huma на лету. Каждый ответ любого теста валидируется против схемы своей операции автоматически, на уровне транспортного слоя, а не отдельным тестом. Плюс отдельный обход всех операций чтения.
-
-**AUT, обязательность авторизации.** Обход всех операций без заголовка авторизации. Ожидание: 401 и ни одной утечки в теле. Список исключений задаётся явно и проверяется на полноту, чтобы случайно добавленная публичная ручка не прошла мимо.
-
-**ERR, инвариант доменного кода.** В продукте есть числовой доменный код ошибки, который клиенты используют для локализации. Первая версия отдаёт его полем `code`. Вторая версия переводит ошибки в формат RFC 9457 через единую точку и дополнительно переносит туда этот код, потому что иначе клиенты второй версии читают ноль. Инвариант: если первая версия на некорректный запрос отдаёт ненулевой доменный код, вторая обязана отдать тот же код. Любой путь ошибки, проходящий мимо переводчика, всплывает как нулевой код. Это самая перспективная порождаемая проверка в наборе.
-
-**SCP, матрица прав токенов.** API-токен несёт разрешения в виде карты «область к списку действий». Полный список допустимых ключей отдаёт сам продукт отдельной ручкой. Значит матрица строится из ответа продукта: для каждой области выдаётся токен ровно с одним действием, после чего проверяется, что разрешённое проходит, а всё соседнее отклоняется.
+**The difference between 403 and 404 is treated as its own class of defect.** An outsider who gets "forbidden" rather than "not found" has been told that someone else's object exists. The product answers 403, and the suite states the position as an expected failure rather than asserting it: see the note on the held finding in [docs/findings](findings/README.md).
 
 ---
 
-## 8. Прицельные зоны
+## 7. The generated families
 
-**Массовые операции.** Три ручки принимают список: массовое изменение задач, массовая простановка меток, массовое назначение исполнителей. Классический дефект класса это проверка прав только на первом элементе. Сценарий: два объекта, на первый права есть, на второй нет. Ожидание: отказ целиком, отсутствие частичного применения, подтверждённое запросом к базе.
+Three families that nobody writes by hand, and one that is meant to join them.
 
-**Полиморфная ручка реакций.** Тип сущности приходит в пути. Проверяем чужой тип, несуществующий тип и тип, к которому у лица нет доступа.
+**CON, contract conformance.** The descriptions are fetched from the running instance: v1 serves Swagger 2.0, v2 serves OpenAPI 3.1 generated on the fly by Huma. Every response to every call made by any test is validated against the schema for its operation, in the transport layer rather than in a test of its own. On top of that, one sweep walks every read operation.
 
-**Связи между задачами.** Связь создаётся между задачами из разных проектов. Проверяем попытку связать свою задачу с чужой и утечку содержимого чужой задачи через список связей.
+**AUT, a credential is required.** Every operation, called with no authorization header. The expectation is 401 and nothing leaked in the body. The list of deliberate exceptions is explicit and is itself checked for staleness, so an endpoint that quietly becomes public cannot slip through.
 
-**Публичные ссылки.** Хеш длиной сорок символов, генерируется сервером. Цепочка из раскрытия хеша и доступа к вложениям другого проекта была реальной уязвимостью. Проверяем область действия токена ссылки и поведение ссылки под паролем.
+**SCP, the token scope matrix.** An API token carries permissions as a map of area to actions, and the product publishes the full set of valid keys on an endpoint of its own. So the matrix is built from the product's answer: for each area a token is issued with exactly one action, and what that action allows must pass while everything next to it is refused.
 
-**Разбор уровня прав.** Пустое значение, строка вместо числа, значение вне диапазона, отрицательное значение.
-
-**Формат API-токена.** Токен это префикс `tk_` плюс сорок шестнадцатеричных символов, поиск идёт по последним восьми символам с последующей сверкой хеша. В коде есть защита от падения на слишком коротком значении. Проверяем короткие, пустые, с неверным префиксом и с верным префиксом, но мусором внутри.
-
-**Порождённые ручки частичного обновления.** Вторая версия генерирует их автоматически из пар чтения и записи. По хребту сверяем поведение частичного обновления с полным.
+**ERR, the domain error code invariant, is the one still written by hand.** The product carries a numeric domain code that clients translate against. v1 returns it as a `code` field. v2 renders errors as RFC 9457 and carries the same code across, because otherwise v2 clients read zero. The invariant: where v1 answers a bad request with a non-zero domain code, v2 must answer with the same code, and any error path that bypasses the translation surfaces as a zero. Two checks state it today, one of them the finding that refusals carry no usable code at all ([VKJ-005](findings/VKJ-005-permission-errors-carry-no-code/)). Generating it across every operation is the intent, and the reason it is ranked P0 with only two tests against it.
 
 ---
 
-## 9. Согласованность версий API
+## 8. The aimed-at places
 
-Срез, уникальный для этого объекта.
+**Bulk operations.** Three endpoints take a list: bulk task update, bulk labelling, bulk assignment. The classic defect of the class is checking permissions on the first element only. The scenario: two objects, rights on one and not the other. The expectation is refusal of the whole call, with nothing partially applied, confirmed against the database.
 
-Известные различия, зафиксированные в коде продукта:
+**The polymorphic reactions endpoint.** The entity type arrives in the path. Checked with another type, a non-existent type, and a type the actor has no access to.
 
-1. Первая версия использует нестандартные глаголы: обновление отправляется методом POST, создание методом PUT. Вторая переведена на обычный REST.
-2. Формат ошибки различается: первая версия отдаёт плоский объект с полями кода и сообщения, вторая отдаёт документ формата RFC 9457.
-3. **Ошибки валидации отдаются с разными статусами: первая версия возвращает 412, вторая 422.** Это намеренное решение авторов, а не дефект, и оно фиксируется как ожидание.
+**Relations between tasks.** A relation is created between tasks in different projects. Checked: linking your task to someone else's, and leaking the other task's content through the relation list.
 
-Что проверяем:
+**Public links.** A forty-character hash, generated by the server. The chain of disclosing a hash and then reaching another project's attachments was a real vulnerability. Checked: the scope of the link's token, and the behaviour of a link behind a password.
 
-1. Создали сущность первой версией, прочитали второй, сверили все поля.
-2. То же в обратную сторону.
-3. Одно действующее лицо получает одинаковое решение по доступу на обеих версиях.
-4. Доменный код ошибки совпадает при разных статусах и разных форматах тела.
-5. Пагинация ведёт себя одинаково на границах, размер страницы по умолчанию равен пятидесяти.
-6. Поля дат приходят в одинаковом формате и в одинаковой зоне.
+**Parsing the permission level.** Empty value, a string instead of a number, a value out of range, a negative value.
+
+**The API token format.** The token is a `tk_` prefix and forty hexadecimal characters, looked up by its last eight with a hash comparison after. The code guards against a value too short to slice. Checked: short, empty, wrong prefix, and right prefix with rubbish inside.
+
+**The generated partial-update endpoints.** v2 derives them automatically from read and write pairs. Along the backbone, partial update is compared against full update.
 
 ---
 
-## 10. Проверки через базу данных
+## 9. Consistency across API versions
 
-| Что проверяем | Как |
+A slice unique to this system under test, where two APIs describe the same product.
+
+Differences that are deliberate, confirmed in the product's source:
+
+1. v1 uses non-standard verbs: update is POST, create is PUT. v2 is ordinary REST.
+2. The error shape differs: v1 returns a flat object with a code and a message, v2 returns an RFC 9457 document.
+3. **Validation errors carry different statuses: v1 answers 412, v2 answers 422.** That is a decision by the authors, not a defect, and it is pinned as an expectation.
+
+What is checked:
+
+1. Create with v1, read with v2, compare every field.
+2. The same in reverse.
+3. One actor gets the same access decision from both versions.
+4. The domain error code matches across different statuses and different body shapes.
+5. Pagination behaves the same at the boundaries; the default page size is fifty.
+6. Date fields arrive in the same format and the same zone.
+
+---
+
+## 10. Checks made through the database
+
+| What | How |
 |---|---|
-| удаление проекта не оставляет осиротевших задач | счёт строк по внешнему ключу |
-| отказ массовой операции не применился частично | сверка состояния до и после |
-| мягкое удаление не отдаётся в списках | флаг в таблице против ответа API |
-| смена владельца переписала все связи прав | выборка по таблице прав |
-| вложение физически удалено вместе с записью | сверка таблицы и хранилища |
-| счётчик позиций задач не разъехался после перемещения | проверка монотонности |
-| хеш токена не хранится в открытом виде | выборка колонок таблицы токенов |
+| deleting a project leaves no orphaned tasks | counting rows by foreign key |
+| a refused bulk update applied nothing, not even partly | comparing every row before and after |
+| a granted permission is written as a row | selecting from the rights table |
+| an attachment is recorded against its task | joining the attachment and file tables |
+| a token is never stored in the clear | selecting the columns of the token table |
+| reading a token back never returns the secret | the API answer beside the stored row |
+
+Read-only, always. The suite never writes through this route: building state through anything but the product's own API would test the schema rather than the product, and would rot at the first migration.
 
 ---
 
-## 11. Асинхронные эффекты
+## 11. Asynchronous effects
 
-Каждая проверка ждёт результата с ограничением по времени. Фиксированных пауз в наборе нет ни одной.
+Every check waits for a result with a deadline. There is not one fixed pause in the suite.
 
-| Эффект | Где подтверждается |
+| Effect | Where it is confirmed |
 |---|---|
-| письмо о регистрации и сбросе пароля | API перехватчика почты |
-| исходящий вебхук на событие задачи | собственный приёмник, сверка тела и подписи |
-| уведомление по вебсокету | подключение клиента и ожидание сообщения |
-| файл вложения лёг в объектное хранилище | S3-совместимый клиент |
-| счётчик метрик сдвинулся | выборка из Prometheus |
-| крон протухания токенов отработал | подготовка состояния и проверка результата |
+| the registration message | the mail trap's API, and the token in it is spent |
+| the password reset message | the mail trap's API |
+| an outgoing webhook on a task event | a receiver of our own, per test, body compared |
+| a webhook ignoring an event it did not subscribe to | the same receiver, which must stay empty |
+| an attachment reaching object storage | fetched back and compared byte for byte |
+| a metrics counter moving | a query to Prometheus |
 
-Внутренняя шина событий продукта работает в памяти процесса, поэтому событие и его обработчик живут в одном контейнере. Это сокращает время ожидания, но не отменяет необходимости ждать: обработчики асинхронные, и служебный API продукта специально дожидается их завершения перед изменением данных.
+The product's internal event bus runs in the process, so an event and its handler live in the same container. That shortens the wait but does not remove the need to wait: the handlers are asynchronous, and the product's own testing API deliberately waits for them before changing data.
 
 ---
 
-## 12. Регрессии на уязвимости
+## 12. Regressions for published vulnerabilities
 
-Каждый тест ссылается на идентификатор в докстроке.
+Each test names its advisory, so a failure here is not a puzzle. It says which published weakness has come back.
 
-| Идентификатор | Суть | Проверка |
+| Identifier | What it was | The check |
 |---|---|---|
-| CVE-2026-33678 | чтение вложения по одному идентификатору | вложение чужого проекта недоступно |
-| GHSA-2pv8-4c52-mf8j | раскрытие хеша ссылки плюс доступ к чужим вложениям | токен ссылки ограничен своим проектом |
-| CVE-2026-68581 | захват чужих API-токенов | токен другого пользователя не читается и не отзывается |
-| CVE-2026-55065 | разрушение чужих канбан-колонок | операции над колонками требуют прав на проект |
-| CVE-2026-35601 | перевод строки ломает генерацию календаря | заголовок с управляющими символами экранируется |
-| CVE-2026-27819 | распаковка архива вне каталога | вне области, только отметка |
+| CVE-2026-33678 | reading an attachment by a single identifier | another project's attachment is out of reach |
+| GHSA-2pv8-4c52-mf8j | hash disclosure plus reach into other attachments | a link's token is confined to its own project |
+| CVE-2026-68581 | taking over other users' API tokens | another user's token cannot be read or revoked |
+| CVE-2026-55065 | destroying someone else's kanban buckets | bucket operations demand rights on the project |
+| CVE-2026-35601 | a line break breaking calendar generation | a title with control characters is escaped |
+| CVE-2026-27819 | archive extraction outside its directory | out of scope, noted only |
 
 ---
 
-## 13. Календарный протокол, тонкий срез
+## 13. The calendar protocol, a thin slice
 
-Восемь проверок, не больше. Смысл среза в одной фразе: **у одних и тех же данных две двери, и они обязаны сходиться**.
+Sixteen checks. The point of the slice in one sentence: **the same data has two doors, and they have to agree.**
 
-1. Задача, созданная через API, видна через календарный протокол.
-2. Задача, созданная через календарный протокол, видна через API.
-3. Изменение срока в одной двери отражается в другой.
-4. Заголовок с переводом строки не ломает выдачу, регрессия на CVE-2026-35601.
-5. Чужой календарь недоступен по токену другого пользователя.
-6. Календарный токен отзывается и после отзыва не работает.
-7. Удаление задачи отражается в обеих дверях.
-8. Символы за пределами латиницы в заголовке не портят кодировку.
+1. A task created over the API is visible over CalDAV, and the reverse.
+2. A due date set in one door reaches the other, in both directions.
+3. A deletion in one door is a deletion in the other, in both directions.
+4. A title outside the Latin alphabet survives both directions unchanged.
+5. A title with a line break cannot forge calendar properties: the regression for CVE-2026-35601.
+6. The calendar refuses a caller with no credentials, and challenges for Basic.
+7. Someone else's calendar is not readable, over GET or PROPFIND.
+8. A revoked CalDAV token stops working.
+9. An API token opens the calendar only when it carries the `caldav` permission, and only under its owner's username.
+
+Answers are read by the rules of RFC 5545 rather than by searching the text: a title escaped correctly still contains the characters of the property it tried to forge, and only parsing tells a real property from text that looks like one.
 
 ---
 
-## 14. Локализация и время
+## 14. Localisation and time
 
-| Что | Проверка |
+| What | The check |
 |---|---|
-| часовой пояс пользователя | срок задачи на границе суток в разных зонах |
-| переход на летнее время | повторяющаяся задача через границу перевода часов |
-| начало недели | представление календаря при разных настройках |
-| формы множественного числа | счётчики в интерфейсе на русском и английском |
-| длина строк | отсутствие обрезки на языках с длинными словами |
-| локализация ошибок | доменный код и параметры подстановки приходят клиенту |
+| the interface follows the browser's language | the placeholder changes away from English for de-DE and ru-RU |
+| the suite's own locale is pinned | English wording is what a default context renders |
+| long words do not break the layout | measured, not eyeballed: the element either fits or is trimmed |
+
+Only the English wording is pinned. For other languages the check is that the wording changed at all, because asserting a particular translation would test the translators rather than the product.
 
 ---
 
-## 15. Устойчивость к отказам
+## 15. Behaviour when a dependency fails
 
-**Вынесено в отдельную группу с собственным запуском.** В основной прогон не попадает, потому что гасит инфраструктуру под собой: такие проверки медленные и по природе нестабильные. Запускается отдельной задачей в CI по расписанию и вручную.
+**A layer of its own, with its own run.** It never joins the main run, because it takes the infrastructure out from under itself: these checks are slow and unstable by nature. It runs as its own CI job, on a schedule and on demand, and always in a single process, because an outage cannot be confined to the test that caused it.
 
-| Отказ | Ожидание |
-|---|---|
-| база недоступна | проверка здоровья отдаёт неуспех, наружу не уходит трассировка стека |
-| Redis недоступен | приложение живо, ограничение частоты деградирует предсказуемо |
-| объектное хранилище недоступно | загрузка файла отдаёт внятную ошибку, а не пустую пятисотку |
-| почтовый сервер недоступен | регистрация не падает, письмо остаётся в очереди |
+| Failure | Expectation | What actually happens |
+|---|---|---|
+| the database is gone | the health check stops claiming health, and no stack trace escapes | as expected |
+| Redis is gone | the product degrades but still answers | it hangs instead: [VKJ-011](findings/VKJ-011-redis-outage-hangs-every-request/) |
+| object storage is gone | an upload fails with a clear error | it answers 200 with the failure hidden in the body: [VKJ-010](findings/VKJ-010-failed-upload-returns-200/) |
+| the mail server is gone | the request does not fail; the message waits | the request holds, but mail stops until traffic pauses: [VKJ-013](findings/VKJ-013-mail-daemon-stale-connection/) |
 
-Решение о выносе объясняется в README. Ценность этих проверок высокая, но красный или долгий основной прогон обесценивает весь репозиторий, поэтому они изолированы намеренно.
-
----
-
-## 16. Интерфейс
-
-Только то, что нельзя проверить через API. Данные готовятся вызовами API, состояние браузерного хранилища подставляется заранее.
-
-1. Разбор строки быстрого добавления в поля задачи.
-2. Перетаскивание карточки между колонками, результат сверяется через API.
-3. Согласованность данных между списком, доской, календарём и таблицей.
-4. Смена языка и отсутствие обрезки текста.
-5. Проект с правом только на чтение не показывает элементы редактирования.
-6. Обратная связь формы на неверный ввод.
-7. Отображение вложения после загрузки.
+Three of the four expectations are not met, which is a fair return for six tests.
 
 ---
 
-## 17. Оформление находок
+## 16. The interface
 
-Найденные дефекты складываются в репозиторий в каталог `docs/findings`, по одной папке на находку. Переписка с сопровождающими продукта не ведётся.
+Only what cannot be checked through the API. Data is prepared with API calls and the browser's session storage is filled in advance, so a page opens signed in and looking at the thing under examination.
 
-Требование к каждому отчёту: **воспроизводимость за две минуты без доверия к автору**. Проверяющий запускает скрипт и видит результат сам.
+1. Quick-add parses a label and a priority out of a plain sentence, and strips the markers from the title.
+2. A task shows up in more than one view of its project.
+3. A project shared read-only offers no control for adding a task.
+4. Language and layout, as in section 14.
+
+A large browser suite duplicating API coverage would be slower, more fragile and worth less. This one is deliberately small.
+
+---
+
+## 17. How findings are written up
+
+Findings go into `docs/findings`, one folder each, in English with a Russian version alongside.
+
+The requirement for every report: **reproducible in two minutes without trusting the author.** The reader runs a script and sees the result.
 
 ```
 docs/findings/
-  README.md                    сводная таблица находок
-  VKJ-001-bulk-partial-auth/
-    README.md                  отчёт
-    reproduce.sh               воспроизведение на curl
-    test_vkj_001.py            падающий тест из набора
-    evidence/                  логи, ответы, скриншоты
+  README.md                    the index
+  VKJ-007-label-update-verb/
+    README.md                  the report
+    README.ru.md               the same in Russian
+    reproduce.py               a standalone reproduction, standard library only
 ```
 
-Поля отчёта: суть, серьёзность, затронутая версия, окружение, предусловия, шаги, ожидаемое, фактическое, доказательства, влияние на пользователя, ссылка на тест.
+Report fields: summary, severity, affected version, environment, steps, expected, actual, impact on the user, and the test that pins it.
 
-**Исключение для уязвимостей.** Если находка выглядит эксплуатируемой, то есть даёт доступ к чужим данным или обход прав, она сначала уходит сопровождающим продукта по их опубликованной процедуре и попадает в каталог только после исправления. Публиковать рабочую дыру в живом продукте нельзя.
-
----
-
-## 18. Что сознательно не покрываем
-
-- Импорт из внешних систем, требует их учётных данных.
-- Загрузка фонов из внешнего фотостока, по той же причине.
-- Плагины на встраиваемом интерпретаторе, отдельная большая тема.
-- Нагрузочные характеристики, другой инструмент и другая задача.
-- Собственные модульные тесты продукта, они уже написаны его авторами.
-- Полное покрытие календарного протокола, сознательно ограничено восемью проверками.
+**The exception for vulnerabilities.** If a finding looks exploitable, meaning it grants access to someone else's data or bypasses a permission, it goes to the product's maintainers through their published procedure first and reaches this folder only after a fix. Publishing a working hole in a live product is not on.
 
 ---
 
-## 19. Открытые вопросы
+## 18. What is deliberately not covered
 
-1. Полный список операций второй версии API подтверждается после подъёма стенда, спецификация там генерируется на лету.
-2. Точный путь, по которому отдаётся спецификация второй версии, уточняется на живом инстансе.
+- Imports from external systems: they need credentials for those systems.
+- Backgrounds from an external photo service, for the same reason.
+- Plugins on the embedded interpreter: a large separate subject.
+- Load and performance characteristics: a different tool and a different job.
+- The product's own unit tests: its authors have written those.
+- Full CalDAV conformance: deliberately limited to the slice in section 13.

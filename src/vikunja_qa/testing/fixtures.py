@@ -15,12 +15,13 @@ from __future__ import annotations
 
 import os
 from collections.abc import Iterator
+from typing import Protocol
 
 import pytest
 
 from vikunja_qa.actors.actor import Actor
 from vikunja_qa.actors.factory import ActorFactory
-from vikunja_qa.clients.calendar import CalendarClient, CalendarOpener
+from vikunja_qa.clients.calendar import CalendarClient
 from vikunja_qa.config import Settings, get_settings
 from vikunja_qa.contracts.baseline import Baseline
 from vikunja_qa.contracts.spec import SpecIndex
@@ -196,6 +197,17 @@ def anon(actors: ActorFactory) -> Actor:
 def owner(actors: ActorFactory) -> Actor:
     """A fresh account that will own whatever the test creates."""
     return actors.user("owner")
+
+
+class CalendarOpener(Protocol):
+    """Opens the calendar door as an actor. The secret defaults to the
+    account password; a CalDAV token or an API token goes in its place.
+
+    Declared here rather than beside the client because it names an actor,
+    and actors sit above clients.
+    """
+
+    def __call__(self, actor: Actor, secret: str | None = None) -> CalendarClient: ...
 
 
 @pytest.fixture(scope="session")

@@ -1,63 +1,65 @@
-# VKJ-007. Описание v1 документирует обновление метки методом, который продукт не принимает
+# VKJ-007. The v1 description documents updating a label with a method the product does not accept
 
-**Серьёзность:** высокая
-**Версия:** Vikunja v2.6.0
-**Компонент:** описание API первой версии, метки
-**Окружение:** официальный образ `vikunja/vikunja:2.6.0`, стенд из `docker/docker-compose.yml`
+English | [Русский](README.ru.md)
 
-## Суть
+**Severity:** high
+**Version:** Vikunja v2.6.0
+**Component:** the first version's API description, labels
+**Environment:** official image `vikunja/vikunja:2.6.0`, the stand from `docker/docker-compose.yml`
 
-Описание первой версии API объявляет обновление метки методом `PUT /api/v1/labels/{id}`. Продукт отвечает на этот запрос кодом 405, то есть метод не поддерживается. Реально работает `POST`, которого в описании нет вовсе.
+## Summary
 
-| Метод на `/api/v1/labels/{id}` | Есть в описании | Ответ продукта |
+The first version's API description declares that a label is updated with `PUT /api/v1/labels/{id}`. The product answers that request with 405, that is, the method is not supported. What actually works is `POST`, which does not appear in the description at all.
+
+| Method on `/api/v1/labels/{id}` | In the description | The product's answer |
 |---|---|---|
-| GET | да | 200 |
-| **PUT** | **да** | **405** |
-| **POST** | **нет** | **200** |
-| PATCH | нет | 405 |
-| DELETE | да | 200 |
+| GET | yes | 200 |
+| **PUT** | **yes** | **405** |
+| **POST** | **no** | **200** |
+| PATCH | no | 405 |
+| DELETE | yes | 200 |
 
-Расхождение двустороннее: задокументирована операция, которой нет, и не задокументирована операция, которая есть.
+The discrepancy runs both ways: an operation that does not exist is documented, and an operation that does exist is not.
 
-## Почему это не придирка
+## Why this is not a quibble
 
-Это не вопрос стиля описания, а неработающая документированная возможность. Клиент, сгенерированный из описания первой версии, **не может обновить метку вообще**: единственный известный ему метод отвергается сервером.
+This is not a matter of description style, but a documented capability that does not work. A client generated from the first version's description **cannot update a label at all**: the only method it knows of is rejected by the server.
 
-Вторая версия API этой проблемы не имеет и служит доказательством, что дело в описании первой:
+The second version of the API does not have this problem, and is evidence that the fault lies in the first version's description:
 
-| Метод на `/api/v2/labels/{id}` | Есть в описании | Ответ продукта |
+| Method on `/api/v2/labels/{id}` | In the description | The product's answer |
 |---|---|---|
-| GET | да | 200 |
-| PUT | да | 200 |
-| PATCH | да | 304 |
-| POST | нет | 405 |
+| GET | yes | 200 |
+| PUT | yes | 200 |
+| PATCH | yes | 304 |
+| POST | no | 405 |
 
-## Влияние
+## Impact
 
-Любой потребитель описания первой версии, будь то сгенерированный клиент, коллекция запросов или документация для интеграторов, получает нерабочую инструкцию по обновлению меток. Ошибка проявляется только во время выполнения и выглядит как отказ сервера, а не как ошибка клиента, поэтому разбираться в ней будут долго.
+Any consumer of the first version's description, whether a generated client, a request collection or documentation for integrators, gets instructions for updating labels that do not work. The failure appears only at run time, and it looks like a server refusal rather than a client mistake, so working it out takes a long time.
 
-Отдельно отмечу: тот же класс расхождения найден на `POST /api/v1/migration/vikunja-file/migrate`, который тоже отвечает 405. Вероятно, случаев больше, и полный список даст обход всех операций.
+Separately: the same class of discrepancy was found on `POST /api/v1/migration/vikunja-file/migrate`, which also answers 405. There are probably more cases, and a walk over every operation would give the full list.
 
-## Шаги воспроизведения
+## Steps to reproduce
 
 ```bash
 python reproduce.py
 ```
 
-Скрипт создаёт метку и перебирает методы на ней, печатая рядом то, что обещает описание, и то, что отвечает продукт.
+The script creates a label and runs through the methods on it, printing side by side what the description promises and what the product answers.
 
-## Ожидаемый результат
+## Expected
 
-Метод, указанный в описании, принимается продуктом.
+The method given in the description is accepted by the product.
 
-## Фактический результат
+## Actual
 
-`PUT` отвергается кодом 405, работает незадокументированный `POST`.
+`PUT` is rejected with 405, and the undocumented `POST` works.
 
-## Что чинить
+## What to fix
 
-Привести аннотацию операции обновления метки в первой версии к методу `POST`, который она реально использует.
+Bring the annotation of the label update operation in the first version into line with the `POST` method it actually uses.
 
-## Связанный тест
+## Related test
 
-`tests/api/contracts/test_documented_operations.py` обходит все операции обеих версий и отмечает каждую, отвечающую кодом 405, поскольку такой ответ означает, что описанной операции не существует.
+`tests/api/contracts/test_documented_operations.py` walks every operation of both versions and flags each one that answers 405, since such an answer means the described operation does not exist.

@@ -15,9 +15,9 @@ from typing import Any
 import pytest
 
 from vikunja_qa.actors.actor import Actor
-from vikunja_qa.clients.calendar import CalendarOpener
 from vikunja_qa.domain import icalendar
 from vikunja_qa.scenes import SceneBuilder
+from vikunja_qa.testing.fixtures import CalendarOpener
 from vikunja_qa.transport.response import ApiResponse
 
 pytestmark = pytest.mark.covers("DAV")

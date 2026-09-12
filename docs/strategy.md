@@ -1,267 +1,279 @@
-# Стратегия и архитектура фреймворка
+# Strategy and architecture
 
-Документ отвечает на вопрос «как устроено», тогда как матрица покрытия отвечает на вопрос «что проверяем». Читать вместе.
+English | [Русский](strategy.ru.md)
 
-Все решения ниже приняты под конкретный объект тестирования и опираются на факты, вытащенные из его исходного кода. Там, где решение спорное, указана отвергнутая альтернатива и причина отказа. Это сделано намеренно: документ должен выдерживать вопрос «а почему не иначе».
+This document answers "how it is built". The [coverage matrix](coverage-matrix.md) answers "what is checked". They are meant to be read together.
 
----
-
-## 1. Изоляция тестов, главное решение
-
-Объект тестирования это одно работающее приложение с общей базой. Тесты должны идти параллельно и не мешать друг другу. Вариантов ровно четыре, и выбор между ними определяет всё остальное.
-
-**Отвергнуто: очистка базы между тестами.** У продукта есть служебный API, который умеет опустошать все таблицы. Соблазнительно, но это убивает параллельный запуск полностью: пока один тест чистит базу, остальные теряют свои данные. Цена слишком велика.
-
-**Отвергнуто: откат транзакции.** Классический приём для модульных тестов здесь неприменим, потому что приложение это отдельный процесс со своим пулом соединений. Наша транзакция ему не видна.
-
-**Отвергнуто: разделение по именам.** Слабая изоляция, держится на дисциплине фильтрации и рассыпается при первой же ошибке в запросе.
-
-**Принято: изоляция по владельцу.** В Vikunja всё принадлежит пользователю: проекты создаются пользователем, задачи живут внутри проектов, права выдаются от владельца. Два теста, работающие под разными пользователями, физически не видят данных друг друга. Значит изоляция достигается конструкцией, а не уборкой.
-
-Каждый тест по умолчанию получает свежих пользователей, созданных через обычную ручку регистрации. Регистрация в продукте включена по умолчанию, дополнительной настройки не требует.
-
-Следствия, которые надо принять честно:
-
-- Регистрация стоит одного вызова на каждого участника теста. Это плата за изоляцию, и она осознанная. Если замеры покажут, что это узкое место, оптимизируем тогда, а не заранее.
-- **Порождаемые обходы спецификации пользуются общим пользователем на весь прогон.** Они читающие и их сотни, плодить пользователей там бессмысленно.
-- Уборка между тестами не нужна вообще. Полная очистка делается один раз перед прогоном через служебный API.
-
-**Что нельзя изолировать по владельцу.** Список всех пользователей, счётчики метрик, глобальная конфигурация, действия администратора инстанса и ограничение частоты запросов общие для всех. Такие тесты помечаются как последовательные и выполняются на одном исполнителе.
-
-**Правило для метрик.** Счётчики глобальные, поэтому утверждения по ним строятся только на разнице, измеренной вокруг действия. Абсолютные значения в утверждениях запрещены.
+Every decision below was made for this particular system under test, and most rest on facts taken from its source. Where a decision is arguable, the rejected alternative is named along with the reason. That is deliberate: the document has to survive the question "why not the other way".
 
 ---
 
-## 2. Служебный API продукта
+## 1. Isolation, the decision everything else follows from
 
-Продукт предоставляет две служебные ручки, включаемые отдельным секретом в конфигурации: полная очистка всех таблиц и наполнение конкретной таблицы заданным содержимым.
+The system under test is one running application over one database. Tests have to run in parallel without disturbing each other. There are four ways to do that, and the choice decides the rest of the design.
 
-Решение по их использованию строгое, потому что соблазн велик.
+**Rejected: truncating the database between tests.** The product has a testing API that empties every table. Tempting, and fatal to parallelism: while one test clears the database, every other test loses its data.
 
-**Разрешено использовать в двух случаях.** Первый: однократная очистка перед началом прогона. Второй: подготовка состояний, недостижимых через публичный API. Примеры таких состояний это уже протухший токен, пользователь с флагом администратора инстанса, запись с датой в прошлом.
+**Rejected: rolling back a transaction.** The classic unit-test trick does not apply, because the application is a separate process with its own connection pool. Our transaction is invisible to it.
 
-**Запрещено во всех остальных.** Подготовка обычных данных идёт только через публичный API. Причина принципиальная: тест, который собрал состояние в обход продукта, проверяет не продукт, а свои представления о его схеме. Такой тест ломается при любой миграции и не находит настоящих дефектов.
+**Rejected: separating by name.** Weak isolation that rests on the discipline of filtering, and collapses at the first mistake in a query.
 
-Каждое обращение к служебному API помечается в коде явно и попадает в отчёт отдельным шагом, чтобы читатель видел, где мы срезали угол и почему.
+**Chosen: isolation by ownership.** In Vikunja everything belongs to a user: projects are created by a user, tasks live inside projects, permissions are granted by the owner. Two tests running as different users physically cannot see each other's data. Isolation becomes a property of the construction rather than of the cleanup.
+
+Every test gets fresh accounts by default, created through the ordinary registration endpoint, mail confirmation included, because the stand runs with the mailer on.
+
+The consequences, taken honestly:
+
+- Registration costs one round trip per actor in a test. That is the price of isolation, and it is accepted knowingly. If a measurement ever shows it to be the bottleneck, that is when to optimise it.
+- **The generated families share one account for the whole run.** They are read-only and there are hundreds of them; minting accounts there would buy nothing.
+- Cleanup between tests is not needed at all. Nothing is deleted, so after a red run the data that produced it is still there to look at.
+
+**What ownership cannot isolate.** The list of all users, metrics counters, global configuration, instance-administrator actions and rate limiting are shared by everyone. In practice only one group in the suite touches that shared state today, the resilience layer, and it runs on its own.
+
+**The rule for metrics.** Counters are global, so assertions about them are built on the difference measured around an action. Absolute values are not asserted.
 
 ---
 
-## 3. Слои
+## 2. The product's testing API
 
-Пять слоёв с односторонней зависимостью. Нарушение направления считается дефектом архитектуры.
+The product exposes two testing endpoints, switched on by a secret in its configuration: empty every table, and fill one table with given contents.
+
+The rule for using them is strict, because the temptation is large.
+
+**Allowed in two cases.** One: a single reset before a run begins. Two: preparing states the public API cannot reach, such as an already-expired token, a user with the instance-administrator flag, or a row dated in the past.
+
+**Forbidden everywhere else.** Ordinary data is prepared through the public API only. The reason is not stylistic: a test that assembles state behind the product's back is testing its own idea of the schema rather than the product. It breaks at the first migration and finds no real defects.
+
+Every use of the testing API is marked in the code and appears in the report as its own step, so a reader can see where a corner was cut and why.
+
+---
+
+## 3. Layers
+
+The framework is a stack with a one-way dependency. Reaching upwards is an architectural defect.
 
 ```
-tests            утверждения, и только они
+tests                 assertions, and nothing else
   ↓
-factories        декларативная сборка состояния
+vikunja_qa.testing    the pytest side: fixtures, conventions, the plugin
   ↓
-api clients      типизированные клиенты по областям
+scenes                declarative construction of state
   ↓
-transport        http, повторы, логирование, валидация контракта
+actors                an identity, its credential, and clients bound to it
   ↓
-config           настройки окружения
+clients               typed clients per area of the API, and the CalDAV door
+  ↓
+transport             HTTP, reporting, contract validation
+  ↓
+config, domain        settings, and the product's own vocabulary
 ```
 
-Интерфейсные объекты страниц стоят сбоку и опираются на те же слои снизу, потому что готовят данные вызовами API, а не кликами.
+Page objects stand to the side and rest on the same layers, because they prepare data through API calls rather than through clicks.
 
-Правила по слоям, каждое проверяемо:
+The rules, each of them checked:
 
-- **В тестах нет прямых http-вызовов.** Тест обращается только к клиентам и фабрикам.
-- **Ниже слоя тестов нет ни одного утверждения.** Клиент возвращает ответ, решение о правильности принимает тест.
-- **Объект страницы не содержит утверждений.** Он умеет взаимодействовать и читать состояние, оценивает тест.
-- **Транспортный слой не знает предметной области.** Он ничего не знает про задачи и проекты.
+- **No test speaks HTTP directly.** A test reaches the product through clients, so every call is stamped with a credential, recorded in the report and validated against the contract.
+- **Nothing below the tests asserts.** A client returns an answer; deciding whether it is right belongs to a test. An assertion further down turns a product defect into a framework error, in the wrong file, with the wrong message.
+- **A page object contains no assertions.** It knows how to act on a page and how to read it; the test judges.
+- **The transport layer knows no domain.** It has never heard of tasks or projects.
+- **Only `vikunja_qa.testing` knows about pytest.** Everything else stays usable from a plain script, which is how the reproduction scripts and the stand check work.
 
-Направление зависимостей закрепляется инструментом контроля импортов и проверяется в сборке. Архитектура, описанная только словами, разъезжается на третьем месяце.
+These are not prose. `tests/unit/test_layers.py` parses the source and fails the build when an arrow points the wrong way. An architecture described only in words comes apart in the third month.
 
 ---
 
-## 4. Действующее лицо как объект
+## 4. The actor as an object
 
-Центральная абстракция фреймворка. Лицо объединяет три вещи: личность, способ подтверждения личности и привязанный к нему клиент.
+The central abstraction. An actor ties together an identity, the credential that proves it, and the clients bound to that credential.
 
-Продукт поддерживает четыре независимых способа подтверждения, и все четыре нужны в матрице доступа:
+The product supports four independent ways to prove identity, and the access matrix needs all four:
 
-| Способ | Как получается | Где применяется |
+| Way | How it is obtained | Where it is used |
 |---|---|---|
-| Токен сессии | обмен логина и пароля | основная масса тестов |
-| API-токен | выдача в настройках, префикс `tk_` плюс сорок символов | проверки областей доступа |
-| Токен публичной ссылки | обмен хеша, при необходимости с паролем | проверки ссылочного доступа |
-| Базовая авторизация | логин и пароль в заголовке | календарный протокол |
+| Session token | trading a username and password | most of the suite |
+| API token | issued in settings, `tk_` plus forty characters | the scope matrix |
+| Link share token | trading a hash, with a password where required | link access checks |
+| HTTP Basic | username and secret in the header | the calendar protocol |
 
-Время жизни токена сессии по умолчанию трое суток, длинного тридцать суток, короткого десять минут. Короткое время жизни используется для отдельных сценариев и даёт нам возможность проверить истечение без подмены времени.
+The default session token lives for three days, so a token minted at the start of a run stays valid for all of it.
 
-Тест не собирает лицо руками. Он объявляет нужную роль, а фабрика выстраивает весь граф отношений: создаёт владельца, создаёт проект, регистрирует второго пользователя, выдаёт ему нужный уровень, при необходимости заводит команду и включает в неё участника.
+A test does not assemble an actor by hand. It names a role, and the factory builds the whole graph: the owner, the project, a second registered user, the grant, and a team if the role needs one.
 
----
-
-## 5. Сборка состояния
-
-Восемьсот тестов остаются читаемыми только если подготовка состояния объявляется, а не программируется.
-
-Вместо десятков мелких фикстур используется один составной строитель сцены. Тест описывает желаемый мир одной цепочкой, строитель выполняет необходимые вызовы в правильном порядке и возвращает объект, через который доступны все участники и все созданные сущности.
-
-Требования к строителю:
-
-- **Идемпотентность по описанию.** Одинаковое описание даёт одинаковую структуру, различаются только идентификаторы.
-- **Ленивость.** Не создаётся ничего, что тест не запросил.
-- **Прозрачность в отчёте.** Каждый шаг сборки попадает в отчёт отдельной строкой, чтобы при падении было видно, на чём сломалась подготовка, а не только сам тест.
-- **Осмысленные имена сущностей.** Каждое созданное имя несёт идентификатор теста и номер исполнителя. После красного прогона видно, какая строка в базе чьей рукой создана. Это мелочь, которая экономит часы при разборе.
+`actor.using(credential)` is the same identity arriving a different way, which is what turns the access matrix into a table rather than a pile of near-identical tests.
 
 ---
 
-## 6. Контрактная проверка как побочный эффект
+## 5. Building state
 
-Обычный подход это отдельный набор контрактных тестов. Мы делаем иначе.
+A suite of this size stays readable only if setup is declared rather than programmed.
 
-**Каждый ответ на каждый вызов в каждом тесте валидируется против схемы своей операции автоматически, на транспортном слое.** Не нужно писать контрактные тесты: контрактное покрытие возникает само, как побочный эффект любого обращения к продукту.
+Instead of dozens of small fixtures there is one scene builder. A test describes the world it wants in a single chain; the builder performs the calls in the right order and hands back one object through which every actor and every created entity is reachable.
 
-Спецификации забираются с работающего инстанса, а не из репозитория, чтобы проверялась та версия, которая реально поднята. Первая версия API описана спецификацией второй редакции, вторая версия отдаёт третью редакцию, генерируемую движком на лету.
+```python
+world = scene.project().member("reader", Permission.READ).task().done()
+```
 
-Отдельный порождаемый обход нужен только для операций, которых не касается ни один рукописный тест. Список таких операций вычисляется, а не поддерживается руками: после прогона мы знаем, какие операции были вызваны, и разница со списком из спецификации и есть то, что надо добрать.
+What the builder guarantees:
 
-Побочная выгода: **отчёт о покрытии операций считается по факту вызовов**, а не по намерениям. Это честная метрика, которую приятно показать.
+- **The same description gives the same structure**, differing only in identifiers.
+- **Nothing is created that the test did not ask for.**
+- **Every construction step appears in the report as its own line**, so when setup breaks it is obvious that setup broke, and where.
+- **Names carry provenance.** Every generated name holds the test's identifier and the worker's number, so a row left in the database after a red run points back at the test that made it.
 
----
-
-## 7. Ожидание асинхронного
-
-Фиксированных пауз в наборе нет ни одной. Это правило, а не пожелание, и оно проверяется в сборке простым поиском по исходникам.
-
-Вместо пауз используется ожидание условия с ограничением по времени и нарастающим интервалом опроса. Каждое применение обязано указывать предельное время явно и сопровождаться комментарием, почему выбрано именно оно.
-
-Причина жёсткости простая. Пауза на две секунды это одновременно и медленно, и ненадёжно: на быстрой машине мы теряем время, на медленной всё равно получаем мигание. Ожидание условия убирает обе проблемы сразу.
-
-Внутренняя шина событий продукта работает в памяти процесса, поэтому задержки короткие. Но обработчики всё равно асинхронные, и служебный API продукта специально дожидается их завершения перед изменением данных, что прямо подтверждает необходимость ожидания.
+Failing to build the world raises `SetupError` rather than an assertion, because it means the thing the test intended to check was never reached.
 
 ---
 
-## 8. Утверждения
+## 6. Contract validation as a side effect
 
-Три требования к каждому утверждению в наборе.
+The usual approach is a separate suite of contract tests. This one does it differently.
 
-**Мягкие проверки для сравнения объектов.** При сверке сущности целиком нужно увидеть все расхождения сразу, а не первое. Иначе разбор превращается в серию прогонов.
+**Every response to every call in every test is validated against the schema for its operation, in the transport layer.** No contract tests are written: contract coverage arises as a by-product of any interaction with the product.
 
-**Читаемая разница при падении.** Сообщение должно показывать, какое поле разошлось и в чём, а не выбрасывать два объекта целиком и предлагать искать глазами.
+The descriptions are fetched from the running instance rather than from the product's repository, so the build that is actually up is the build that is checked. v1 serves Swagger 2.0; v2 serves OpenAPI 3.1, generated on the fly.
 
-**Полный контекст в отчёте.** При любом падении в отчёт прикладываются запрос, ответ, идентификатор корреляции, состояние базы для проверок целостности, а для интерфейсных тестов ещё скриншот и трассировка.
+Deviations that are already written up live in a baseline, with the finding they belong to. The suite runs strict: a mismatch that is not in the baseline fails the test that produced it. The baseline exists so that what is already known does not drown out what is new, and **it may only shrink**. The end of a run prints the baseline entries nothing hit, which is how one entry was found to be describing a defect the product no longer has.
 
-Отдельно: код ответа и доменный код ошибки проверяются вместе. Утверждение только по коду ответа слабое, потому что 400 отдаётся по десяткам причин.
-
----
-
-## 9. Параллельный запуск
-
-По умолчанию всё идёт параллельно, потому что изоляция по владельцу это позволяет.
-
-Последовательными помечаются четыре категории:
-
-1. Тесты ограничения частоты запросов, они меняют глобальное состояние счётчиков.
-2. Тесты метрик, где нужна тишина вокруг измерения.
-3. Действия администратора инстанса и изменения конфигурации.
-4. Вся группа устойчивости к отказам, она гасит контейнеры.
-
-Распределение по исполнителям настраивается так, чтобы последовательная группа целиком попадала на одного исполнителя. Группа устойчивости в основной прогон не входит вовсе.
+A by-product worth having: **operation coverage is counted from calls actually made**, not from intentions.
 
 ---
 
-## 10. Политика нестабильности
+## 7. Waiting for the asynchronous
 
-Позиция жёсткая и вынесена в README, потому что она сама по себе говорит об уровне.
+There is not one fixed pause standing in for a wait. The rule is enforced, not requested: `tests/unit/test_layers.py` fails the build on `time.sleep` in the suite.
 
-- **У тестов API повторов нет вообще.** Ноль. Тест API, который мигает, это либо дефект теста, либо настоящая гонка в продукте. Оба случая требуют разбора, а не повтора.
-- **У интерфейсных тестов ровно один повтор**, и на повторе пишется трассировка. Повтор здесь это инструмент диагностики, а не способ получить зелёный прогон.
-- **Тест, которому повтор понадобился, чинится или удаляется.** Третьего не дано.
+Instead there is `wait_until`, which polls a condition with a deadline and a growing interval. Every use states its budget and, in the `because` argument, what it is waiting for, so a timeout explains itself instead of reporting that time ran out.
 
----
+The reason for the strictness is simple. A two-second pause is both slower and less reliable than a wait: on a fast machine it wastes the difference, on a loaded one it still flakes.
 
-## 11. Отчётность
-
-Шаги в отчёте порождаются автоматически на уровне клиентов, а не расставляются руками в тестах. Ручная разметка шагов замусоривает тест и всегда отстаёт от кода.
-
-Каждый тест несёт идентификатор, ссылающийся на строку матрицы покрытия, уровень серьёзности и область. Это даёт прослеживаемость в обе стороны: от строки матрицы к тесту и обратно.
+**The one exception, named rather than hidden.** The mail resilience module is allowed a real sleep, because it has to let a timer inside the product elapse, and a timer is not something a poll can observe. It is the only file on the allowlist, and the allowlist is in the test.
 
 ---
 
-## 12. Собственное качество фреймворка
+## 8. Assertions
 
-Инструмент тестирования без собственных тестов это анекдот, и проверяющий заметит это первым.
+Three requirements for every assertion in the suite.
 
-Модульными тестами покрываются: загрузка и разбор спецификаций, разбор таблицы прав доступа, генератор имён, помощник ожидания условия, помощники утверждений, сборка заголовков авторизации для четырёх способов.
+**Full context in the message.** Every response knows how to describe itself: method, URL, the credential used, what was sent, the status, the domain error code and the body. An assertion that fails prints all of it, so the first look at a failure is usually the last one needed.
 
-Эти тесты не требуют поднятого стенда и идут за секунды, поэтому в сборке стоят первыми и отсекают глупые поломки до запуска долгого.
+**The failure names the thing, not the shape.** Messages say what the product did and why that is wrong, in the product's vocabulary.
 
-Дополнительно в сборку входят проверка стиля, проверка типов и контроль направления импортов между слоями.
+**The report carries the evidence.** Request and response bodies are attached to every step, and a failing browser test attaches the screen and the page source as well.
 
----
-
-## 13. Стенд
-
-Восемь контейнеров. Приложение, база, хранилище ключей, объектное хранилище, перехватчик почты, приёмник вебхуков, сбор метрик и панель наблюдения.
-
-Настройки стенда отличаются от боевых осознанно:
-
-- Ограничение частоты выключено по умолчанию, иначе параллельный прогон упрётся в него. Для тестов самого ограничения поднимается отдельный профиль с включённым.
-- Служебный API включён секретом.
-- Файлы складываются в объектное хранилище, а не на диск, чтобы проверялся более сложный путь.
-- Почта уходит в перехватчик.
-
-Прогон не начинается, пока проверка здоровья приложения не ответит успехом. Ожидание готовности встроено в запуск, а не оставлено на удачу.
+Separately: the status code and the domain error code are checked together. Asserting a status alone is weak, because 400 is returned for dozens of reasons.
 
 ---
 
-## 14. Сборка
+## 9. Running in parallel
 
-Шесть задач, разделённых по скорости и по требованиям.
+Everything runs in parallel by default, because ownership isolation allows it. The api layer runs on eight workers and the browser layer on four.
 
-| Задача | Что делает | Нужен стенд |
+The exception is the resilience layer, which stops containers the whole stand shares. It cannot be confined to the test that caused it, so it never joins the main run, and the plugin refuses `--resilience` together with `-n` rather than trusting anyone to remember.
+
+Contract coverage is gathered per worker and merged on the controller, so the summary at the end of a run is the whole run rather than one worker's share.
+
+---
+
+## 10. The flakiness policy
+
+The position is deliberate, and it is in the README because the position itself says something.
+
+- **The api layer gets no retries at all.** Zero. An API test that flickers is either a defective test or a real race in the product. Both need investigating, not repeating.
+- **The browser layer gets exactly one rerun**, and the rerun records a trace. The retry is a diagnostic instrument, not a way to reach green.
+- **A test that needed the rerun gets fixed or deleted.** There is no third option.
+
+---
+
+## 11. Reporting
+
+Report steps are generated at the client level rather than written into tests. Hand-placed steps clutter a test and always fall behind the code.
+
+Labels are derived, not declared. A test's location gives its epic, feature and story; the matrix checks it declares give its severity and a link to the matrix row; a `finding` or `advisory` marker adds the link to the write-up or the advisory. That gives traceability in both directions, from a matrix row to the tests and back, and it cannot drift, because one side is computed from the other.
+
+Attachments go through one place, `vikunja_qa.reporting`, which is silent when no test is running. That is not a nicety: attaching to Allure outside a test raises, and for a while it was silently skipping an entire generated family at collection time.
+
+---
+
+## 12. The framework's own quality
+
+A testing tool with no tests of its own is a joke, and the reviewer notices first.
+
+The unit layer covers the parts where a mistake would be invisible: specification loading and matching, the baseline, the waiting helper, the iCalendar reader and writer, the generators behind the scope and sweep families, the traceability catalogue, the conventions, the ledger that crosses process boundaries, and the transport, exercised against a canned adapter so the real client runs its real code with no network.
+
+Three of them check the repository rather than the code: the layering, the documentation against the suite it describes, and the conventions, applied by running the plugin against small throwaway test trees with pytest's own `pytester`.
+
+**The unit layer runs with outgoing connections refused.** A test that quietly starts depending on a live service fails at once and says so, rather than passing on a developer's machine and failing in the job that has no stand.
+
+---
+
+## 13. The stand
+
+Eight containers: the application, PostgreSQL, Redis, MinIO, a mail trap, a webhook receiver, Prometheus and Grafana.
+
+The stand differs from a production deployment deliberately:
+
+- Rate limiting is switched off, and the three pre-authentication floors are raised besides, because that floor ignores the global switch and a parallel run walks straight into it.
+- The testing API is enabled by its secret.
+- Files go to object storage rather than to disk, so the more complicated path is the one under test.
+- Mail goes to the trap, and registration really does go through the confirmation link.
+- CalDAV is on, which is the product's default.
+
+A run does not start until `scripts/check_stand.py` says the stand is ready. It walks one real user path end to end, so a green result means something, and it uses the standard library only, because it runs before the project's dependencies necessarily exist.
+
+---
+
+## 14. The build
+
+Seven jobs, split by speed and by what they need.
+
+| Job | What it does | Needs a stand |
 |---|---|---|
-| проверка стиля и типов | стиль, типы, направление импортов | нет |
-| собственные тесты | модульные тесты фреймворка | нет |
-| API | основной набор, параллельно | да |
-| интерфейс | Playwright, один повтор | да |
-| устойчивость | группа отказов, по расписанию и вручную | да |
-| отчёт | сборка и публикация отчёта | нет |
+| style, types, layers | ruff, ruff format, mypy | no |
+| the framework's own tests | the unit layer | no |
+| smoke | the critical path across both layers | yes |
+| api suite | the main run, eight workers, P0 coverage gate | yes |
+| browser suite | Playwright, one rerun, traces on failure | yes |
+| dependency outages | the resilience layer, on a schedule and on demand | yes |
+| report | builds and publishes the Allure report | no |
 
-Быстрые задачи идут первыми и отсекают поломки за секунды. Группа устойчивости в основную цепочку не входит.
+The fast jobs come first and cut a broken change off in seconds. Smoke gates the two full suites. The resilience layer is not in the main chain at all.
 
 ---
 
-## 15. Технологический выбор
+## 15. The technology, and why
 
-| Что | Чем | Почему |
+| What | Which | Why |
 |---|---|---|
-| язык | Python | основной язык автора и целевой аудитории |
-| зависимости | uv | скорость и воспроизводимая фиксация версий |
-| запуск | pytest | стандарт и богатая система расширений |
-| параллель | pytest-xdist | распределение с управлением группами |
-| http | requests | заявлен в опыте, покрывает все нужды |
-| модели | pydantic | типизация ответов и понятные ошибки разбора |
-| схемы | валидатор JSON Schema | контрактная проверка обеих редакций |
-| база | psycopg | прямые запросы для проверки целостности |
-| интерфейс | Playwright для Python | переиспользование клиентов и фабрик |
-| отчёт | Allure | заявлен в опыте, читаемый результат |
-| стиль и типы | ruff, mypy | быстрая и строгая проверка |
-| слои | контроль импортов | архитектура закреплена, а не описана |
-
-Версия Python на машине разработки свежая, поэтому наличие готовых сборок под каждую зависимость проверяется до внесения её в проект, а не после.
+| language | Python | the author's language and the target audience's |
+| dependencies | uv | speed and a reproducible lock |
+| runner | pytest | the standard, with the plugin system this design leans on |
+| parallelism | pytest-xdist | distribution, and a controller that can merge what workers learned |
+| HTTP | requests | it covers everything needed here |
+| settings | pydantic-settings | typed configuration from the environment |
+| schemas | jsonschema | Draft 4 for Swagger 2.0 and 2020-12 for OpenAPI 3.1 |
+| database | psycopg | direct queries for the integrity checks, read-only |
+| browser | Playwright | its own factories, traces and videos, reused rather than rebuilt |
+| report | Allure | readable results, and labels that can be derived |
+| style and types | ruff, mypy | fast, strict, and the same locally as in CI |
+| layering | the suite's own unit test | the architecture is enforced, not described |
 
 ---
 
-## 16. Порядок сборки фреймворка
+## 16. The order it was built in
 
-Порядок выбран так, чтобы на каждом шаге получалось нечто работающее целиком, а не половина трёх слоёв.
+Chosen so that each step ends with something that works end to end, rather than with half of three layers.
 
-1. **Стенд и настройки.** Compose, ожидание готовности, профили окружения. Результат: стенд поднимается одной командой и отвечает на проверку здоровья.
-2. **Транспорт и подтверждение личности.** Клиент, логирование, четыре способа авторизации, лицо как объект. Результат: тест умеет прийти под любой ролью.
-3. **Контрактная проверка в транспорте.** Загрузка обеих спецификаций, автоматическая валидация. Результат: любое обращение уже проверяется на соответствие.
-4. **Клиенты по областям и строитель сцены.** Результат: состояние объявляется одной строкой.
-5. **Порождаемые семейства.** Обходы авторизации, доменных кодов ошибок и областей действия токенов. Результат: сотни проверок без ручного труда.
-6. **Матрица доступа по хребту.** Результат: главный содержательный срез.
-7. **Целостность через базу, асинхронные эффекты.** Результат: то, чего нельзя проверить через API.
-8. **Согласованность версий API.** Результат: срез, которого нет ни у кого.
-9. **Регрессии на уязвимости.** Результат: привязка к реальным дефектам продукта.
-10. **Интерфейс поверх готовых фабрик.** Результат: тонкий и быстрый набор.
-11. **Устойчивость отдельной группой.**
-12. **Сборка, отчёт, README, оформление находок.**
+1. **The stand and the settings.** Compose, the readiness gate, environment profiles.
+2. **Transport and identity.** The client, reporting, four credentials, the actor.
+3. **Contract validation inside transport.** Both descriptions loaded, every response validated.
+4. **Area clients and the scene builder.** State becomes one line.
+5. **The generated families.** Authorization, token scopes, the documented-operation sweep.
+6. **The access matrix along the backbone.**
+7. **Integrity through the database, and the asynchronous effects.**
+8. **Consistency between the two API versions.**
+9. **Regressions for published vulnerabilities.**
+10. **The browser layer on top of the existing factories.**
+11. **The resilience layer, on its own.**
+12. **The calendar slice, the conventions plugin, the coverage gate, and the findings.**
 
-Первые четыре шага образуют скелет. После них набор растёт линейно и без архитектурных решений.
+The first four steps are the skeleton. After them the suite grows linearly, with no further architectural decisions to take.

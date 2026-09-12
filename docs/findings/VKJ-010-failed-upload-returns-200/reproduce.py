@@ -110,9 +110,7 @@ def upload(task_id: int, token: str) -> tuple[int, str, float]:
 def main() -> int:
     token = register()
     _, project = call("PUT", f"{API}/api/v1/projects", {"title": "VKJ-010"}, token)
-    _, task = call(
-        "PUT", f"{API}/api/v1/projects/{project['id']}/tasks", {"title": "probe"}, token
-    )
+    _, task = call("PUT", f"{API}/api/v1/projects/{project['id']}/tasks", {"title": "probe"}, token)
 
     print("stopping the object storage container")
     compose("stop", "minio")

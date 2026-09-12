@@ -1,8 +1,12 @@
 """VKJ-003. Reproduction.
 
-The v2 description marks most collection fields nullable, but five were
-left declared as a plain `object` or `array` while the product returns
-`null` in them.
+The v2 description marks most collection fields nullable, but four were
+left declared as a plain `object`, or as a reference to one, while the
+product returns `null` in them.
+
+`bucket_configuration` is checked alongside as the control: it is already
+declared nullable, and a run that reports it means the description changed
+rather than the finding holding.
 
 Standard library only, and it imports nothing from the test framework.
 
@@ -107,9 +111,7 @@ def declaration(spec: dict, schema_name: str, field: str) -> tuple[str, bool]:
 def live_values(token: str) -> dict[str, object]:
     """The same fields as the product actually sends them."""
     _, project = call("PUT", f"{API}/api/v1/projects", {"title": "VKJ-003"}, token)
-    _, task = call(
-        "PUT", f"{API}/api/v1/projects/{project['id']}/tasks", {"title": "probe"}, token
-    )
+    _, task = call("PUT", f"{API}/api/v1/projects/{project['id']}/tasks", {"title": "probe"}, token)
     _, views = call("GET", f"{API}/api/v1/projects/{project['id']}/views", token)
     _, settings = call("GET", f"{API}/api/v2/user/settings", token)
 

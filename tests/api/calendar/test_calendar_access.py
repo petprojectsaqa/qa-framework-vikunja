@@ -10,9 +10,10 @@ from __future__ import annotations
 
 import pytest
 
-from vikunja_qa.clients.calendar import CalendarClient, CalendarOpener
+from vikunja_qa.clients.calendar import CalendarClient
 from vikunja_qa.config import Settings
 from vikunja_qa.scenes import SceneBuilder
+from vikunja_qa.testing.fixtures import CalendarOpener
 from vikunja_qa.transport.client import HttpClient
 
 pytestmark = pytest.mark.covers("DAV")

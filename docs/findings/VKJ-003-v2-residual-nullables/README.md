@@ -1,45 +1,47 @@
-# VKJ-003. Во второй версии описания нуллевость исправлена не везде
+# VKJ-003. Nullability is not fixed everywhere in the second version of the specification
 
-**Серьёзность:** низкая
-**Версия:** Vikunja v2.6.0
-**Компонент:** описание API второй версии
-**Окружение:** официальный образ `vikunja/vikunja:2.6.0`, стенд из `docker/docker-compose.yml`
+English | [Русский](README.ru.md)
 
-## Суть
+**Severity:** low
+**Version:** Vikunja v2.6.0
+**Component:** the second-version API specification
+**Environment:** official image `vikunja/vikunja:2.6.0`, the stand from `docker/docker-compose.yml`
 
-Описание второй версии API в основном учитывает, что пустые коллекции приходят как `null`, и объявляет их типом `["array", "null"]`. Но несколько полей остались объявлены просто как `object` или `array`, хотя продукт возвращает в них `null`:
+## Summary
 
-| Поле | Где встречается | Объявлено | Возвращается |
+The second version of the API specification mostly accounts for empty collections arriving as `null`, and declares them with the type `["array", "null"]`. But several fields are still declared as plain `object` or `array`, although the product returns `null` in them:
+
+| Field | Where it appears | Declared | Returned |
 |---|---|---|---|
-| `related_tasks` | задача | `object` | `null` |
-| `reactions` | задача, комментарий | `object` | `null` |
-| `extra_settings_links` | настройки пользователя | `object` | `null` |
-| `filter` | представление проекта | `$ref` на объект `TaskCollection` | `null` |
+| `related_tasks` | task | `object` | `null` |
+| `reactions` | task, comment | `object` | `null` |
+| `extra_settings_links` | user settings | `object` | `null` |
+| `filter` | project view | `$ref` to the `TaskCollection` object | `null` |
 
-Соседнее поле `bucket_configuration` в том же представлении объявлено как `["array", "null"]`, то есть уже поправлено. Оно приведено здесь как пример того, как должны выглядеть остальные четыре.
+The neighbouring `bucket_configuration` field in the same view is declared as `["array", "null"]`, that is, it has already been fixed. It is given here as an example of what the other four should look like.
 
-Это остаток того же дефекта, что описан в [VKJ-002](../VKJ-002-v1-nullable-collections/), но уже в новой версии описания, где остальные поля поправлены.
+This is what is left of the same defect as described in [VKJ-002](../VKJ-002-v1-nullable-collections/), but now in the new version of the specification, where the other fields have been fixed.
 
-## Почему это отдельная находка
+## Why this is its own finding
 
-VKJ-002 говорит о старой версии описания, которую можно счесть замороженной. Здесь речь о новой, генерируемой из кода и активно развиваемой. Исправление тут имеет смысл, потому что именно эта версия будет использоваться дальше, и она уже почти корректна: не хватает четырёх полей.
+VKJ-002 is about the old version of the specification, which can be taken as frozen. This one is about the new version, generated from the code and actively developed. A fix here is worth making, because this is the version that will be used from now on, and it is already nearly correct: four fields are missing.
 
-## Влияние
+## Impact
 
-Клиент второй версии, сгенерированный на строго типизированном языке, падает на разборе задачи, у которой нет связанных задач и реакций, то есть на любой обычной задаче.
+A second-version client generated in a strictly typed language fails on parsing a task that has no related tasks and no reactions, which is to say any ordinary task.
 
-## Воспроизведение
+## Reproduction
 
 ```bash
 py docs/findings/VKJ-003-v2-residual-nullables/reproduce.py
 ```
 
-Скрипт читает описание второй версии с работающего стенда, рядом запрашивает те же поля у продукта и печатает объявленный тип против присланного значения.
+The script reads the second-version specification from a running stand, asks the product for the same fields alongside it, and prints the declared type against the value that came back.
 
-## Что чинить
+## What to fix
 
-Проставить нуллевость этим четырём полям так же, как она уже проставлена соседнему `bucket_configuration`.
+Mark nullability on these four fields the same way it is already marked on the neighbouring `bucket_configuration`.
 
-## Связанный тест
+## Related test
 
-Ловится контрактной проверкой в транспортном слое. В базовой линии записано как `VKJ-003`.
+Caught by the contract check in the transport layer. Recorded in the baseline as `VKJ-003`.
