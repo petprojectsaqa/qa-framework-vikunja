@@ -19,6 +19,7 @@ import time
 import urllib.error
 import urllib.request
 import uuid
+from collections.abc import Callable
 
 VIKUNJA = "http://localhost:3456"
 MAILPIT = "http://localhost:18025"
@@ -58,6 +59,13 @@ def request(
         status = exc.code
     except urllib.error.URLError as exc:
         raise StandNotReadyError(f"{method} {url} unreachable: {exc.reason}") from exc
+    except OSError as exc:
+        # A service that is still coming up resets the connection rather
+        # than refusing it, and that arrives as a bare OSError rather than
+        # a URLError. A readiness gate has to treat every flavour of "not
+        # yet" the same, or it fails on the very condition it exists to
+        # wait out.
+        raise StandNotReadyError(f"{method} {url} unreachable: {exc}") from exc
 
     try:
         return status, json.loads(payload)
@@ -77,6 +85,8 @@ def wait_for(label: str, url: str) -> None:
             last = f"status {status}"
         except StandNotReadyError as exc:
             last = str(exc)
+        except Exception as exc:  # noqa: BLE001 - anything at all means not ready yet
+            last = f"{type(exc).__name__}: {exc}"
         time.sleep(1)
     raise StandNotReadyError(f"{label} never became ready ({last})")
 
@@ -255,13 +265,33 @@ def check_metrics_scrape() -> None:
         print(f"  WARN  vikunja target is {health}: {err}")
 
 
+def with_retries(step: Callable[[], None], attempts: int = 3) -> None:
+    """Run a multi-request step again if it trips on a service that is
+    still settling.
+
+    The infrastructure waits above poll on their own; this one does not,
+    and a single reset partway through a six-request walk would fail the
+    gate over exactly the condition it exists to wait out.
+    """
+    for attempt in range(1, attempts + 1):
+        try:
+            step()
+        except StandNotReadyError as exc:
+            if attempt == attempts:
+                raise
+            print(f"  ..    still settling ({exc}); attempt {attempt + 1} of {attempts}")
+            time.sleep(3)
+        else:
+            return
+
+
 def main() -> int:
     print("Vikunja QA stand readiness\n")
     try:
         check_infrastructure()
         check_api_versions()
         check_testing_api()
-        check_user_path()
+        with_retries(check_user_path)
         check_metrics_scrape()
     except StandNotReadyError as exc:
         print(f"\nFAILED: {exc}")
