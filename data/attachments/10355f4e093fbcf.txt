@@ -1,0 +1,11 @@
+PUT http://localhost:3456/api/v1/tasks/56/assignees
+as: session:ownerdtosomeonewhocanseeitgw3d171f593
+sent: {
+  "user_id": 100
+}
+status: 403  (26 ms)
+domain code: 7003
+body: {
+  "code": 7003,
+  "message": "This user does not have access to the project."
+}

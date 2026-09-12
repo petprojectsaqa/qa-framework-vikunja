@@ -1,4 +1,0 @@
-GET http://localhost:3456/api/v1/tokens
-as: session:ownerorrevokedbyanyoneelsegw3bae64134
-status: 200  (30 ms)
-body: []

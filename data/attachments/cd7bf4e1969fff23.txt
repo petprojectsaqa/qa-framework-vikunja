@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "owneronsanswerthesameactorgw71f24861c",
+  "password": "VikunjaQA123!"
+}
+status: 200  (270 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNDg3NjMsImlkIjo2MCwiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiJjYWVkZjdhYS0xNDZhLTQzODQtYmViNy01ZTU2NGMyZTE1M2IiLCJzaWQiOiIyMzE5OWNhZC1lOTNjLTQ1YWQtODY3Ni1hZGIzMzRhMTg3NTMiLCJ0eXBlIjoxLCJ1c2VybmFtZSI6Im93bmVyb25zYW5zd2VydGhlc2FtZWFjdG9yZ3c3MWYyNDg2MWMifQ.fbSmx6_7KhF_EkiSUMv7ObM-gnsm_MwM04N7wOtSlnE"
+}
