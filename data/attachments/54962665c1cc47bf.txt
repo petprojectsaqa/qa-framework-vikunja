@@ -1,4 +1,0 @@
-GET http://localhost:3456/dav/projects/
-as: basic:owneretwithoutaservererrorgw5c1b6e3fe
-status: 500  (293 ms)
-body: 

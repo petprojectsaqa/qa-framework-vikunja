@@ -1,6 +1,0 @@
-GET http://localhost:3456/api/v1/backgrounds/unsplash/image/none
-as: session:sweepersweep05314a89
-status: 404  (6 ms)
-body: {
-  "message": "Not Found"
-}

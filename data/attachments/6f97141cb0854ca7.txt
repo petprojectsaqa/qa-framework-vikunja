@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownernwithcaldavpermissiongw45b962319",
+  "password": "VikunjaQA123!"
+}
+status: 200  (338 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTEzNDEsImlkIjoxMDUsImlzX2FkbWluIjpmYWxzZSwianRpIjoiODhhMTRkMjEtYWQ2Ny00YmVkLWE5YjgtYzdmYTdiYmZiMWFmIiwic2lkIjoiMzBmZjMzYjAtNjI2Yi00YjQyLWI0NjEtOTFmOTEyYmIxZTM3IiwidHlwZSI6MSwidXNlcm5hbWUiOiJvd25lcm53aXRoY2FsZGF2cGVybWlzc2lvbmd3NDViOTYyMzE5In0.KuI5UvTLIdRGTvrJSa0rbAHcVZRXtdENugplBjVwSrQ"
+}

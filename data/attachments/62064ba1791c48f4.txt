@@ -1,0 +1,56 @@
+GET http://localhost:3456/api/v1/projects/246/views/1736/buckets
+as: session:owneredonebucketfinishesitgw32a1e0a85
+status: 200  (6 ms)
+body: [
+  {
+    "id": 1300,
+    "title": "To-Do",
+    "project_view_id": 1736,
+    "limit": 0,
+    "count": 0,
+    "position": 100,
+    "created": "2026-09-12T22:05:51Z",
+    "updated": "2026-09-12T22:05:52Z",
+    "created_by": {
+      "id": 184,
+      "name": "",
+      "username": "owneredonebucketfinishesitgw32a1e0a85",
+      "created": "2026-09-12T22:05:51Z",
+      "updated": "2026-09-12T22:05:51Z"
+    }
+  },
+  {
+    "id": 1301,
+    "title": "Doing",
+    "project_view_id": 1736,
+    "limit": 0,
+    "count": 0,
+    "position": 200,
+    "created": "2026-09-12T22:05:52Z",
+    "updated": "2026-09-12T22:05:52Z",
+    "created_by": {
+      "id": 184,
+      "name": "",
+      "username": "owneredonebucketfinishesitgw32a1e0a85",
+      "created": "2026-09-12T22:05:51Z",
+      "updated": "2026-09-12T22:05:51Z"
+    }
+  },
+  {
+    "id": 1302,
+    "title": "Done",
+    "project_view_id": 1736,
+    "limit": 0,
+    "count": 0,
+    "position": 300,
+    "created": "2026-09-12T22:05:52Z",
+    "updated": "2026-09-12T22:05:52Z",
+    "created_by": {
+      "id": 184,
+      "name": "",
+      "username": "owneredonebucketfinishesitgw32a1e0a85",
+      "created": "2026-09-12T22:05:51Z",
+      "updated": "2026-09-12T22:05:51Z"
+    }
+  }
+]

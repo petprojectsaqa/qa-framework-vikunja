@@ -1,0 +1,23 @@
+PUT http://localhost:3456/api/v1/teams
+as: session:ownertestaccessmatrixpygw0e65097ff
+sent: {
+  "name": "devs"
+}
+status: 201  (21 ms)
+body: {
+  "id": 1,
+  "name": "devs",
+  "description": "",
+  "external_id": "",
+  "created_by": {
+    "id": 10,
+    "name": "",
+    "username": "ownertestaccessmatrixpygw0e65097ff",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "members": null,
+  "created": "2026-09-12T22:05:25.743025336Z",
+  "updated": "2026-09-12T22:05:25.743029313Z",
+  "is_public": false
+}

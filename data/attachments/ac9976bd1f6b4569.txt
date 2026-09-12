@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/tasks/8
+as: session:outsidertestaccessmatrixpygw0f6f7e92f
+status: 403  (76 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "Forbidden"
+}

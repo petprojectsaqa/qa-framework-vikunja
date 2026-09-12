@@ -1,0 +1,11 @@
+PUT http://localhost:3456/api/v1/projects/49/tasks
+as: session:outsiderantstheleastprivilegegw45c871d2e
+sent: {
+  "title": "writing with read access"
+}
+status: 403  (37 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "Forbidden"
+}

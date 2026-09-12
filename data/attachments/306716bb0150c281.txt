@@ -1,0 +1,11 @@
+DELETE http://localhost:3456/api/v2/projects/999999999/views/999999999/buckets/999999999
+as: session:ownereprojectsviewsbucketsgw639477cb9
+status: 404  (112 ms)
+domain code: 10001
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "This bucket does not exist.",
+  "code": 10001
+}

@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/14/tasks
+as: session:owneroutofthetitlechromiumgw38dc2bfd4
+sent: {
+  "title": "send it on"
+}
+status: 201  (70 ms)
+body: {
+  "id": 13,
+  "title": "send it on",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 14,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#3",
+  "index": 3,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-12T22:05:41.778515391Z",
+  "updated": "2026-09-12T22:05:41.778517305Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 7,
+    "name": "",
+    "username": "owneroutofthetitlechromiumgw38dc2bfd4",
+    "created": "2026-09-12T22:05:41Z",
+    "updated": "2026-09-12T22:05:41Z"
+  }
+}

@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/55
+as: session:outsidertestcrossversionpygw767f6675e
+status: 403  (70 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "You don't have the permission to see this"
+}
