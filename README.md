@@ -4,6 +4,9 @@ Reference API and UI test framework in Python, exercised against a real product:
 
 Not a portfolio of CRUD checks against a public sandbox. The point is the parts that are hard: ownership-based isolation that survives full parallelism, contract validation that costs nothing per test, an access matrix driven by data, verification through the database and through the services around the product, and a cross-version comparison of two APIs the product ships side by side.
 
+[![suite](https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml/badge.svg)](https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml)
+[![report](https://img.shields.io/badge/allure-report-green)](https://petprojectsaqa.github.io/qa-framework-vikunja/)
+
 **Eleven defects found in the product**, each with a reproduction that runs in seconds and imports nothing from this framework. See [docs/findings](docs/findings/).
 
 **On AI assistance.** This was built with an AI assistant, and the decisions in it are mine. Every design choice is written down in [docs/strategy.md](docs/strategy.md) together with the alternatives it was chosen over, and I can walk through any line of it. Said here plainly because a reader is entitled to know how the work in front of them was made, and because finding out later is worse than being told up front.
@@ -92,3 +95,7 @@ py scripts/verify_findings.py
 ```
 
 Скрипты ничего не импортируют из фреймворка и не требуют зависимостей, поэтому проверяющему не нужно разбираться в коде, чтобы убедиться в находке.
+
+## Report
+
+Отчёт последнего прогона публикуется автоматически: [petprojectsaqa.github.io/qa-framework-vikunja](https://petprojectsaqa.github.io/qa-framework-vikunja/). История сохраняется между прогонами, поэтому видны тренды, а не только последний результат.
