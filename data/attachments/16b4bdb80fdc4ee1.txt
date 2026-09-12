@@ -1,0 +1,30 @@
+PUT http://localhost:3456/api/v1/projects/79/webhooks
+as: session:ownerntitdidnotsubscribetogw31ec34b26
+sent: {
+  "target_url": "http://webhook-receiver:8080/hook/test_a_webhook_is_not_delivered_for_an_event_it_did_not_subscribe_to-gw3",
+  "events": [
+    "task.deleted"
+  ]
+}
+status: 201  (6 ms)
+body: {
+  "id": 2,
+  "target_url": "http://webhook-receiver:8080/hook/test_a_webhook_is_not_delivered_for_an_event_it_did_not_subscribe_to-gw3",
+  "events": [
+    "task.deleted"
+  ],
+  "project_id": 79,
+  "user_id": 0,
+  "secret": "",
+  "basic_auth_user": "",
+  "basic_auth_password": "",
+  "created_by": {
+    "id": 60,
+    "name": "",
+    "username": "ownerntitdidnotsubscribetogw31ec34b26",
+    "created": "2026-09-12T18:19:13Z",
+    "updated": "2026-09-12T18:19:13Z"
+  },
+  "created": "2026-09-12T18:19:13.876053289Z",
+  "updated": "2026-09-12T18:19:13.876056655Z"
+}

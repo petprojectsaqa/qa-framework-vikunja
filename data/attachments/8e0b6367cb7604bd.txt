@@ -1,0 +1,24 @@
+GET http://localhost:3456/api/v1/tasks/9/attachments
+as: session:ownerchesonlyitsownprojectgw42a125c81
+status: 200  (34 ms)
+body: [
+  {
+    "id": 2,
+    "task_id": 9,
+    "created_by": {
+      "id": 37,
+      "name": "",
+      "username": "ownerchesonlyitsownprojectgw42a125c81",
+      "created": "2026-09-12T18:19:08Z",
+      "updated": "2026-09-12T18:19:08Z"
+    },
+    "file": {
+      "id": 2,
+      "name": "private.txt",
+      "mime": "text/plain; charset=utf-8",
+      "size": 17,
+      "created": "2026-09-12T18:19:09Z"
+    },
+    "created": "2026-09-12T18:19:09Z"
+  }
+]
