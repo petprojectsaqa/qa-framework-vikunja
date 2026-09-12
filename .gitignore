@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Test output
+allure-results/
+allure-report/
+test-results/
+playwright-report/
+*.log
+
+# Local overrides
+.env
+docker/.env
+docker-compose.override.yml

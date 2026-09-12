@@ -1,0 +1,7 @@
+# The suite runs on Linux in CI and on Windows locally. Normalising here
+# keeps a checkout identical on both, and keeps a Windows commit from
+# turning every file in a diff into noise.
+* text=auto eol=lf
+
+*.png binary
+*.zip binary

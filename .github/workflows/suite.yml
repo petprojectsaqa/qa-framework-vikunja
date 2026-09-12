@@ -1,0 +1,168 @@
+name: suite
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # The resilience group only runs here: it stops containers, so it is
+    # too slow and too disruptive to gate every push on.
+    - cron: "0 3 * * *"
+
+env:
+  UV_FROZEN: "1"
+
+jobs:
+  # Seconds, and no stand. Anything broken here would break everything
+  # below, so it goes first and fails fast.
+  static:
+    name: style, types, layers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --extra dev
+      - run: uv run ruff check .
+      - run: uv run ruff format --check src tests scripts docs
+      - run: uv run mypy src scripts
+
+  self-test:
+    name: the framework's own tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --extra dev
+      # No stand on purpose: these must pass with the product switched
+      # off, or they are not unit tests.
+      - run: uv run pytest tests/unit -q
+
+  api:
+    name: api suite
+    runs-on: ubuntu-latest
+    needs: [static, self-test]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --extra dev
+
+      - name: bring the stand up
+        run: docker compose -f docker/docker-compose.yml up -d --quiet-pull
+
+      # `up` returns before the product answers, so the gate is not
+      # optional. It also proves the stand end to end before any test
+      # blames the product for a stand that was never ready.
+      - name: wait for the stand
+        run: uv run python scripts/check_stand.py
+
+      - run: uv run pytest tests/api tests/smoke -n 8 --alluredir=allure-results
+
+      - name: stand logs on failure
+        if: failure()
+        run: docker compose -f docker/docker-compose.yml logs --tail 300
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-api
+          path: allure-results
+
+  ui:
+    name: browser suite
+    runs-on: ubuntu-latest
+    needs: [static, self-test]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --extra dev
+      - run: uv run playwright install chromium --with-deps
+
+      - name: bring the stand up
+        run: docker compose -f docker/docker-compose.yml up -d --quiet-pull
+      - name: wait for the stand
+        run: uv run python scripts/check_stand.py
+
+      # One retry, and only here. A browser test that needs it gets fixed
+      # or deleted; the retry exists to capture a trace, not to turn a
+      # run green. The api suite gets none at all.
+      - run: >
+          uv run pytest tests/ui -n 4
+          --retries 1
+          --tracing retain-on-failure
+          --video retain-on-failure
+          --alluredir=allure-results
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-ui
+          path: |
+            allure-results
+            test-results
+
+  resilience:
+    name: dependency outages
+    runs-on: ubuntu-latest
+    # Never on a push. It stops containers out from under itself, so it
+    # is slow and unstable by nature, and a main pipeline that is
+    # sometimes red for that reason is worth less than a smaller one that
+    # is always honest.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --extra dev
+      - name: bring the stand up
+        run: docker compose -f docker/docker-compose.yml up -d --quiet-pull
+      - name: wait for the stand
+        run: uv run python scripts/check_stand.py
+      # Serial by necessity: each test takes a dependency away from the
+      # whole stand.
+      - run: uv run pytest tests/resilience -m resilience -p no:randomly --alluredir=allure-results
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-resilience
+          path: allure-results
+
+  report:
+    name: publish the report
+    runs-on: ubuntu-latest
+    needs: [api, ui]
+    if: always() && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: allure-*
+          merge-multiple: true
+          path: allure-results
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: keep the history so trends survive
+        uses: actions/checkout@v5
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+      - run: |
+          if [ -d gh-pages/history ]; then cp -r gh-pages/history allure-results/; fi
+          npx --yes allure-commandline generate allure-results -o allure-report --clean
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report

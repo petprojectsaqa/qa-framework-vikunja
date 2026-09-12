@@ -1,0 +1,190 @@
+name: vikunja-qa
+
+services:
+  # ---------------------------------------------------------------- system under test
+  vikunja:
+    image: vikunja/vikunja:2.6.0
+    environment:
+      VIKUNJA_SERVICE_PUBLICURL: http://localhost:3456
+      VIKUNJA_SERVICE_JWTSECRET: qa-stand-jwt-secret-not-for-production
+      # Enables DELETE /api/v1/test/all and PATCH /api/v1/test/{table}.
+      # Requests must carry this value in the Authorization header.
+      VIKUNJA_SERVICE_TESTINGTOKEN: qa-stand-testing-token
+      VIKUNJA_SERVICE_ENABLEREGISTRATION: "true"
+
+      VIKUNJA_DATABASE_TYPE: postgres
+      VIKUNJA_DATABASE_HOST: db
+      VIKUNJA_DATABASE_USER: vikunja
+      VIKUNJA_DATABASE_PASSWORD: vikunja
+      VIKUNJA_DATABASE_DATABASE: vikunja
+      VIKUNJA_DATABASE_SSLMODE: disable
+
+      VIKUNJA_REDIS_ENABLED: "true"
+      VIKUNJA_REDIS_HOST: redis:6379
+      VIKUNJA_KEYVALUE_TYPE: redis
+
+      # Off by default so the parallel suite does not throttle itself.
+      # The rate-limit tests bring up their own profile with this enabled.
+      VIKUNJA_RATELIMIT_ENABLED: "false"
+      # Pre-auth routes keep a per-IP floor of 10/min even when the global
+      # limiter is off; the product does that on purpose and says so in its
+      # source. Every account the suite creates costs three such calls
+      # (register, confirm, login), so the default floor caps us at three
+      # accounts a minute. Raised here for the same reason the global
+      # limiter is off, and left realistic in the rate-limit profile.
+      VIKUNJA_RATELIMIT_NOAUTHLIMIT: "100000"
+      VIKUNJA_RATELIMIT_BASICAUTHLIMIT: "100000"
+      VIKUNJA_RATELIMIT_TOKENREFRESHLIMIT: "100000"
+
+      # Files go to object storage rather than disk: the longer code path.
+      VIKUNJA_FILES_TYPE: s3
+      VIKUNJA_FILES_S3_ENDPOINT: http://minio:9000
+      VIKUNJA_FILES_S3_BUCKET: vikunja
+      VIKUNJA_FILES_S3_REGION: us-east-1
+      VIKUNJA_FILES_S3_ACCESSKEY: minioadmin
+      VIKUNJA_FILES_S3_SECRETKEY: minioadmin
+      VIKUNJA_FILES_S3_USEPATHSTYLE: "true"
+
+      VIKUNJA_MAILER_ENABLED: "true"
+      VIKUNJA_MAILER_HOST: mailpit
+      VIKUNJA_MAILER_PORT: "1025"
+      VIKUNJA_MAILER_AUTHTYPE: plain
+      VIKUNJA_MAILER_USERNAME: ""
+      VIKUNJA_MAILER_PASSWORD: ""
+      VIKUNJA_MAILER_FROMEMAIL: vikunja@qa.local
+      VIKUNJA_MAILER_FORCESSL: "false"
+      VIKUNJA_MAILER_SKIPTLSVERIFY: "true"
+
+      VIKUNJA_METRICS_ENABLED: "true"
+
+      VIKUNJA_WEBHOOKS_ENABLED: "true"
+      VIKUNJA_WEBHOOKS_TIMEOUTSECONDS: "5"
+      # The sink lives on a private compose network. Two separate flags
+      # govern that: the webhook one, and the general guard on outgoing
+      # requests, which is what actually refuses 172.16/12 and says so in
+      # the log. Both are needed, and both stay on only because this is a
+      # test stand.
+      VIKUNJA_WEBHOOKS_ALLOWNONROUTABLEIPS: "true"
+      VIKUNJA_OUTGOINGREQUESTS_ALLOWNONROUTABLEIPS: "true"
+
+      VIKUNJA_LOG_LEVEL: DEBUG
+      VIKUNJA_CORS_ENABLE: "true"
+    ports:
+      - "3456:3456"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "/app/vikunja/vikunja", "healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- data
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: vikunja
+      POSTGRES_PASSWORD: vikunja
+      POSTGRES_DB: vikunja
+    ports:
+      # Exposed so the suite can assert on data integrity directly.
+      - "15432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vikunja -d vikunja"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "16379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # ---------------------------------------------------------------- object storage
+  minio:
+    # MinIO images moved off Docker Hub; quay.io is the live registry.
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "19000:9000"
+      - "19001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  minio-init:
+    image: quay.io/minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin &&
+      mc mb --ignore-existing local/vikunja &&
+      echo 'bucket ready'
+      "
+
+  # ---------------------------------------------------------------- mail capture
+  mailpit:
+    image: axllent/mailpit:latest
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+    ports:
+      - "18025:8025"   # HTTP API and UI, the suite reads messages from here
+      - "11025:1025"   # SMTP
+
+  # ---------------------------------------------------------------- webhook sink
+  webhook-receiver:
+    build: ./webhook-receiver
+    ports:
+      - "18080:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8080/_health')"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+
+  # ---------------------------------------------------------------- observability
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "19090:9090"
+    depends_on:
+      - vikunja
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "13000:3000"
+    depends_on:
+      - prometheus
