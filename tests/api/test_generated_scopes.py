@@ -41,11 +41,21 @@ def _catalogue() -> tuple[ScopeCase, ...]:
     """
     settings = get_settings()
     try:
-        factory = ActorFactory(settings, MailpitClient(settings.mailpit_url), label="catalogue")
+        # A generous mail timeout: this runs at collection on a cold
+        # runner, and losing the whole module to a slow first message
+        # would hide every scope check behind an unrelated delay.
+        mail = MailpitClient(settings.mailpit_url, timeout=60)
+        factory = ActorFactory(settings, mail, label="catalogue")
         response = factory.user("catalogue").api.tokens.routes()
         return tuple(cases_for(response.body))
     except Exception as exc:  # noqa: BLE001 - collection needs a readable reason
-        pytest.skip(f"cannot read the permission catalogue; is the stand up? ({exc})")
+        # allow_module_level is required here: without it pytest raises its
+        # own error about skipping at import time, which buries the reason
+        # this actually failed.
+        pytest.skip(
+            f"cannot read the permission catalogue: {type(exc).__name__}: {exc}",
+            allow_module_level=True,
+        )
 
 
 CASES = _catalogue()

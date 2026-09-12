@@ -62,7 +62,13 @@ def _specs() -> tuple[SpecIndex, ...]:
             ),
         )
     except Exception as exc:  # noqa: BLE001 - collection needs a readable reason
-        pytest.skip(f"cannot read the descriptions; is the stand up? ({exc})")
+        # allow_module_level is required here: without it pytest raises its
+        # own error about skipping at import time, which buries the reason
+        # this actually failed.
+        pytest.skip(
+            f"cannot read the descriptions: {type(exc).__name__}: {exc}",
+            allow_module_level=True,
+        )
 
 
 @lru_cache(maxsize=1)

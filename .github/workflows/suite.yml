@@ -95,7 +95,7 @@ jobs:
       # run green. The api suite gets none at all.
       - run: >
           uv run pytest tests/ui -n 4
-          --retries 1
+          --reruns 1 --reruns-delay 0
           --tracing retain-on-failure
           --video retain-on-failure
           --alluredir=allure-results
