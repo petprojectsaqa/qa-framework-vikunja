@@ -1,32 +1,38 @@
 # qa-framework-vikunja
 
-Reference API and UI test framework in Python, exercised against a real product: [Vikunja](https://github.com/go-vikunja/vikunja), a self-hosted task manager, pinned at v2.6.0 and run locally on an eight-container stand.
-
-Not a portfolio of CRUD checks against a public sandbox. The point is the parts that are hard: ownership-based isolation that survives full parallelism, contract validation that costs nothing per test, an access matrix driven by data, verification through the database and through the services around the product, and a cross-version comparison of two APIs the product ships side by side.
+**English** · [Русский](README.ru.md)
 
 [![suite](https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml/badge.svg)](https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml)
 [![report](https://img.shields.io/badge/allure-report-green)](https://petprojectsaqa.github.io/qa-framework-vikunja/)
+
+A reference API and UI test framework in Python, exercised against a real product: [Vikunja](https://github.com/go-vikunja/vikunja), a self-hosted task manager, pinned at v2.6.0 and run on an eight-container local stand.
+
+This is not a collection of CRUD checks against a public sandbox. It is about the parts that usually get skipped: isolation that survives full parallelism, contract validation that costs nothing per test, an access matrix driven by data, verification through the database and the services around the product, and a comparison of the two API versions the product ships side by side.
 
 **Eleven defects found in the product**, each with a reproduction that runs in seconds and imports nothing from this framework. See [docs/findings](docs/findings/).
 
 **On AI assistance.** This was built with an AI assistant, and the decisions in it are mine. Every design choice is written down in [docs/strategy.md](docs/strategy.md) together with the alternatives it was chosen over, and I can walk through any line of it. Said here plainly because a reader is entitled to know how the work in front of them was made, and because finding out later is worse than being told up front.
 
-Документация ниже и в `docs/` ведётся на русском, код и отчёты на английском.
-
 ## Status
 
 | | |
 |---|---|
-| Тестов в основном прогоне | 853 |
-| Из них порождено из описаний продукта | 762 |
-| Прогон на восьми исполнителях | около 50 секунд |
-| Покрытие операций API | 99% на обеих версиях |
-| Модульные тесты фреймворка, без стенда | 27 за 3 секунды |
-| Найдено дефектов продукта | 11 |
+| Tests in the main run | 853 |
+| Generated from the product's own descriptions | 762 |
+| Run time on eight workers | about 50 seconds |
+| API operations exercised | 99% of both versions |
+| Framework unit tests, no stand needed | 27 in 3 seconds |
+| Defects found in the product | 11 |
 
-Не закрыт один пункт матрицы покрытия: тонкий срез календарного протокола, восемь проверок.
+One item of the coverage matrix is still open: a thin slice of CalDAV, eight checks.
 
 ## Quick start
+
+You need Docker with Compose, and [uv](https://docs.astral.sh/uv/).
+
+```bash
+uv sync --extra dev
+```
 
 ```bash
 docker compose -f docker/docker-compose.yml up -d --quiet-pull
@@ -37,12 +43,18 @@ uv run python scripts/check_stand.py
 ```
 
 ```bash
-uv sync --extra dev && uv run pytest -n 8
+uv run pytest -n 8
 ```
 
-Проверка готовности обязательна: `docker compose up` возвращает управление раньше, чем приложение начинает отвечать. Скрипт дожидается каждого сервиса, находит обе спецификации и проходит настоящий путь пользователя целиком.
+The readiness check is not optional: `docker compose up` returns before the product answers. The script waits for every service, locates both API descriptions and walks one real user path end to end, so a green result means the stand is actually usable.
 
-Группа устойчивости в основной прогон не входит, она гасит контейнеры:
+Browser tests need a browser, installed once:
+
+```bash
+uv run playwright install chromium
+```
+
+The resilience group stops containers, so it stays out of the main run:
 
 ```bash
 uv run pytest tests/resilience -m resilience -p no:randomly
@@ -50,52 +62,54 @@ uv run pytest tests/resilience -m resilience -p no:randomly
 
 ## Design notes
 
-**Изоляция строится на владельце, а не на уборке.** В Vikunja всё принадлежит пользователю, поэтому каждый тест работает под своими свежими аккаунтами, а аккаунты, которые никогда не встречались, не видят данных друг друга. Отсюда полная параллельность без очистки базы между тестами и без последовательного выполнения. Продукт предоставляет служебный API с опустошением таблиц, и он сознательно не используется для этого.
+**Isolation comes from ownership, not cleanup.** Everything in Vikunja belongs to a user, so each test works under freshly registered accounts, and accounts that have never met cannot see each other's data. That gives full parallelism with no truncation between tests. The product ships a test API that empties every table, and it is deliberately not used for this.
 
-**Регистрация идёт настоящим путём.** Стенд работает с включённой почтой, поэтому продукт держит новый аккаунт до подтверждения адреса. Набор читает письмо из перехватчика, забирает токен и тратит его. Полный круг занимает около четырёх десятых секунды, так что подменять статус в базе незачем, а почтовый тракт оказывается под непрерывной проверкой.
+**Registration walks the real path.** The stand runs with mail enabled, so the product holds a new account until its address is confirmed. The suite reads the message from the mail trap, takes the token and spends it. The round trip costs about 0.4 seconds, so there is no reason to flip the account status in the database, and the mail pipeline stays under continuous test.
 
-**Контрактная проверка это побочный эффект.** Валидация ответа против схемы живёт в транспортном слое, значит каждый вызов каждого теста проверяется автоматически и отдельные контрактные тесты писать не нужно. Обе спецификации забираются с работающего инстанса, а не из репозитория продукта. В первый же день работы проверка нашла четыре дефекта на выборке из 32 вызовов.
+**Contract validation is a side effect.** Responses are checked against their schema in the transport layer, so every call made by every test is validated and no separate contract suite is needed. Both descriptions are fetched from the running instance rather than from the product's repository. On its first day the check found four defects in a sample of 32 calls.
 
-**Режим строгий, известное вынесено в базовую линию.** Расхождение, которого нет в базовой линии, роняет тест, который его вызвал. Базовая линия содержит только уже описанные находки, каждая запись ссылается на отчёт и объясняет причину. Записи ради тишины запрещены, и это проверяется тестом.
+**Strict mode, with known deviations in a baseline.** A deviation missing from the baseline fails the test that produced it. The baseline holds only findings already written up; each entry names its report and gives a reason. Entries added just to silence the suite are not allowed, and a test enforces that.
 
-**Списки проверок берутся у продукта, а не пишутся руками.** Обход авторизации порождается из обеих спецификаций, матрица областей действия токенов из каталога прав, который продукт публикует сам. Поэтому эндпоинт, добавленный завтра, попадёт под проверку при первом же прогоне, и ни один список не может разъехаться с реальностью. Покрытие операций после обхода составляет 99% на обеих версиях.
+**Check lists come from the product, not from a hand-kept file.** The authorization sweep is generated from both API descriptions, and the token scope matrix from the permission catalogue the product publishes itself. An endpoint added tomorrow is covered on the next run, and no list can drift from reality.
 
-**Состояние объявляется, а не программируется.** Тест описывает нужный мир одной цепочкой, строитель выполняет вызовы. Публичные ссылки и участники команд становятся такими же действующими лицами, как и все, поэтому строка матрицы доступа не знает, каким путём её вызывающий попал внутрь.
+**State is declared, not programmed.** A test describes the world it needs in one chain and a builder makes the calls. Link shares and team members become actors like anyone else, so a row of the access matrix does not care how its caller got in.
 
-**Проверяется то, что происходит вне ответа.** Письмо читается из перехватчика, исходящий вебхук из собственного приёмника, файл через объектное хранилище, счётчик из системы метрик, а целостность данных прямыми запросами к PostgreSQL. Ради этого стенд и держит восемь контейнеров.
+**What happens outside the response is checked too.** Mail is read from the trap, outgoing webhooks from a dedicated sink, files through object storage, counters from the metrics scrape, and data integrity through direct PostgreSQL queries. That is why the stand runs eight containers.
 
-**Фиксированных пауз в наборе нет ни одной.** Ожидание строится на опросе условия с явным сроком, и по истечении срока сообщение говорит, чего именно оно ждало.
+**There is not a single fixed pause.** Waiting polls a condition against an explicit deadline, and a timeout says what it was waiting for.
 
-**Браузер не входит через форму.** Аккаунт готовится по API, токен подкладывается в хранилище до запуска приложения, страница открывается сразу на нужном месте. Тест падает, только когда сломано то, что он проверяет.
+**The browser never signs in through the form.** The account is prepared over the API and its token placed in browser storage before the application boots, so a page opens directly where the test needs it. A test fails only when the thing it checks is broken.
 
-**У тестов API нет повторов.** Ноль. Мигающий тест API это либо дефект теста, либо настоящая гонка в продукте, и оба случая требуют разбора. Интерфейсным разрешён один повтор, и то как средство записать трассировку, а не способ получить зелёный прогон.
+**API tests never retry.** A flaky API test is either a defect in the test or a real race in the product, and both need investigating. Browser tests get one retry, used to capture a trace rather than to turn a run green.
 
-**Спорное не выдаётся за решённое.** Там, где поведение продукта кажется дефектом, но доказать это нельзя, тест помечается как ожидаемо падающий. Он формулирует позицию, не ломает сборку и превратится в неожиданный успех, если продукт передумает.
+**Open questions are not presented as settled.** Where the product's behaviour looks like a defect that cannot be proven, the test is marked as an expected failure. It states the position without breaking the build, and turns into an unexpected pass if the product changes.
 
-Полностью решения и отвергнутые альтернативы описаны в [docs/strategy.md](docs/strategy.md), объём и приоритеты покрытия в [docs/coverage-matrix.md](docs/coverage-matrix.md).
+The full reasoning, with the alternatives each decision was chosen over, is in [docs/strategy.md](docs/strategy.md), and scope and priorities are in [docs/coverage-matrix.md](docs/coverage-matrix.md). Both documents are currently in Russian.
 
 ## Layout
 
 ```
-docker/     стенд на восьми сервисах и приёмник вебхуков
-docs/       матрица покрытия и стратегия
-scripts/    проверка готовности стенда
-src/        фреймворк
+docker/     the eight-service stand and the webhook sink
+docs/       coverage matrix, strategy, findings
+scripts/    stand readiness check and the findings runner
+src/        the framework
 tests/      unit, smoke, api, ui, resilience
 ```
 
-Слои внутри `src` зависят строго в одну сторону: тесты, фабрики, клиенты областей, транспорт, настройки. Утверждений ниже слоя тестов нет ни одного.
+Layers inside `src` depend in one direction only: tests, scenes, area clients, transport, config. No assertion lives below the test layer.
 
 ## Findings
 
-Одиннадцать дефектов, каждый в своей папке с воспроизведением:
+Eleven defects, each in its own folder with a reproduction:
 
 ```bash
-py scripts/verify_findings.py
+python scripts/verify_findings.py
 ```
 
-Скрипты ничего не импортируют из фреймворка и не требуют зависимостей, поэтому проверяющему не нужно разбираться в коде, чтобы убедиться в находке.
+On Windows PowerShell, use `py` in place of `python`.
+
+The scripts import nothing from the framework and need no dependencies, so a reviewer can confirm a finding without reading the code. The write-ups are currently in Russian; every reproduction prints its result in English.
 
 ## Report
 
-Отчёт последнего прогона публикуется автоматически: [petprojectsaqa.github.io/qa-framework-vikunja](https://petprojectsaqa.github.io/qa-framework-vikunja/). История сохраняется между прогонами, поэтому видны тренды, а не только последний результат.
+The report of the latest run is published automatically at [petprojectsaqa.github.io/qa-framework-vikunja](https://petprojectsaqa.github.io/qa-framework-vikunja/). History is kept between runs, so trends are visible rather than only the last result.
