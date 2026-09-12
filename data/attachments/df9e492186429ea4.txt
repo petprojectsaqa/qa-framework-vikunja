@@ -1,0 +1,8 @@
+PUT http://localhost:3456/api/v1/user/settings/token/caldav
+as: session:ownerongeropensthecalendargw4020abaea
+status: 201  (295 ms)
+body: {
+  "id": 46,
+  "token": "x7TTnA7htDTB3YQWohEoNfRZeqtHNzqc135kDefFWPESZW8sjuy19r3FKreMwDrr",
+  "created": "2026-09-12T20:54:56.085566686Z"
+}

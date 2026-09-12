@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:ownerneverreturnsthesecretgw3bdd82d5c
+sent: {
+  "title": "read back probe",
+  "permissions": {
+    "labels": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T20:54:59Z"
+}
+status: 201  (56 ms)
+body: {
+  "id": 37,
+  "title": "read back probe",
+  "token": "tk_701ad67fc977c543eb59557ad39f2927b374ddd8",
+  "permissions": {
+    "labels": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T20:54:59Z",
+  "created": "2026-09-12T20:54:59.897233725Z",
+  "owner_id": 65
+}

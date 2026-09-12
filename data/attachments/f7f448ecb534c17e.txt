@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerorrevokedbyanyoneelsegw3fc6ba018",
+  "password": "VikunjaQA123!"
+}
+status: 200  (208 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNDcxMDEsImlkIjo3NywiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiI5ODU4N2YwMy1kZjI2LTQwNDktODg4Yi01YjQxNjhkMTg5MWEiLCJzaWQiOiI4ZDNlZTA4Ni1mNzk0LTQ2MDgtYmQyMy03ZTkwMzRlOGE3MDAiLCJ0eXBlIjoxLCJ1c2VybmFtZSI6Im93bmVyb3JyZXZva2VkYnlhbnlvbmVlbHNlZ3czZmM2YmEwMTgifQ.bNYaLoHzsEtDlk3cAb6GrDlTMvDUxDnCYHbybyGESJs"
+}

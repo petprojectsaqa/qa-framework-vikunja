@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/123/tasks
+as: session:ownertsitdidnotsubscribetogw21ac29bca
+sent: {
+  "title": "a creation, not a deletion"
+}
+status: 201  (32 ms)
+body: {
+  "id": 47,
+  "title": "a creation, not a deletion",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 123,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-12T20:55:03.07670428Z",
+  "updated": "2026-09-12T20:55:03.076707595Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 87,
+    "name": "",
+    "username": "ownertsitdidnotsubscribetogw21ac29bca",
+    "created": "2026-09-12T20:55:02Z",
+    "updated": "2026-09-12T20:55:02Z"
+  }
+}

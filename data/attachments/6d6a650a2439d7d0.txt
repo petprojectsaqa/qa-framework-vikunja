@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:ownerotheraccountsusernamegw4890148e3
+sent: {
+  "title": "calendar door",
+  "permissions": {
+    "caldav": [
+      "access"
+    ]
+  },
+  "expires_at": "2026-10-12T20:55:01Z"
+}
+status: 201  (36 ms)
+body: {
+  "id": 39,
+  "title": "calendar door",
+  "token": "tk_355204bd5fc19ae337e88919f9f2e4b17c0c4e35",
+  "permissions": {
+    "caldav": [
+      "access"
+    ]
+  },
+  "expires_at": "2026-10-12T20:55:01Z",
+  "created": "2026-09-12T20:55:01.050202412Z",
+  "owner_id": 64
+}

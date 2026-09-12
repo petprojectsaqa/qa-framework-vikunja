@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/99999999
+as: session:outsiderexistencedisclosurepygw55abe4ab7
+status: 404  (67 ms)
+domain code: 4002
+body: {
+  "code": 4002,
+  "message": "This task does not exist"
+}
