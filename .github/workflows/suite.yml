@@ -5,7 +5,7 @@ on:
   pull_request:
   workflow_dispatch:
   schedule:
-    # The resilience group only runs here: it stops containers, so it is
+    # The resilience layer only runs here: it stops containers, so it is
     # too slow and too disruptive to gate every push on.
     - cron: "0 3 * * *"
 
@@ -38,13 +38,40 @@ jobs:
           enable-cache: true
       - run: uv sync --extra dev
       # No stand on purpose: these must pass with the product switched
-      # off, or they are not unit tests.
+      # off, or they are not unit tests. They also hold the documentation
+      # to what the suite actually contains.
       - run: uv run pytest tests/unit -q
+
+  # The critical path across both layers, in under a minute of tests. It
+  # gates the full suites so an obviously broken stand fails here rather
+  # than inside eight hundred results.
+  smoke:
+    name: smoke
+    runs-on: ubuntu-latest
+    needs: [static, self-test]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --extra dev
+      - run: uv run playwright install chromium --with-deps
+
+      - name: bring the stand up
+        run: docker compose -f docker/docker-compose.yml up -d --quiet-pull
+      - name: wait for the stand
+        run: uv run python scripts/check_stand.py
+
+      - run: uv run pytest -m smoke tests/api tests/ui -q
+
+      - name: stand logs on failure
+        if: failure()
+        run: docker compose -f docker/docker-compose.yml logs --tail 300
 
   api:
     name: api suite
     runs-on: ubuntu-latest
-    needs: [static, self-test]
+    needs: [smoke]
     steps:
       - uses: actions/checkout@v5
       - uses: astral-sh/setup-uv@v7
@@ -61,7 +88,13 @@ jobs:
       - name: wait for the stand
         run: uv run python scripts/check_stand.py
 
-      - run: uv run pytest tests/api tests/smoke -n 8 --alluredir=allure-results
+      # --fail-uncovered turns a silently skipped family into a red run.
+      # Every P0 check lives in this layer, and one of them once stopped
+      # running for weeks without anyone noticing.
+      - run: >
+          uv run pytest tests/api -n 8
+          --fail-uncovered P0
+          --alluredir=allure-results
 
       - name: stand logs on failure
         if: failure()
@@ -76,7 +109,7 @@ jobs:
   ui:
     name: browser suite
     runs-on: ubuntu-latest
-    needs: [static, self-test]
+    needs: [smoke]
     steps:
       - uses: actions/checkout@v5
       - uses: astral-sh/setup-uv@v7
@@ -100,13 +133,21 @@ jobs:
           --video retain-on-failure
           --alluredir=allure-results
 
+      # Only the results, and on their own. Uploading them beside
+      # test-results nests both a directory deeper in the artifact, and
+      # the report job then finds no results at all: the published report
+      # had no browser tests in it for exactly that reason.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: allure-ui
-          path: |
-            allure-results
-            test-results
+          path: allure-results
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-traces
+          path: test-results
 
   resilience:
     name: dependency outages
@@ -126,9 +167,9 @@ jobs:
         run: docker compose -f docker/docker-compose.yml up -d --quiet-pull
       - name: wait for the stand
         run: uv run python scripts/check_stand.py
-      # Serial by necessity: each test takes a dependency away from the
-      # whole stand.
-      - run: uv run pytest tests/resilience -m resilience -p no:randomly --alluredir=allure-results
+      # --resilience both includes the layer and keeps it in one process:
+      # an outage cannot be confined to the test that caused it.
+      - run: uv run pytest tests/resilience --resilience --alluredir=allure-results
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -138,7 +179,7 @@ jobs:
   report:
     name: publish the report
     runs-on: ubuntu-latest
-    needs: [api, ui]
+    needs: [api, ui, resilience]
     if: always() && github.ref == 'refs/heads/main'
     permissions:
       contents: write
