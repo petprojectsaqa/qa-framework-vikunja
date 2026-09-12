@@ -13,6 +13,7 @@ from functools import cached_property
 from vikunja_qa.clients.projects import ProjectsClient
 from vikunja_qa.clients.sharing import LabelsClient, SharesClient, TeamsClient, TokensClient
 from vikunja_qa.clients.tasks import TasksClient
+from vikunja_qa.clients.user import UserClient
 from vikunja_qa.transport.client import HttpClient
 
 
@@ -47,3 +48,7 @@ class Api:
     @cached_property
     def tokens(self) -> TokensClient:
         return TokensClient(self._http)
+
+    @cached_property
+    def user(self) -> UserClient:
+        return UserClient(self._http)

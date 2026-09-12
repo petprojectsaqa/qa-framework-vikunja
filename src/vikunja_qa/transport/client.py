@@ -18,7 +18,9 @@ from typing import Any
 
 import allure
 import requests
+from requests.structures import CaseInsensitiveDict
 
+from vikunja_qa import reporting
 from vikunja_qa.auth.strategies import Anonymous, AuthStrategy
 from vikunja_qa.transport.response import ApiResponse
 
@@ -70,6 +72,22 @@ class HttpClient:
             base_url,
             self._auth,
             timeout=self._timeout,
+            session=self._session,
+            attach_traffic=self._attach,
+            hooks=self._hooks,
+        )
+
+    def with_timeout(self, seconds: float) -> HttpClient:
+        """Same target and credential, a different patience.
+
+        For the checks where how long an answer takes is the question, such
+        as whether a request hangs while a dependency is down. The deadline
+        belongs to the caller asking that question, not to every request.
+        """
+        return HttpClient(
+            self._base_url,
+            self._auth,
+            timeout=seconds,
             session=self._session,
             attach_traffic=self._attach,
             hooks=self._hooks,
@@ -148,12 +166,13 @@ class HttpClient:
             method=method.upper(),
             url=url,
             status=raw.status_code,
-            headers=dict(raw.headers),
+            headers=CaseInsensitiveDict(raw.headers),
             body=body,
             elapsed_ms=elapsed_ms,
             request_body=json if json is not None else data,
             auth_label=self._auth.label,
             text=raw.text,
+            content=raw.content,
         )
 
         self._record(response)
@@ -168,8 +187,4 @@ class HttpClient:
         title = f"{response.method} {short_url} -> {response.status}"
         with allure.step(title):
             if self._attach:
-                allure.attach(
-                    response.describe(),
-                    name=title,
-                    attachment_type=allure.attachment_type.TEXT,
-                )
+                reporting.attach(response.describe(), name=title)

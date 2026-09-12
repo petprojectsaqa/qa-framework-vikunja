@@ -1,75 +1,66 @@
 """Putting a browser in front of an account that already exists.
 
 No test signs in through the form. The account is registered, confirmed
-and logged in over the API, and the session token is placed in browser
-storage before the application boots. A test then opens straight onto the
-page it is about to examine.
+and logged in over the API, and its session token is placed in browser
+storage before the application boots, so a test opens straight onto the
+page it examines. A test then fails only when the thing it checks is
+broken, not whenever the sign-in form changes.
 
-That is worth more than the seconds it saves. A test fails only when the
-thing it checks is broken, rather than whenever the sign-in form changes,
-and the data it needs is built by one API call instead of forty clicks.
+Contexts come from pytest-playwright's `new_context` factory rather than
+from `browser.new_context`. The factory is what records traces, videos
+and screenshots according to `--tracing`, `--video` and `--screenshot`;
+bypassing it leaves those options set and silently doing nothing.
 
-Two scripts run before any page script:
-
-`token` is where the frontend keeps its session, so writing it there is
-exactly what signing in would have done.
-
-`TESTING` makes the application emit its `data-cy` attributes, which its
-production build otherwise strips. The product's own source says this
-flag is meant to be injected by a test runner, which is what we are.
-Selectors here still prefer roles and text where those identify an
-element; the attribute is for the cases where nothing else does.
+Two scripts run before any page script. `token` is where the frontend
+keeps its session, so writing it there is exactly what signing in would
+have done. `TESTING` makes the application emit its `data-cy` attributes,
+which the production build strips unless a test runner injects the flag,
+as the product's own source says it should.
 """
 
 from __future__ import annotations
 
 import json
+from typing import Protocol
 
-from playwright.sync_api import Browser, BrowserContext, Page
+from playwright.sync_api import BrowserContext, Page
 
 from vikunja_qa.actors.actor import Actor
 from vikunja_qa.auth.strategies import SessionToken
+
+#: Pinned rather than inherited. The application follows the browser's
+#: language, so leaving it to the machine running the suite would make
+#: every text selector depend on where it ran. Localisation tests set a
+#: locale deliberately instead.
+DEFAULT_LOCALE = "en-GB"
+
+VIEWPORT = {"width": 1400, "height": 900}
 
 
 class NotASessionError(AssertionError):
     pass
 
 
-def _token_of(actor: Actor) -> str:
+class PageOpener(Protocol):
+    """Opens a page signed in as someone, in a given language. What the
+    browser layer's `open_as` fixture hands a test."""
+
+    def __call__(self, actor: Actor, *, locale: str = DEFAULT_LOCALE) -> Page: ...
+
+
+def session_token_of(actor: Actor) -> str:
     if not isinstance(actor.auth, SessionToken):
         raise NotASessionError(
-            f"{actor} holds a {actor.auth.label} credential; the browser can only "
-            "carry a session token"
+            f"{actor} holds a {actor.auth.label} credential; a browser can only carry a "
+            "session token"
         )
     return actor.auth.token
 
 
-#: Pinned rather than inherited. The application follows the browser's
-#: language, so leaving this to the machine running the suite would make
-#: every text-based selector depend on where it ran. The localisation
-#: tests set it deliberately instead.
-DEFAULT_LOCALE = "en-GB"
-
-
-def context_for(
-    browser: Browser,
-    actor: Actor,
-    base_url: str,
-    *,
-    locale: str = DEFAULT_LOCALE,
-    **kwargs: object,
-) -> BrowserContext:
-    """A browser context already signed in as this actor."""
-    context = browser.new_context(base_url=base_url, locale=locale, **kwargs)  # type: ignore[arg-type]
+def sign_in(context: BrowserContext, actor: Actor) -> BrowserContext:
+    """Make every page this context opens start signed in as the actor."""
+    token = json.dumps(session_token_of(actor))
     context.add_init_script(
-        "window.TESTING = true;\n"
-        f"try {{ localStorage.setItem('token', {json.dumps(_token_of(actor))}); }} catch (e) {{}}"
+        f"window.TESTING = true;\ntry {{ localStorage.setItem('token', {token}); }} catch (e) {{}}"
     )
     return context
-
-
-def open_at(context: BrowserContext, path: str = "/") -> Page:
-    """A page already on the route the test cares about."""
-    page = context.new_page()
-    page.goto(path)
-    return page

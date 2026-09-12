@@ -36,7 +36,7 @@ HTTP/1.1 200 OK
 4. Посмотреть на код ответа и на тело.
 5. Вернуть контейнер: `docker compose start minio`.
 
-Тест `tests/resilience/test_dependency_failures.py` делает это целиком и сам восстанавливает стенд.
+Тест `tests/resilience/dependencies/test_object_storage.py` делает это целиком и сам восстанавливает стенд.
 
 ## Ожидаемый результат
 
@@ -52,4 +52,4 @@ HTTP/1.1 200 OK
 
 ## Связанный тест
 
-`tests/resilience/test_dependency_failures.py::TestObjectStorage::test_an_upload_fails_clearly_when_storage_is_gone`, помечен как ожидаемо падающий. Позиция зафиксирована, сборку не ломает, и превратится в неожиданный успех, когда код ответа исправят.
+`tests/resilience/dependencies/test_object_storage.py::test_a_failed_upload_says_so_in_its_status_code`, помечен как ожидаемо падающий. Позиция зафиксирована, сборку не ломает, и превратится в неожиданный успех, когда код ответа исправят.

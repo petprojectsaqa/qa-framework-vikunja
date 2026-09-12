@@ -34,15 +34,14 @@ packages = ["src/vikunja_qa"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-# The resilience group stops containers, so it never joins the main run.
-# It is a separate CI job, and the reason is written down in its module.
-addopts = "-ra --strict-markers --strict-config -m 'not resilience'"
-markers = [
-    "serial: touches global state; must not run in parallel with others",
-    "resilience: brings a dependency down; excluded from the main run",
-    "cve: regression for a published vulnerability",
-    "xversion: compares the v1 and v2 APIs",
-]
+# Markers are registered by the suite's own plugin, vikunja_qa.testing.plugin,
+# which also derives one per coverage matrix check; `pytest --markers` lists
+# them all. The resilience layer is left out there too, by directory, unless
+# --resilience is given, so -m stays free for whoever runs the suite.
+# importlib import mode lets modules in different areas share a name, such
+# as api/side_effects/test_mail.py and resilience/dependencies/test_mail.py,
+# without turning every test directory into a package.
+addopts = "-ra --strict-markers --strict-config --import-mode=importlib"
 filterwarnings = ["error"]
 
 [tool.ruff]

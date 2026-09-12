@@ -55,6 +55,10 @@ class Settings(BaseSettings):
         description="Attach request and response bodies to the Allure report.",
     )
 
+    # --- reporting ---------------------------------------------------------
+    # Where report links to the coverage matrix and to findings point.
+    repository_url: str = "https://github.com/petprojectsaqa/qa-framework-vikunja"
+
     # --- contract checking -------------------------------------------------
     # "strict" fails the test that produced a mismatch, "collect" records
     # them and reports at the end of the run, "off" disables the check.
@@ -67,6 +71,11 @@ class Settings(BaseSettings):
     @property
     def api_v2(self) -> str:
         return f"{self.base_url.rstrip('/')}/api/v2"
+
+    @property
+    def dav_url(self) -> str:
+        """The CalDAV entrance, which lives beside the API rather than in it."""
+        return f"{self.base_url.rstrip('/')}/dav"
 
     @property
     def db_dsn(self) -> str:

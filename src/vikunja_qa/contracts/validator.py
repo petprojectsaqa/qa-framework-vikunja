@@ -15,7 +15,7 @@ import threading
 from collections import Counter
 from collections.abc import Iterator
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
@@ -254,6 +254,29 @@ class ContractValidator:
                 "percent": round(100 * touched / total) if total else 0,
             }
         return summary
+
+    def snapshot(self) -> dict[str, Any]:
+        """Everything this validator saw, as plain data.
+
+        Built for crossing a process boundary: under xdist each worker has
+        its own validator, and only plain data reaches the controller that
+        prints the combined picture.
+        """
+        with self._lock:
+            called = list(self._called)
+            violations = [asdict(violation) for violation in self._violations]
+            accepted = [deviation.finding for _, deviation in self._accepted]
+        return {
+            "described": {spec.label: len(spec.operations) for spec in self._specs},
+            "exercised": {
+                spec.label: sorted(
+                    key.split(" ", 1)[1] for key in called if key.startswith(f"{spec.label} ")
+                )
+                for spec in self._specs
+            },
+            "violations": violations,
+            "accepted": accepted,
+        }
 
     def untouched(self, spec: SpecIndex) -> list[str]:
         """Operations no test has called yet. This is the list the

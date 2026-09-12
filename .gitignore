@@ -8,6 +8,7 @@ __pycache__/
 
 # Test output
 allure-results/
+allure-results-*/
 allure-report/
 test-results/
 playwright-report/

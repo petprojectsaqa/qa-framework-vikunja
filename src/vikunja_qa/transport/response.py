@@ -8,6 +8,7 @@ understands both error shapes the product speaks.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -17,12 +18,18 @@ class ApiResponse:
     method: str
     url: str
     status: int
-    headers: dict[str, str]
+    #: Case-insensitive, as header names are in HTTP. The product is written
+    #: in Go, which sends `Www-Authenticate`; a plain dict would make
+    #: `headers.get("WWW-Authenticate")` quietly answer None.
+    headers: Mapping[str, str]
     body: Any
     elapsed_ms: float
     request_body: Any = None
     auth_label: str = ""
     text: str = field(default="", repr=False)
+    #: The body exactly as received. For binary payloads such as attachments,
+    #: where decoding to text and back would not return the same bytes.
+    content: bytes = field(default=b"", repr=False)
 
     # --- reading the payload ------------------------------------------------
 

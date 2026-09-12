@@ -20,6 +20,8 @@ import allure
 import psycopg
 from psycopg.rows import dict_row
 
+from vikunja_qa import reporting
+
 
 class Database:
     def __init__(self, dsn: str) -> None:
@@ -41,11 +43,7 @@ class Database:
             with self._cursor() as cursor:
                 cursor.execute(sql, params or {})
                 result = cursor.fetchall()
-            allure.attach(
-                "\n".join(str(row) for row in result[:20]) or "(no rows)",
-                name="rows",
-                attachment_type=allure.attachment_type.TEXT,
-            )
+            reporting.attach("\n".join(str(row) for row in result[:20]) or "(no rows)", name="rows")
             return list(result)
 
     def one(self, sql: str, params: dict[str, Any] | None = None) -> dict[str, Any] | None:

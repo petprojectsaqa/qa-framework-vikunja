@@ -80,8 +80,7 @@ KNOWN: tuple[Deviation, ...] = (
         spec="v2",
         kind="schema mismatch",
         detail_pattern=(
-            r"(related_tasks|reactions|extra_settings_links|filter|"
-            r"bucket_configuration): None is not of type"
+            r"(related_tasks|reactions|extra_settings_links|filter): None is not of type"
         ),
         reason=(
             "v2 fixed nullability for most collections but left these few "
@@ -119,15 +118,6 @@ KNOWN: tuple[Deviation, ...] = (
             "The other half of VKJ-007: the description omits the verb "
             "that works, POST on a single label, while declaring a PUT "
             "the product rejects."
-        ),
-    ),
-    Deviation(
-        finding="VKJ-009",
-        spec="*",
-        kind="not JSON",
-        reason=(
-            "Endpoints serving an image, a QR code or an export archive "
-            "are described as returning JSON."
         ),
     ),
     Deviation(

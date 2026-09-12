@@ -17,6 +17,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import allure
+import requests
 
 from vikunja_qa.waiting import wait_until
 
@@ -85,6 +86,29 @@ def wait_until_ready(service: str, timeout: float = 120) -> None:
         return True if state in ("healthy", "running") else None
 
     wait_until(ready, timeout=timeout, because=f"{service} is answering again")
+
+
+def health_of(base_url: str, timeout: float = 5) -> requests.Response | None:
+    """The product's own health check, or None when nothing answers at all."""
+    try:
+        return requests.get(f"{base_url.rstrip('/')}/health", timeout=timeout)
+    except requests.RequestException:
+        return None
+
+
+def wait_until_healthy(base_url: str, timeout: float = 120) -> None:
+    """Block until the product reports itself healthy.
+
+    A dependency's container running again is not the product having
+    noticed. It reconnects on its own schedule, and the next test should
+    not be the one that finds out it has not yet.
+    """
+
+    def healthy() -> bool | None:
+        response = health_of(base_url)
+        return True if response is not None and response.status_code == 200 else None
+
+    wait_until(healthy, timeout=timeout, because="the product reports itself healthy again")
 
 
 @contextmanager

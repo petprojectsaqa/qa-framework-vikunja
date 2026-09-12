@@ -48,4 +48,4 @@
 
 ## Связанный тест
 
-`tests/resilience/test_dependency_failures.py::TestKeyValueStore::test_the_product_survives_losing_redis`, помечен как ожидаемо падающий.
+`tests/resilience/dependencies/test_key_value_store.py::test_losing_redis_degrades_requests_instead_of_hanging_them`, помечен как ожидаемо падающий.
