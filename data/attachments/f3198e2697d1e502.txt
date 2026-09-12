@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:ownerneverstoredinthecleargw210525cde
+sent: {
+  "title": "integrity probe",
+  "permissions": {
+    "labels": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T18:50:08Z"
+}
+status: 201  (8 ms)
+body: {
+  "id": 2,
+  "title": "integrity probe",
+  "token": "tk_e0b58c6bd371be0e24d6daf813730b5689926163",
+  "permissions": {
+    "labels": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T18:50:08Z",
+  "created": "2026-09-12T18:50:08.816474168Z",
+  "owner_id": 67
+}

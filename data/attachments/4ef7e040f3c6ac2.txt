@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/40/tasks
+as: session:ownertoutsiderdisclosurepygw323f43ab9
+sent: {
+  "title": "task task"
+}
+status: 201  (67 ms)
+body: {
+  "id": 6,
+  "title": "task task",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 40,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-12T18:50:01.476851931Z",
+  "updated": "2026-09-12T18:50:01.476856318Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 28,
+    "name": "",
+    "username": "ownertoutsiderdisclosurepygw323f43ab9",
+    "created": "2026-09-12T18:49:59Z",
+    "updated": "2026-09-12T18:49:59Z"
+  }
+}

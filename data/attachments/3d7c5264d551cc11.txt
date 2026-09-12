@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/63/users
+as: session:ownerprojectisallowedadmingw160f59557
+sent: {
+  "username": "adminprojectisallowedadmingw1308e584f",
+  "permission": 2
+}
+status: 201  (6 ms)
+body: {
+  "id": 8,
+  "username": "adminprojectisallowedadmingw1308e584f",
+  "permission": 2,
+  "created": "2026-09-12T18:50:04.552429877Z",
+  "updated": "2026-09-12T18:50:04.552434043Z"
+}

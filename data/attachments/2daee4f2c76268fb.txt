@@ -1,0 +1,6 @@
+DELETE http://localhost:3456/api/v1/tasks/34
+as: session:ownerntitdidnotsubscribetogw1e609b69e
+status: 200  (18 ms)
+body: {
+  "message": "Successfully deleted."
+}

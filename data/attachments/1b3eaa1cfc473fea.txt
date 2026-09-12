@@ -1,6 +1,0 @@
-DELETE http://localhost:3456/api/v1/projects/74
-as: session:ownerleavesnoorphanedtasksgw2b9cd13ee
-status: 200  (22 ms)
-body: {
-  "message": "Successfully deleted."
-}

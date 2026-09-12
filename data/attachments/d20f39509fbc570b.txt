@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/tasks/99999999
-as: session:ownersedifferentmediatypesgw2b137b42d
-status: 404  (13 ms)
-domain code: 4002
-body: {
-  "code": 4002,
-  "message": "This task does not exist"
-}

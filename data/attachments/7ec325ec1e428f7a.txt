@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/projects/63
+as: session:ownerprojectisallowedadmingw160f59557
+status: 404  (4 ms)
+domain code: 3001
+body: {
+  "code": 3001,
+  "message": "This project does not exist."
+}
