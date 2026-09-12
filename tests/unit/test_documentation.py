@@ -62,13 +62,27 @@ def test_every_test_a_document_points_at_exists(document: Path) -> None:
     )
 
 
-def test_every_finding_folder_is_listed_in_the_index() -> None:
-    index = (FINDINGS / "README.md").read_text(encoding="utf-8")
+@pytest.mark.parametrize("index_name", ["README.md", "README.ru.md"])
+def test_every_finding_folder_is_listed_in_the_index(index_name: str) -> None:
+    """Both indexes, because a finding added to one language and forgotten
+    in the other is exactly the drift that goes unnoticed."""
+    index = (FINDINGS / index_name).read_text(encoding="utf-8")
     folders = sorted(path.name for path in FINDINGS.iterdir() if path.is_dir())
 
     missing = [folder for folder in folders if folder not in index]
 
-    assert not missing, f"findings with no row in docs/findings/README.md: {missing}"
+    assert not missing, f"findings with no row in docs/findings/{index_name}: {missing}"
+
+
+@pytest.mark.parametrize("index_name", ["README.md", "README.ru.md"])
+def test_every_held_finding_is_named_in_the_index(index_name: str) -> None:
+    """A held finding has no folder, so nothing else would notice if its
+    row went missing and the numbering quietly grew a gap."""
+    index = (FINDINGS / index_name).read_text(encoding="utf-8")
+
+    unlisted = sorted(finding for finding in traceability.HELD_FINDINGS if finding not in index)
+
+    assert not unlisted, f"held findings with no row in docs/findings/{index_name}: {unlisted}"
 
 
 def test_every_finding_folder_carries_a_report_in_both_languages_and_a_reproduction() -> None:

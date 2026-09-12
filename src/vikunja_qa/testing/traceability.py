@@ -122,7 +122,7 @@ ADVISORY_ID = re.compile(r"^(CVE-\d{4}-\d{4,}|GHSA(-[0-9a-z]{4}){3})$")
 #: Findings written up but deliberately kept out of the repository until
 #: the product's maintainers have seen them. Referencing one is valid; it
 #: simply has no folder to link to.
-HELD_FINDINGS = frozenset({"VKJ-006"})
+HELD_FINDINGS = frozenset({"VKJ-006", "VKJ-014"})
 
 
 def finding_folder(finding_id: str, findings_root: Path) -> str | None:

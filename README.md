@@ -17,11 +17,11 @@ This is not a collection of CRUD checks against a public sandbox. It is about th
 
 | | |
 |---|---|
-| Main run | 1035 passing, 16 skipped, 4 expected failures |
+| Main run | 1038 passing, 16 skipped, 4 expected failures |
 | Generated from the product's own descriptions | 744 of 843 matrix-bound tests |
 | Run time on eight workers | about 40 seconds |
 | API operations exercised | 99% of both versions |
-| The framework's own tests, no stand needed | 184 in 12 seconds |
+| The framework's own tests, no stand needed | 187 in 12 seconds |
 | Resilience layer, run on its own | 6 |
 | Defects found in the product | 15 |
 

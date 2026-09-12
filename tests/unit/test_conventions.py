@@ -66,12 +66,14 @@ def test_names_that_resolve_to_nothing_are_refused(
 
 
 def test_a_held_finding_needs_no_folder(findings: Path) -> None:
-    (held,) = traceability.HELD_FINDINGS
+    """A finding kept back from publication has no folder to point at, and
+    a test may still name it."""
+    held = tuple(sorted(traceability.HELD_FINDINGS))
+    assert held, "there is nothing held back, so this rule has nothing to protect"
 
-    assert (
-        conventions.violations(PRODUCT, Declarations(codes=("ACL",), findings=(held,)), findings)
-        == []
-    )
+    declared = Declarations(codes=("ACL",), findings=held)
+
+    assert conventions.violations(PRODUCT, declared, findings) == []
 
 
 class FakeItem:
