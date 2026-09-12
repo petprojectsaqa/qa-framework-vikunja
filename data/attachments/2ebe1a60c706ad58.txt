@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownersamefailuregetfiltersgw265db23eb",
+  "password": "VikunjaQA123!"
+}
+status: 200  (324 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTIyNTUsImlkIjo3MSwiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiI3NmFkODQwNC02NmJkLTRlODMtOGRjNS03OThlM2VhNWIyNDAiLCJzaWQiOiIwNzU3YjA4OS05MGFhLTQyZDUtYmRiMS0xNGQ4NjUwM2I4ZmQiLCJ0eXBlIjoxLCJ1c2VybmFtZSI6Im93bmVyc2FtZWZhaWx1cmVnZXRmaWx0ZXJzZ3cyNjVkYjIzZWIifQ.0bVwnX0H7TFYuZZJFxMF2GKRF5ZYYDlSONYg45Gi62o"
+}

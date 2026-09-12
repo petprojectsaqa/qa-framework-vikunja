@@ -1,0 +1,11 @@
+GET http://localhost:3456/api/v2/projects/999999999/views/999999999/tasks
+as: session:ownergetprojectsviewstasksgw3ac2516ee
+status: 404  (3 ms)
+domain code: 3014
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "This project view does not exist.",
+  "code": 3014
+}

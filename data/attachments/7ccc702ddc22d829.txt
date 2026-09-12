@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/projects/999999999/shares
+as: session:ownerluregetprojectssharesgw118fd4d17
+status: 404  (7 ms)
+domain code: 3001
+body: {
+  "code": 3001,
+  "message": "This project does not exist."
+}

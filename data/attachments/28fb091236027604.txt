@@ -1,0 +1,21 @@
+PUT http://localhost:3456/api/v1/labels
+as: session:ownernnotbeputonatasktwicegw6a394c3af
+sent: {
+  "title": "label urgent"
+}
+status: 201  (31 ms)
+body: {
+  "id": 2,
+  "title": "label urgent",
+  "description": "",
+  "hex_color": "",
+  "created_by": {
+    "id": 185,
+    "name": "",
+    "username": "ownernnotbeputonatasktwicegw6a394c3af",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-12T22:21:09.381202912Z",
+  "updated": "2026-09-12T22:21:09.381205546Z"
+}

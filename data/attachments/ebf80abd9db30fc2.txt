@@ -1,0 +1,11 @@
+DELETE http://localhost:3456/api/v2/labels/999999999
+as: session:ownermefailuredeletelabelsgw289f8fbd7
+status: 404  (8 ms)
+domain code: 8002
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "This label does not exist.",
+  "code": 8002
+}

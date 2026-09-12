@@ -1,0 +1,6 @@
+GET http://localhost:3456/api/v1/migration/trello/auth
+as: session:sweepersweepa4b325a1
+status: 404  (1 ms)
+body: {
+  "message": "Not Found"
+}

@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:tokenstesttokenscopespygw6833c1802
+sent: {
+  "title": "scope projects_users.read_all",
+  "permissions": {
+    "projects_users": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T22:20:50Z"
+}
+status: 201  (54 ms)
+body: {
+  "id": 35,
+  "title": "scope projects_users.read_all",
+  "token": "tk_568c15b89f1e7aaae8685a6c8ab4496d7a923ee9",
+  "permissions": {
+    "projects_users": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T22:20:50Z",
+  "created": "2026-09-12T22:20:50.931019463Z",
+  "owner_id": 41
+}

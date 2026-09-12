@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownernchangedinthecalendargw4cd3fcda0",
+  "password": "VikunjaQA123!"
+}
+status: 200  (236 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTIyNDYsImlkIjoyOSwiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiJjMTgzOThhZC1jNGI2LTRmMTEtOTlhZi1iNTZjNDM3OWE4MGYiLCJzaWQiOiI4OWY0ODVlYy04MWE2LTQ4NjMtYWE0Zi00NWFhZjgzYzMzYjAiLCJ0eXBlIjoxLCJ1c2VybmFtZSI6Im93bmVybmNoYW5nZWRpbnRoZWNhbGVuZGFyZ3c0Y2QzZmNkYTAifQ.9Zvj5YBz7_y-L0R9F3N5uhXlX0RT996zsmAcZ0_DYqA"
+}

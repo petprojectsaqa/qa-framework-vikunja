@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/tasks/28
-as: session:outsidertesterrorcodespygw4a94f49b5
-status: 403  (23 ms)
-domain code: 0
-body: {
-  "code": 0,
-  "message": "You don't have the permission to see this"
-}

@@ -1,9 +1,0 @@
-GET http://localhost:3456/api/v2/labels/999999999
-as: session:owneresamefailuregetlabelsgw4c608ba48
-status: 403  (106 ms)
-body: {
-  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
-  "title": "Forbidden",
-  "status": 403,
-  "detail": "You don't have the permission to see this"
-}

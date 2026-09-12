@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "admintestaccessmatrixpygw2144921ad",
+  "password": "VikunjaQA123!"
+}
+status: 200  (148 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTIyNDQsImlkIjoxOSwiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiJhYWYwNGM2MC1jN2E3LTRhZTAtYmQyZi1iOGU2NjBlMTdhOGIiLCJzaWQiOiIxZTEzNDM1OS03MTE3LTQzOTktYjI3Mi03NWU2MDY5MGEwYjgiLCJ0eXBlIjoxLCJ1c2VybmFtZSI6ImFkbWludGVzdGFjY2Vzc21hdHJpeHB5Z3cyMTQ0OTIxYWQifQ.CrPxK9exjY-DoYPFgEOWZ6RC1RxePHbriOgwZe1W9c0"
+}

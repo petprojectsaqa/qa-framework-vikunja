@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "owneriluregetprojectsteamsgw0c67f02be",
+  "password": "VikunjaQA123!"
+}
+status: 200  (315 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTIyNTksImlkIjo5NywiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiI1YWQ1YjQ4NS0xYmQ5LTRiZjItOWMyZS1hOGM0N2E3NjhjNTYiLCJzaWQiOiJmNjNjNzBjMi0xZGMxLTQzNGUtYTE5MS00ZTFjMmZlMTFlYWEiLCJ0eXBlIjoxLCJ1c2VybmFtZSI6Im93bmVyaWx1cmVnZXRwcm9qZWN0c3RlYW1zZ3cwYzY3ZjAyYmUifQ.M7PBT5sup7RRRz1U64oU4t1Y5BemKevEuCYsYeDIqno"
+}

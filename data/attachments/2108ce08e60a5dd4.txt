@@ -1,0 +1,11 @@
+DELETE http://localhost:3456/api/v2/projects/999999999/users/999999999
+as: session:ownerredeleteprojectsusersgw212ed9e68
+status: 404  (16 ms)
+domain code: 3001
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "This project does not exist.",
+  "code": 3001
+}

@@ -1,0 +1,11 @@
+POST http://localhost:3456/api/v1/tasks/26
+as: session:outsidertestaccessmatrixpygw2091376d7
+sent: {
+  "title": "changed by the matrix"
+}
+status: 403  (12 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "Forbidden"
+}
