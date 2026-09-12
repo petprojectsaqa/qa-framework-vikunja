@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/5
+as: session:outsidertestaccessmatrixpygw00a2090d4
+status: 403  (15 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "You don't have the permission to see this"
+}

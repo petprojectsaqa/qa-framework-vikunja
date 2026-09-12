@@ -1,0 +1,46 @@
+GET http://localhost:3456/api/v1/tasks/40
+as: session:ownerdsbackidenticallyv2v1gw154b66292
+status: 200  (8 ms)
+body: {
+  "id": 40,
+  "title": "task by v2",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 97,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": null,
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": {},
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "subscription": {
+    "id": 40,
+    "entity": "task",
+    "entity_id": 40,
+    "created": "2026-09-12T18:22:59Z"
+  },
+  "created": "2026-09-12T18:22:59Z",
+  "updated": "2026-09-12T18:22:59Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 71,
+    "name": "",
+    "username": "ownerdsbackidenticallyv2v1gw154b66292",
+    "created": "2026-09-12T18:22:59Z",
+    "updated": "2026-09-12T18:22:59Z"
+  }
+}

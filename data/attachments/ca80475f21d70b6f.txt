@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects
+as: session:ownerwithdifferentstatusesgw1e252809c
+sent: {
+  "title": ""
+}
+status: 412  (2 ms)
+domain code: 2002
+body: {
+  "code": 2002,
+  "message": "Invalid Data",
+  "invalid_fields": [
+    "title: non zero value required"
+  ]
+}

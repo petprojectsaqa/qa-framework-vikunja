@@ -1,9 +1,0 @@
-POST http://localhost:3456/api/v2/user/confirm
-as: anonymous
-status: 400  (24 ms)
-body: {
-  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
-  "title": "Bad Request",
-  "status": 400,
-  "detail": "request body is required"
-}

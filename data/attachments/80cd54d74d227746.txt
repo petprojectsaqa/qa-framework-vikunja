@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "teammatetestaccessmatrixpygw13ffc183f",
+  "password": "VikunjaQA123!"
+}
+status: 200  (180 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyMzc5NDQsImlkIjoyOCwiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiIxMmY2YWY2MS1lNDE1LTQ1ODYtOWRkOC1iNTBmOTZiOGRjNTUiLCJzaWQiOiJiZGY0ZjQzMy1jMGQxLTRiN2MtOWFlYi00ZGExNmFiNDI3ZTciLCJ0eXBlIjoxLCJ1c2VybmFtZSI6InRlYW1tYXRldGVzdGFjY2Vzc21hdHJpeHB5Z3cxM2ZmYzE4M2YifQ.eo4P4-O37N9GJY2qxuNXKFm10jnFJzZzjRqlyTgRPzc"
+}

@@ -1,0 +1,28 @@
+GET http://localhost:3456/api/v1/user
+as: session:ownerredactorcanreaditselfgw6b1f89fbd
+status: 200  (7 ms)
+body: {
+  "id": 46,
+  "name": "",
+  "username": "ownerredactorcanreaditselfgw6b1f89fbd",
+  "created": "2026-09-12T18:22:27Z",
+  "updated": "2026-09-12T18:22:27Z",
+  "settings": {
+    "name": "",
+    "email_reminders_enabled": false,
+    "discoverable_by_name": false,
+    "discoverable_by_email": false,
+    "overdue_tasks_reminders_enabled": true,
+    "overdue_tasks_reminders_time": "9:00",
+    "default_project_id": 57,
+    "week_start": 0,
+    "language": "",
+    "timezone": "GMT",
+    "frontend_settings": null,
+    "extra_settings_links": null
+  },
+  "deletion_scheduled_at": "0001-01-01T00:00:00Z",
+  "is_local_user": true,
+  "auth_provider": "local",
+  "is_admin": false
+}
