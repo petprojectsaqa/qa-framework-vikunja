@@ -1,4 +1,0 @@
-GET http://localhost:3456/dav/projects/34
-as: basic:outsiderdsomeoneelsescalendargw4778552d8
-status: 404  (223 ms)
-body: 

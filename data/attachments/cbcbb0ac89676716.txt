@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/tasks/41/attachments/1
-as: session:ownerroughsomeoneelsestaskgw735f22b61
-status: 404  (23 ms)
-domain code: 4011
-body: {
-  "code": 4011,
-  "message": "This task attachment does not exist."
-}

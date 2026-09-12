@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/projects/19
+as: session:readertestaccessmatrixpygw1c28e960c
+status: 403  (12 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "Forbidden"
+}

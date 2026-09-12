@@ -1,6 +1,0 @@
-GET http://localhost:3456/api/v1/migration/trello/status
-as: anonymous
-status: 404  (8 ms)
-body: {
-  "message": "Not Found"
-}

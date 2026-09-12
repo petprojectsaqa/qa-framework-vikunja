@@ -1,0 +1,6 @@
+PUT http://localhost:3456/api/v1/labels/999999999
+as: anonymous
+status: 405  (17 ms)
+body: {
+  "message": "Method Not Allowed"
+}

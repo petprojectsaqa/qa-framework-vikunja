@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "readertestcrossversionpygw756d0f8fb",
+  "password": "VikunjaQA123!",
+  "email": "readertestcrossversionpygw756d0f8fb@qa.local"
+}
+status: 200  (698 ms)
+body: {
+  "id": 50,
+  "name": "",
+  "username": "readertestcrossversionpygw756d0f8fb",
+  "created": "2026-09-12T20:55:33Z",
+  "updated": "2026-09-12T20:55:33.487106502Z"
+}

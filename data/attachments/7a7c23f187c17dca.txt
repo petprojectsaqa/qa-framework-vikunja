@@ -1,5 +1,0 @@
-PROPFIND http://localhost:3456/dav/projects/34/
-as: basic:outsiderdsomeoneelsescalendargw4778552d8
-sent: b'<?xml version="1.0" encoding="utf-8"?><D:propfind xmlns:D="DAV:"><D:prop><D:getetag/></D:prop></D:propfind>'
-status: 404  (253 ms)
-body: 
