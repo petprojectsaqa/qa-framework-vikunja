@@ -11,7 +11,7 @@ This is not a collection of CRUD checks against a public sandbox. It is about th
 
 **Eleven defects found in the product**, each with a reproduction that runs in seconds and imports nothing from this framework. See [docs/findings](docs/findings/).
 
-**On AI assistance.** This was built with an AI assistant, and the decisions in it are mine. Every design choice is written down in [docs/strategy.md](docs/strategy.md) together with the alternatives it was chosen over, and I can walk through any line of it. Said here plainly because a reader is entitled to know how the work in front of them was made, and because finding out later is worse than being told up front.
+**AI-first engineering.** This framework was built the way I work: with AI in the loop. AI speeds up implementation and widens the search for defects, while the architecture, the test strategy and every trade-off are engineering decisions, each written down in [docs/strategy.md](docs/strategy.md) with the alternatives it was chosen over. That combination is what lets one engineer deliver this depth of coverage: most of the suite is generated from the product's own API descriptions, and it has already found eleven real defects.
 
 ## Status
 
