@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneriluregettaskscommentsgw20e17a83f",
+  "password": "VikunjaQA123!",
+  "email": "owneriluregettaskscommentsgw20e17a83f@qa.local"
+}
+status: 200  (579 ms)
+body: {
+  "id": 122,
+  "name": "",
+  "username": "owneriluregettaskscommentsgw20e17a83f",
+  "created": "2026-09-12T22:19:28Z",
+  "updated": "2026-09-12T22:19:28.923922454Z"
+}

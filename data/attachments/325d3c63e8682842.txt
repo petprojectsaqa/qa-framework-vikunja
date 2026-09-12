@@ -1,0 +1,6 @@
+DELETE http://localhost:3456/api/v1/tasks/31
+as: link-share:pSb4ejJd
+status: 200  (194 ms)
+body: {
+  "message": "Successfully deleted."
+}

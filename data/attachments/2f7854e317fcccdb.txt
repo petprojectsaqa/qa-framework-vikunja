@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:tokenstesttokenscopespygw418325d6e
+sent: {
+  "title": "scope reactions.read_all",
+  "permissions": {
+    "reactions": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T22:19:11Z"
+}
+status: 201  (24 ms)
+body: {
+  "id": 4,
+  "title": "scope reactions.read_all",
+  "token": "tk_c8c25547ccf035e60d56a527f64b2907ae174c9c",
+  "permissions": {
+    "reactions": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T22:19:11Z",
+  "created": "2026-09-12T22:19:11.496488685Z",
+  "owner_id": 25
+}

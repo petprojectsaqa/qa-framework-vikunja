@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerdarclientleavestheapigw1220832db",
+  "password": "VikunjaQA123!",
+  "email": "ownerdarclientleavestheapigw1220832db@qa.local"
+}
+status: 200  (356 ms)
+body: {
+  "id": 197,
+  "name": "",
+  "username": "ownerdarclientleavestheapigw1220832db",
+  "created": "2026-09-12T22:19:39Z",
+  "updated": "2026-09-12T22:19:39.589431344Z"
+}

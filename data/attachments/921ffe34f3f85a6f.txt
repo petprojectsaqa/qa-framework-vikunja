@@ -1,0 +1,8 @@
+POST http://localhost:3456/api/v1/user/password/token
+as: anonymous
+status: 400  (21 ms)
+domain code: 1004
+body: {
+  "code": 1004,
+  "message": "Please specify a username and a password."
+}

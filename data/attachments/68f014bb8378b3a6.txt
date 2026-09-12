@@ -1,0 +1,27 @@
+PUT http://localhost:3456/api/v1/tasks/59/attachments
+as: session:ownerroughsomeoneelsestaskgw08e53270f
+status: 200  (122 ms)
+body: {
+  "errors": null,
+  "success": [
+    {
+      "id": 1,
+      "task_id": 59,
+      "created_by": {
+        "id": 159,
+        "name": "",
+        "username": "ownerroughsomeoneelsestaskgw08e53270f",
+        "created": "2026-09-12T22:19:34Z",
+        "updated": "2026-09-12T22:19:34Z"
+      },
+      "file": {
+        "id": 1,
+        "name": "secret.txt",
+        "mime": "text/plain; charset=utf-8",
+        "size": 17,
+        "created": "2026-09-12T22:19:34.776334278Z"
+      },
+      "created": "2026-09-12T22:19:34.798634734Z"
+    }
+  ]
+}

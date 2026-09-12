@@ -1,0 +1,6 @@
+DELETE http://localhost:3456/api/v1/projects/189
+as: session:ownerleavesnoorphanedtasksgw22e47bc88
+status: 200  (110 ms)
+body: {
+  "message": "Successfully deleted."
+}

@@ -1,0 +1,17 @@
+GET http://localhost:3456/dav/projects/60
+as: basic:ownernchangedinthecalendargw3dc0f84a0
+status: 200  (543 ms)
+body: BEGIN:VCALENDAR
+VERSION:2.0
+X-PUBLISHED-TTL:PT4H
+X-WR-CALNAME:project main
+PRODID:-//Vikunja Todo App//EN
+BEGIN:VTODO
+UID:b13da01e-a0de-479a-bdd9-297aad38664f
+DTSTAMP:20260912T221916Z
+SUMMARY:ÐÑÐ¾Ð²ÐµÑÐ¸ÑÑ ÐºÐ²Ð°ÑÑÐ°Ð»ÑÐ½ÑÐ¹ Ð¾ÑÑÑÑ Ð¿ÐµÑÐµÐ´ Ð¾ÑÐ¿ÑÐ°Ð²ÐºÐ¾Ð¹ â ååæå ±åæ¸ãç¢ºèªãã â
+STATUS:NEEDS-ACTION
+CREATED:20260912T221916Z
+LAST-MODIFIED:20260912T221916Z
+END:VTODO
+END:VCALENDAR

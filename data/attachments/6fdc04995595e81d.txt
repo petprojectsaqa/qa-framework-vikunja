@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerregetprojectswebhooksgw5723b9f42",
+  "password": "VikunjaQA123!"
+}
+status: 200  (252 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyNTIxNjYsImlkIjoxMDEsImlzX2FkbWluIjpmYWxzZSwianRpIjoiOGRiMzk4MjAtOTg0Zi00MzNlLWI2ODctOGY2NWRjMjE3ZDFhIiwic2lkIjoiZmJlOGEyY2MtYThhZi00NDJkLWIzNzMtODExMGZhNzFjNDAwIiwidHlwZSI6MSwidXNlcm5hbWUiOiJvd25lcnJlZ2V0cHJvamVjdHN3ZWJob29rc2d3NTcyM2I5ZjQyIn0.X7jtWyepISL_pQOASOODvYO1OMjY_mQHD3QFU0wRQhE"
+}

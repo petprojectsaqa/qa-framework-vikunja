@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/projects
-as: api-token:malformed
-status: 401  (7 ms)
-domain code: 11
-body: {
-  "code": 11,
-  "message": "missing, malformed, expired or otherwise invalid token provided"
-}

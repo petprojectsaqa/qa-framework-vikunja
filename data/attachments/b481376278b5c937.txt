@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerregetprojectswebhooksgw5723b9f42",
+  "password": "VikunjaQA123!",
+  "email": "ownerregetprojectswebhooksgw5723b9f42@qa.local"
+}
+status: 200  (816 ms)
+body: {
+  "id": 101,
+  "name": "",
+  "username": "ownerregetprojectswebhooksgw5723b9f42",
+  "created": "2026-09-12T22:19:25Z",
+  "updated": "2026-09-12T22:19:25.551408332Z"
+}

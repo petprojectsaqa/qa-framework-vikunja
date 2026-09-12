@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:tokenstesttokenscopespygw418325d6e
+sent: {
+  "title": "scope teams.read_all",
+  "permissions": {
+    "teams": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T22:19:11Z"
+}
+status: 201  (32 ms)
+body: {
+  "id": 13,
+  "title": "scope teams.read_all",
+  "token": "tk_00232d5319fdbcf68a67282d53456aaec83ef482",
+  "permissions": {
+    "teams": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-12T22:19:11Z",
+  "created": "2026-09-12T22:19:11.990103126Z",
+  "owner_id": 25
+}

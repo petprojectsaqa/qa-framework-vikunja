@@ -1,0 +1,1 @@
+{'user_id': 156, 'permission': 0}
