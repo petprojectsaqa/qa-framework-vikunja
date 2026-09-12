@@ -84,22 +84,41 @@ class MailpitClient:
     def body_of(message: dict[str, Any]) -> str:
         return f"{message.get('Text') or ''}\n{message.get('HTML') or ''}"
 
+    def token_matching(
+        self, recipient: str, pattern: re.Pattern[str], *, timeout: float | None = None
+    ) -> str:
+        """Wait for the message that carries this token, not merely the first.
+
+        One address collects several messages: the welcome note, then a
+        password reset, then whatever else. Taking the first one that
+        arrives makes the answer depend on which message the trap happens
+        to return, which is a race that shows up as an occasional failure
+        under load and never on a quiet machine.
+        """
+        deadline = time.monotonic() + (timeout or self._timeout)
+        interval = 0.05
+        subjects: list[str] = []
+        while time.monotonic() < deadline:
+            subjects = []
+            for summary in self.messages_for(recipient):
+                message = self.message(summary["ID"])
+                subjects.append(str(message.get("Subject")))
+                match = pattern.search(self.body_of(message))
+                if match:
+                    return match.group(1)
+            time.sleep(interval)
+            interval = min(interval * 1.5, 0.5)
+
+        raise MailNotFoundError(
+            f"no message to {recipient} carried a token matching {pattern.pattern!r} "
+            f"within {timeout or self._timeout:.0f}s; subjects seen: {subjects or 'none'}"
+        )
+
     def confirmation_token(self, recipient: str, *, timeout: float | None = None) -> str:
-        message = self.wait_for_message(recipient, timeout=timeout)
-        match = CONFIRM_TOKEN.search(self.body_of(message))
-        if not match:
-            raise MailNotFoundError(
-                f"the message to {recipient} carried no confirmation token; "
-                f"subject was {message.get('Subject')!r}"
-            )
-        return match.group(1)
+        return self.token_matching(recipient, CONFIRM_TOKEN, timeout=timeout)
 
     def password_reset_token(self, recipient: str, *, timeout: float | None = None) -> str:
-        message = self.wait_for_message(recipient, timeout=timeout)
-        match = PASSWORD_RESET_TOKEN.search(self.body_of(message))
-        if not match:
-            raise MailNotFoundError(f"the message to {recipient} carried no reset token")
-        return match.group(1)
+        return self.token_matching(recipient, PASSWORD_RESET_TOKEN, timeout=timeout)
 
     def clear(self) -> None:
         self._session.delete(f"{self._base_url}/api/v1/messages", timeout=10)

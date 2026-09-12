@@ -9,21 +9,21 @@ A reference API and UI test framework in Python, exercised against a real produc
 
 This is not a collection of CRUD checks against a public sandbox. It is about the parts that usually get skipped: isolation that survives full parallelism, contract validation that costs nothing per test, an access matrix driven by data, verification through the database and the services around the product, a comparison of the two API versions the product ships side by side, and a second door into the same data over CalDAV.
 
-**Fifteen defects found in the product**, each with a reproduction that runs in seconds and imports nothing from this framework. See [docs/findings](docs/findings/).
+**Sixteen defects found in the product**, each with a reproduction that runs in seconds and imports nothing from this framework. See [docs/findings](docs/findings/).
 
-**AI-first engineering.** This framework was built the way I work: with AI in the loop. AI speeds up implementation and widens the search for defects, while the architecture, the test strategy and every trade-off are engineering decisions, each written down in [docs/strategy.md](docs/strategy.md) with the alternatives it was chosen over. That combination is what lets one engineer deliver this depth of coverage: most of the suite is generated from the product's own API descriptions, and it has already found fifteen real defects.
+**AI-first engineering.** This framework was built the way I work: with AI in the loop. AI speeds up implementation and widens the search for defects, while the architecture, the test strategy and every trade-off are engineering decisions, each written down in [docs/strategy.md](docs/strategy.md) with the alternatives it was chosen over. That combination is what lets one engineer deliver this depth of coverage: most of the suite is generated from the product's own API descriptions, and it has already found sixteen real defects.
 
 ## Status
 
 | | |
 |---|---|
-| Main run | 1038 passing, 16 skipped, 4 expected failures |
-| Generated from the product's own descriptions | 744 of 843 matrix-bound tests |
+| Main run | 1126 passing, 16 skipped, 5 expected failures |
+| Generated from the product's own descriptions | 790 of 929 matrix-bound tests |
 | Run time on eight workers | about 40 seconds |
 | API operations exercised | 99% of both versions |
-| The framework's own tests, no stand needed | 187 in 12 seconds |
+| The framework's own tests, no stand needed | 190 in 13 seconds |
 | Resilience layer, run on its own | 6 |
-| Defects found in the product | 15 |
+| Defects found in the product | 16 |
 
 Every row of the [coverage matrix](docs/coverage-matrix.md) has tests behind it, and the run prints the table at the end so a gap cannot open quietly. The thin ones are error codes and negative input, where the intent is a family rather than the handful written so far.
 
@@ -117,9 +117,9 @@ The suite is laid out by what a test needs to run, then by what it covers:
 
 ```
 tests/unit/            the framework testing itself; runs with the stand off
-tests/api/<area>/      framework, authorization, contracts, rules,
-                       integrity, side_effects, calendar, concurrency,
-                       regressions
+tests/api/<area>/      framework, authorization, boundaries, contracts,
+                       rules, integrity, side_effects, calendar,
+                       concurrency, regressions
 tests/ui/<area>/       framework, tasks, views, permissions, localisation
 tests/resilience/      dependency outages, on its own run
 ```
@@ -128,7 +128,7 @@ Layers inside `src` depend in one direction only, and a unit test parses the sou
 
 ## Findings
 
-Fifteen defects, each in its own folder with a write-up in both languages and a reproduction. Two of them are held back from publication until the product's maintainers have answered, so thirteen are here:
+Sixteen defects, each in its own folder with a write-up in both languages and a reproduction. Two of them are held back from publication until the product's maintainers have answered, so fourteen are here:
 
 ```bash
 python scripts/verify_findings.py

@@ -43,10 +43,18 @@ NEVER_CALL: tuple[str, ...] = (
 #: Authorization is decided before any lookup, so an identifier that
 #: cannot exist keeps the sweep from touching real data even if an
 #: endpoint turns out not to check at all.
+#: Some path parameters are not identifiers at all but words the product
+#: only accepts from a fixed list. Filling those with a number asks a
+#: different question, and the two versions then fail for different
+#: reasons: v1 looks the task up and says it is missing while v2 refuses
+#: the word itself. Each one is spelled out here, per the name each
+#: version gives it.
 SUBSTITUTIONS: dict[str, str] = {
     "username": "nobody999",
     "kind": "tasks",
+    "entitykind": "tasks",
     "entity": "task",
+    "relationKind": "subtask",
     "provider": "none",
     "image": "none",
     "hash": "nonexistenthash",

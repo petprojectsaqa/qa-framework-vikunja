@@ -59,6 +59,14 @@ class Violation:
 class ContractValidator:
     """Validates responses against whichever specification covers them."""
 
+    #: How many mismatches one response may contribute. A body that
+    #: disagrees with its schema in fifty places tells the reader the same
+    #: thing as one that disagrees in ten.
+    MISMATCHES_PER_RESPONSE = 10
+
+    #: Statuses that carry no content, whatever the description declares.
+    WITHOUT_A_BODY = frozenset({204, 304})
+
     def __init__(
         self,
         specs: list[SpecIndex],
@@ -161,6 +169,12 @@ class ContractValidator:
             )
             return
 
+        if response.status in self.WITHOUT_A_BODY:
+            # 204 and 304 carry no content by definition, whatever a
+            # description says it would have sent. Asking for a body here
+            # would report the standard as a defect.
+            return
+
         if not isinstance(response.body, (dict, list)):
             # Some endpoints legitimately answer with plain text; only flag
             # it when the contract promised a structured body.
@@ -177,27 +191,36 @@ class ContractValidator:
                 )
             return
 
-        errors = self._validate(spec, schema, response.body)
-        if errors:
+        # One violation per mismatch, not one per response. The baseline
+        # decides what is already known by matching the detail, so a
+        # response carrying a known deviation beside an unknown one would
+        # otherwise have both absorbed under the known finding, which is
+        # exactly what the baseline must never do.
+        for error in self._validate(spec, schema, response.body):
             self._report(
                 Violation(
                     spec=spec.label,
                     operation=operation.key,
                     status=response.status,
                     kind="schema mismatch",
-                    detail="\n  ".join(errors),
+                    detail=error,
                     url=response.url,
                 )
             )
 
     def _validate(self, spec: SpecIndex, schema: dict[str, Any], body: Any) -> list[str]:
+        """Every mismatch between one body and its schema, one per entry.
+
+        Capped, because a response that disagrees with its schema in fifty
+        places says the same thing as one that disagrees in ten, and the
+        report has to stay readable.
+        """
         validator = self._validator_for(spec, schema)
         messages = []
         for error in sorted(validator.iter_errors(body), key=lambda e: list(e.path)):
             where = "/".join(str(p) for p in error.path) or "<root>"
             messages.append(f"{where}: {error.message}")
-            if len(messages) >= 10:
-                messages.append("... further mismatches omitted")
+            if len(messages) >= self.MISMATCHES_PER_RESPONSE:
                 break
         return messages
 

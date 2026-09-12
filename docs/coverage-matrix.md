@@ -54,11 +54,13 @@ Off the backbone: migrations, instance administration, stock photo backgrounds, 
 | `share_write` | public link, write | a hash traded for a token |
 | `share_pwd` | link behind a password | a hash and a password traded for a token |
 | `token_narrow` | an API token with one narrow permission | a token issued for a single area |
-| `instance_admin` | instance administrator | prepared through the product's testing API |
+| `instance_admin` | instance administrator | not enumerated: see below |
 
 Permission levels in the product: read is zero, write is one, admin is two, and there is a fourth state, "not determined", which is minus one. The model guards against an empty JSON value quietly becoming read access. The boundary of that field's parsing is checked separately.
 
 Public links have two independent axes, the permission level and whether a password is set. Both are enumerated.
+
+`instance_admin` is the one actor the matrix does not enumerate, and the reason is worth stating rather than hiding. The only route to that flag from outside the database is the product's table-filling testing endpoint, which replaces the contents of a table. Used on the user table it would destroy the accounts every other test is running under, so the suite does not reach for it. Administrator-only routes are still covered by the generated families, which demand a credential of every operation.
 
 ---
 
@@ -70,13 +72,13 @@ Each row is a kind of check. A test declares the ones it provides with `@pytest.
 |---|---|---|---|---|
 | <a id="con"></a>`CON` | Responses match their contract | generated | P0 | 362 |
 | <a id="aut"></a>`AUT` | Every operation demands a credential | generated | P0 | 349 |
-| <a id="err"></a>`ERR` | Domain error codes are preserved | hand-written | P0 | 2 |
+| <a id="err"></a>`ERR` | Domain error codes are preserved | generated | P0 | 49 |
 | <a id="scp"></a>`SCP` | API token scopes hold | generated | P0 | 37 |
-| <a id="acl"></a>`ACL` | Access matrix | table-driven | P0 | 37 |
+| <a id="acl"></a>`ACL` | Access matrix | table-driven | P0 | 49 |
 | <a id="int"></a>`INT` | Data integrity, verified in the database | hand-written | P0 | 6 |
 | <a id="cve"></a>`CVE` | Regressions for published vulnerabilities | hand-written | P0 | 5 |
 | <a id="fun"></a>`FUN` | Business rules | hand-written | P1 | 8 |
-| <a id="neg"></a>`NEG` | Boundaries and invalid input | hand-written | P1 | 1 |
+| <a id="neg"></a>`NEG` | Boundaries and invalid input | hand-written | P1 | 28 |
 | <a id="asy"></a>`ASY` | Asynchronous side effects | hand-written | P1 | 6 |
 | <a id="xvr"></a>`XVR` | Consistency across API versions | hand-written | P1 | 9 |
 | <a id="ui"></a>`UI` | Behaviour only a browser can check | Playwright | P1 | 4 |
@@ -87,7 +89,7 @@ Each row is a kind of check. A test declares the ones it provides with `@pytest.
 
 Priority reads as severity in the report: P0 is critical, P1 normal, P2 minor.
 
-**Where the suite stands.** Every row has tests behind it. The thin ones are `ERR` and `NEG`, with two checks and one, where the intent is a family; section 7 says what generating `ERR` would take. The generated families carry most of the count, which is the design working as intended rather than a distortion: they cover every operation the product publishes, and they cost nothing to maintain.
+**Where the suite stands.** Every row has tests behind it, and none is a token. The generated families carry most of the count, which is the design working as intended rather than a distortion: they cover every operation the product publishes, and they cost nothing to maintain.
 
 The api job runs with `--fail-uncovered P0`, so a P0 row falling to zero turns the build red. That is not hypothetical. `SCP` sat at zero for weeks without anyone noticing, because the family was skipped at collection by a `KeyError` one line long.
 
@@ -114,7 +116,7 @@ Areas come from the tags in the v1 description. The number is the count of opera
 | admin (8) | 8 | + | + | + | + | + | | | | | | | P2 |
 | migration (19) | 19 | + | + | + | | | | | | | | | P3, smoke |
 
-A `+` in a generated column (CON, AUT, SCP) is a fact: those families walk every operation. A `+` in a hand-written column, `ERR` included, is the intent for that area, and section 4 says how far the suite has got.
+A `+` in a generated column (CON, AUT, ERR, SCP) is a fact: those families walk every operation, or every operation both versions describe. A `+` in a hand-written column is the intent for that area, and section 4 says how far the suite has got.
 
 ---
 
@@ -124,16 +126,18 @@ Built once as a table of data and executed as parameters. A row is a resource, a
 
 One project is built once per module and reached through every route the product offers: a direct grant at each level, a team, a public read link, an outsider and an anonymous caller. The rows as the suite runs them today:
 
-| Operation | owner | admin | writer | reader | teammate | share_read | outsider | anon |
-|---|---|---|---|---|---|---|---|---|
-| read the task | 200 | 200 | 200 | 200 | 200 | 200 | 403 | 401 |
-| update the task | 200 | 200 | 200 | 403 | 200 | 403 | 403 | 401 |
-| delete the task | 200 | 200 | 200 | 403 | 200 | 403 | 403 | 401 |
-| delete the project | 200 | 200 | 403 | 403 | 403 | 403 | 403 | 401 |
+| Operation | owner | admin | writer | reader | teammate | share_read | share_write | share_pwd | token_narrow | outsider | anon |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| read the task | 200 | 200 | 200 | 200 | 200 | 200 | 200 | 200 | 200 | 403 | 401 |
+| update the task | 200 | 200 | 200 | 403 | 200 | 403 | 200 | 403 | 401 | 403 | 401 |
+| delete the task | 200 | 200 | 200 | 403 | 200 | 403 | 200 | 403 | 401 | 403 | 401 |
+| delete the project | 200 | 200 | 403 | 403 | 403 | 403 | 403 | 403 | 401 | 403 | 401 |
+
+`token_narrow` is the row worth reading twice. A token carrying one action on one area is refused **401** everywhere outside it, not 403: the product declines to accept the credential for that route at all, rather than accepting it and then weighing permissions.
 
 Deleting the project is split in two. The refusals are replayed against the shared project, because a refused call changes nothing; the two rows that succeed get a world of their own, since a project made just for the row would carry none of the shared grants. A row that mutates gets a spare task, for the same reason.
 
-The actors this matrix does not yet enumerate are in the table above and remain intent: a write link, a link behind a password, a narrow API token and an instance administrator.
+Every actor in section 3 is enumerated here except the instance administrator, for the reason given there.
 
 **The difference between 403 and 404 is treated as its own class of defect.** An outsider who gets "forbidden" rather than "not found" has been told that someone else's object exists. The product answers 403, and the suite states the position as an expected failure rather than asserting it: see the note on the held finding in [docs/findings](findings/README.md).
 
@@ -141,7 +145,7 @@ The actors this matrix does not yet enumerate are in the table above and remain 
 
 ## 7. The generated families
 
-Three families that nobody writes by hand, and one that is meant to join them.
+Four families that nobody writes by hand.
 
 **CON, contract conformance.** The descriptions are fetched from the running instance: v1 serves Swagger 2.0, v2 serves OpenAPI 3.1 generated on the fly by Huma. Every response to every call made by any test is validated against the schema for its operation, in the transport layer rather than in a test of its own. On top of that, one sweep walks every read operation.
 
@@ -149,7 +153,11 @@ Three families that nobody writes by hand, and one that is meant to join them.
 
 **SCP, the token scope matrix.** An API token carries permissions as a map of area to actions, and the product publishes the full set of valid keys on an endpoint of its own. So the matrix is built from the product's answer: for each area a token is issued with exactly one action, and what that action allows must pass while everything next to it is refused.
 
-**ERR, the domain error code invariant, is the one still written by hand.** The product carries a numeric domain code that clients translate against. v1 returns it as a `code` field. v2 renders errors as RFC 9457 and carries the same code across, because otherwise v2 clients read zero. The invariant: where v1 answers a bad request with a non-zero domain code, v2 must answer with the same code, and any error path that bypasses the translation surfaces as a zero. Two checks state it today, one of them the finding that refusals carry no usable code at all ([VKJ-005](findings/VKJ-005-permission-errors-carry-no-code/)). Generating it across every operation is the intent, and the reason it is ranked P0 with only two tests against it.
+**ERR, the domain error code invariant.** The product carries a numeric domain code that clients translate against. v1 returns it as a `code` field. v2 renders errors as RFC 9457 and carries the same code across, because otherwise v2 clients read zero. The invariant: where v1 names a failure with a domain code, v2 has to name it with the same one, and any error path that bypasses the translation surfaces as a missing or different code.
+
+The pairs are computed rather than listed. The two versions describe the same operation under different parameter names, `/projects/{projectID}/users/{userID}` against `/projects/{project}/users/{user}`, so matching on the literal template finds barely half of what they share; matching on the shape of the path finds the rest. Every pair that can be asked about an identifier which cannot exist is asked, on both versions, and held to the same answer. Two checks beside the sweep state the rest: that an absent object does carry a code, and that a refusal does not ([VKJ-005](findings/VKJ-005-permission-errors-carry-no-code/)).
+
+The sweep found [VKJ-016](findings/VKJ-016-caldav-token-revocation-false-success/) on its first run, which is the argument for generating this sort of thing rather than writing it.
 
 ---
 
@@ -163,9 +171,9 @@ Three families that nobody writes by hand, and one that is meant to join them.
 
 **Public links.** A forty-character hash, generated by the server. The chain of disclosing a hash and then reaching another project's attachments was a real vulnerability. Checked: the scope of the link's token, and the behaviour of a link behind a password.
 
-**Parsing the permission level.** Empty value, a string instead of a number, a value out of range, a negative value.
+**Parsing the permission level.** Null, an empty string, the number as a string, the "not determined" sentinel, out of range, fractional, boolean, a list and an object. None of them may become a grant, and a refusal has to leave an existing grant alone. With no level named at all the grant lands on read, which is the safe direction to default in.
 
-**The API token format.** The token is a `tk_` prefix and forty hexadecimal characters, looked up by its last eight with a hash comparison after. The code guards against a value too short to slice. Checked: short, empty, wrong prefix, and right prefix with rubbish inside.
+**The API token format.** The token is a `tk_` prefix and forty hexadecimal characters, looked up by its last eight with a hash comparison after. The code guards against a value too short to slice. Checked: empty, prefix only, too short to slice, right shape with the wrong value, right shape but not hexadecimal, wrong prefix, no prefix, four thousand characters, and punctuation. Every one is refused the same way, with the same status and the same domain code, because a refusal that varies by shape tells whoever is guessing which half of the guess was right.
 
 **The generated partial-update endpoints.** v2 derives them automatically from read and write pairs. Along the backbone, partial update is compared against full update.
 

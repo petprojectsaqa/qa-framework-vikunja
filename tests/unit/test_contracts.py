@@ -11,7 +11,7 @@ import pytest
 
 from vikunja_qa.contracts.baseline import Baseline, Deviation
 from vikunja_qa.contracts.spec import SpecIndex, resolvable
-from vikunja_qa.contracts.validator import Violation
+from vikunja_qa.contracts.validator import ContractValidator, Mode, Violation
 from vikunja_qa.transport.response import ApiResponse
 
 SWAGGER_2 = {
@@ -199,6 +199,53 @@ class TestBaseline:
         for deviation in Baseline()._deviations:
             assert deviation.finding.startswith("VKJ-"), deviation
             assert deviation.reason.strip(), deviation
+
+
+class TestOneViolationPerMismatch:
+    """A response is reported mismatch by mismatch.
+
+    Reported whole, a body carrying a known deviation beside an unknown one
+    has both absorbed under the known finding, because the baseline matches
+    on the text of the report. That is the one thing the baseline must
+    never do, and it did: nullability, already written up as VKJ-002, was
+    hiding the string-typed subscription of VKJ-001 in the same task.
+    """
+
+    SCHEMA = {
+        "type": "object",
+        "properties": {
+            "labels": {"type": "array"},
+            "subscription": {"type": "object", "properties": {"entity": {"type": "integer"}}},
+        },
+    }
+
+    KNOWN = Deviation(
+        finding="VKJ-002",
+        spec="v1",
+        kind="schema mismatch",
+        detail_pattern=r"None is not of type",
+        reason="documented",
+    )
+
+    def test_a_known_deviation_does_not_absorb_an_unknown_one_beside_it(
+        self, spec: SpecIndex
+    ) -> None:
+        validator = ContractValidator([spec], mode=Mode.COLLECT, baseline=Baseline((self.KNOWN,)))
+        body = {"labels": None, "subscription": {"entity": "task"}}
+
+        errors = validator._validate(spec, self.SCHEMA, body)
+
+        assert len(errors) == 2, f"the two mismatches were merged into {errors}"
+        new, accepted = Baseline((self.KNOWN,)).split(
+            [
+                Violation("v1", "GET /tasks/{id}", 200, "schema mismatch", error, "u")
+                for error in errors
+            ]
+        )
+
+        assert len(accepted) == 1, "the nullability mismatch should be the known one"
+        assert len(new) == 1, "the unknown mismatch has to survive on its own"
+        assert "subscription/entity" in new[0].detail
 
 
 def _response(body: object) -> ApiResponse:

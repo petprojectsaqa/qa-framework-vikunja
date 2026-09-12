@@ -22,6 +22,7 @@ import pytest
 
 from vikunja_qa.actors.factory import ActorFactory
 from vikunja_qa.config import get_settings
+from vikunja_qa.contracts.errors import ErrorCase, absent_object_cases
 from vikunja_qa.contracts.scopes import ScopeCase, cases_for
 from vikunja_qa.contracts.spec import SpecIndex
 from vikunja_qa.contracts.sweep import Call, calls_for
@@ -91,6 +92,16 @@ def described_specs() -> tuple[SpecIndex, ...]:
         return descriptions()
     except Exception as exc:  # noqa: BLE001 - any failure means the stand is unreadable
         _skip_module("the API descriptions", exc)
+
+
+def error_cases() -> tuple[ErrorCase, ...]:
+    """One case per operation both versions describe and can be asked about
+    an identifier that does not exist."""
+    try:
+        specs = descriptions()
+    except Exception as exc:  # noqa: BLE001 - any failure means the stand is unreadable
+        _skip_module("the API descriptions", exc)
+    return tuple(absent_object_cases(list(specs)))
 
 
 def scope_cases() -> tuple[ScopeCase, ...]:

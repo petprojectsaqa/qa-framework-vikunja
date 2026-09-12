@@ -26,6 +26,7 @@ import pytest
 
 from vikunja_qa.actors.actor import Actor
 from vikunja_qa.actors.factory import ActorFactory
+from vikunja_qa.auth.strategies import ApiToken
 from vikunja_qa.domain.permissions import Permission
 from vikunja_qa.scenes import Scene, SceneBuilder
 
@@ -46,6 +47,9 @@ READ_TASK = [
     row("reader", 200),
     row("teammate", 200),
     row("share_read", 200),
+    row("share_write", 200),
+    row("share_pwd", 200),
+    row("token_narrow", 200),
     row("outsider", 403, smoke=True),
     row("anon", 401),
 ]
@@ -57,6 +61,11 @@ WRITE_TASK = [
     row("reader", 403),
     row("teammate", 200),
     row("share_read", 403),
+    row("share_write", 200),
+    row("share_pwd", 403),
+    # A token outside its scope is refused as a credential, not as a
+    # permission: the product declines to accept it for this route at all.
+    row("token_narrow", 401),
     row("outsider", 403),
     row("anon", 401),
 ]
@@ -70,9 +79,19 @@ DELETE_PROJECT_REFUSED = [
     row("reader", 403),
     row("teammate", 403),
     row("share_read", 403),
+    row("share_write", 403),
+    row("share_pwd", 403),
+    row("token_narrow", 401),
     row("outsider", 403),
     row("anon", 401),
 ]
+
+#: The scope the narrow token carries: one action on one area, so every
+#: other route is outside it.
+NARROW_SCOPE = {"tasks": ["read_one"]}
+
+#: Any passphrase; the point is that the link has one and the actor knows it.
+SHARE_PASSWORD = "a-passphrase-the-link-carries"
 
 
 @pytest.fixture(scope="module")
@@ -85,6 +104,8 @@ def world(module_scene: SceneBuilder) -> Scene:
         .member("reader", Permission.READ)
         .team("devs", members=("teammate",), permission=Permission.WRITE)
         .share("share_read", Permission.READ)
+        .share("share_write", Permission.WRITE)
+        .share("share_pwd", Permission.READ, password=SHARE_PASSWORD)
         .outsider()
         .task("readable")
         .done()
@@ -93,9 +114,20 @@ def world(module_scene: SceneBuilder) -> Scene:
 
 @pytest.fixture
 def caller(request: pytest.FixtureRequest, world: Scene, actors: ActorFactory) -> Actor:
-    """The actor a row names."""
+    """The actor a row names.
+
+    Two are made here rather than in the scene: one has no credential at
+    all, and one is the owner arriving through a token narrow enough that
+    most of these routes are outside it.
+    """
     role: str = request.param
-    return actors.anonymous() if role == "anon" else world.actor(role)
+    if role == "anon":
+        return actors.anonymous()
+    if role == "token_narrow":
+        minted = world.owner.api.tokens.create("narrow", NARROW_SCOPE)
+        assert minted.ok, minted.describe()
+        return world.owner.using(ApiToken(str(minted["token"]), "narrow"), role=role)
+    return world.actor(role)
 
 
 @pytest.fixture
