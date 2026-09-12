@@ -1,15 +1,123 @@
-# qa-framework-vikunja
+<h1 align="center">qa-framework-vikunja</h1>
 
-**English** · [Русский](README.ru.md)
+<p align="center">
+  <b>A reference API, browser and CalDAV test framework in Python, run against a real product.</b><br>
+  Not a sandbox exercise: an eight-container stand, a thousand checks in under a minute, and sixteen real defects found.
+</p>
 
-[![suite](https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml/badge.svg)](https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml)
-[![report](https://img.shields.io/badge/allure-report-green)](https://petprojectsaqa.github.io/qa-framework-vikunja/)
+<p align="center">
+  <a href="https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml"><img alt="suite" src="https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml/badge.svg"></a>
+  <a href="https://petprojectsaqa.github.io/qa-framework-vikunja/"><img alt="Allure report" src="https://img.shields.io/badge/Allure-live%20report-2dbd7d?style=flat-square"></a>
+  <a href="docs/findings/"><img alt="defects found" src="https://img.shields.io/badge/defects%20found-16-d9534f?style=flat-square"></a>
+  <a href="docs/coverage-matrix.md"><img alt="coverage matrix" src="https://img.shields.io/badge/coverage%20matrix-16%2F16%20rows-4c7fd4?style=flat-square"></a>
+  <img alt="python" src="https://img.shields.io/badge/Python-3.13%2B-3776AB?style=flat-square&logo=python&logoColor=white">
+</p>
 
-A reference API and UI test framework in Python, exercised against a real product: [Vikunja](https://github.com/go-vikunja/vikunja), a self-hosted task manager, pinned at v2.6.0 and run on an eight-container local stand.
+<p align="center">
+  <b>English</b> · <a href="README.ru.md">Русский</a>
+</p>
 
-This is not a collection of CRUD checks against a public sandbox. It is about the parts that usually get skipped: isolation that survives full parallelism, contract validation that costs nothing per test, an access matrix driven by data, verification through the database and the services around the product, a comparison of the two API versions the product ships side by side, and a second door into the same data over CalDAV.
+---
 
-**Sixteen defects found in the product**, each with a reproduction that runs in seconds and imports nothing from this framework. See [docs/findings](docs/findings/).
+The product under test is [Vikunja](https://github.com/go-vikunja/vikunja), a self-hosted task manager, pinned at v2.6.0. It was chosen because it ships two API versions side by side and a CalDAV door onto the same data, which makes questions possible that a public sandbox cannot answer.
+
+This is not a collection of CRUD checks. It is about the parts that usually get skipped: isolation that survives full parallelism, contract validation that costs nothing per test, an access matrix driven by data, verification through the database and the services around the product, consistency between the two API versions, and what happens when a dependency goes away.
+
+## Start here
+
+Five minutes, in this order:
+
+| | |
+|---|---|
+| **[The live report](https://petprojectsaqa.github.io/qa-framework-vikunja/)** | every run published, with history, so trends show rather than one green tick |
+| **[What was found](docs/findings/)** | sixteen defects, each reproducible in two minutes by a script that imports nothing from this framework |
+| **[Why it is built this way](docs/strategy.md)** | every decision with the alternative it was chosen over |
+| **[What is covered](docs/coverage-matrix.md)** | the matrix each test is bound to, and the count behind every row |
+
+The one file that shows the design: [`src/vikunja_qa/testing/plugin.py`](src/vikunja_qa/testing/plugin.py), the plugin that makes the suite's conventions hold instead of hoping they do.
+
+## The stack
+
+**Testing**
+<p>
+  <img alt="pytest" src="https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white">
+  <img alt="pytest-xdist" src="https://img.shields.io/badge/pytest--xdist-0A9EDC?style=flat-square">
+  <img alt="Playwright" src="https://img.shields.io/badge/Playwright-2EAD33?style=flat-square">
+  <img alt="requests" src="https://img.shields.io/badge/requests-2C5BB4?style=flat-square">
+  <img alt="Allure" src="https://img.shields.io/badge/Allure-2dbd7d?style=flat-square">
+  <img alt="jsonschema" src="https://img.shields.io/badge/jsonschema-6b5b95?style=flat-square">
+  <img alt="OpenAPI" src="https://img.shields.io/badge/OpenAPI%203.1-6BA539?style=flat-square&logo=openapiinitiative&logoColor=white">
+  <img alt="Swagger" src="https://img.shields.io/badge/Swagger%202.0-85EA2D?style=flat-square&logo=swagger&logoColor=black">
+</p>
+
+**The stand**
+<p>
+  <img alt="Docker Compose" src="https://img.shields.io/badge/Docker%20Compose-2496ED?style=flat-square&logo=docker&logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white">
+  <img alt="Redis" src="https://img.shields.io/badge/Redis-FF4438?style=flat-square&logo=redis&logoColor=white">
+  <img alt="MinIO" src="https://img.shields.io/badge/MinIO-C72E49?style=flat-square&logo=minio&logoColor=white">
+  <img alt="Mailpit" src="https://img.shields.io/badge/Mailpit-1f6feb?style=flat-square">
+  <img alt="Prometheus" src="https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white">
+  <img alt="Grafana" src="https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white">
+  <img alt="CalDAV" src="https://img.shields.io/badge/CalDAV-RFC%205545-555555?style=flat-square">
+</p>
+
+**Quality gates**
+<p>
+  <img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white">
+  <img alt="uv" src="https://img.shields.io/badge/uv-DE5FE9?style=flat-square&logo=uv&logoColor=white">
+  <img alt="ruff" src="https://img.shields.io/badge/ruff-D7FF64?style=flat-square&logo=ruff&logoColor=black">
+  <img alt="mypy" src="https://img.shields.io/badge/mypy%20strict-2a6db2?style=flat-square">
+  <img alt="psycopg" src="https://img.shields.io/badge/psycopg-336791?style=flat-square">
+</p>
+
+## How it fits together
+
+```mermaid
+flowchart LR
+    subgraph suite["the suite"]
+        direction TB
+        U["unit<br/>the framework's own tests<br/>no stand, network refused"]
+        A["api<br/>HTTP, both versions<br/>and the CalDAV door"]
+        B["ui<br/>Playwright, signed in<br/>over the API"]
+        R["resilience<br/>stops containers<br/>its own run"]
+    end
+
+    V["Vikunja v2.6.0<br/>API v1 · API v2 · CalDAV"]
+
+    subgraph around["what the product touches"]
+        direction TB
+        PG[("PostgreSQL<br/>row-level checks")]
+        RD[("Redis")]
+        S3["MinIO<br/>attachments"]
+        MAIL["Mailpit<br/>confirmation and reset mail"]
+        HOOK["webhook sink<br/>one path per test"]
+        PROM["Prometheus<br/>counters"]
+    end
+
+    A --> V
+    B --> V
+    R -. "takes one away" .-> around
+    V --> PG
+    V --> RD
+    V --> S3
+    V --> MAIL
+    V --> HOOK
+    V --> PROM
+    A -. "verifies directly" .-> PG
+    A -. "reads" .-> MAIL
+    A -. "reads" .-> HOOK
+    A -. "reads" .-> S3
+    A -. "reads" .-> PROM
+
+    style V fill:#4c7fd4,stroke:#2f5596,color:#fff
+    style suite fill:#f6f8fa,stroke:#d0d7de
+    style around fill:#f6f8fa,stroke:#d0d7de
+```
+
+Every response the suite receives, from any test, is validated against the schema for its operation on the way past. That is why contract coverage reaches 99% of both API versions without a single contract test being written.
+
+## How it was built
 
 **AI-first engineering.** This framework was built the way I work: with AI in the loop. AI speeds up implementation and widens the search for defects, while the architecture, the test strategy and every trade-off are engineering decisions, each written down in [docs/strategy.md](docs/strategy.md) with the alternatives it was chosen over. That combination is what lets one engineer deliver this depth of coverage: most of the suite is generated from the product's own API descriptions, and it has already found sixteen real defects.
 

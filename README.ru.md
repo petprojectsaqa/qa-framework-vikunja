@@ -1,15 +1,123 @@
-# qa-framework-vikunja
+<h1 align="center">qa-framework-vikunja</h1>
 
-[English](README.md) · **Русский**
+<p align="center">
+  <b>Эталонный фреймворк тестирования API, браузера и CalDAV на Python, работающий против настоящего продукта.</b><br>
+  Не упражнение в песочнице: стенд из восьми контейнеров, тысяча проверок меньше чем за минуту и шестнадцать настоящих дефектов.
+</p>
 
-[![suite](https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml/badge.svg)](https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml)
-[![report](https://img.shields.io/badge/allure-report-green)](https://petprojectsaqa.github.io/qa-framework-vikunja/)
+<p align="center">
+  <a href="https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml"><img alt="suite" src="https://github.com/petprojectsaqa/qa-framework-vikunja/actions/workflows/suite.yml/badge.svg"></a>
+  <a href="https://petprojectsaqa.github.io/qa-framework-vikunja/"><img alt="Allure report" src="https://img.shields.io/badge/Allure-%D0%B6%D0%B8%D0%B2%D0%BE%D0%B9%20%D0%BE%D1%82%D1%87%D1%91%D1%82-2dbd7d?style=flat-square"></a>
+  <a href="docs/findings/"><img alt="defects found" src="https://img.shields.io/badge/%D0%BD%D0%B0%D0%B9%D0%B4%D0%B5%D0%BD%D0%BE%20%D0%B4%D0%B5%D1%84%D0%B5%D0%BA%D1%82%D0%BE%D0%B2-16-d9534f?style=flat-square"></a>
+  <a href="docs/coverage-matrix.ru.md"><img alt="coverage matrix" src="https://img.shields.io/badge/%D0%BC%D0%B0%D1%82%D1%80%D0%B8%D1%86%D0%B0%20%D0%BF%D0%BE%D0%BA%D1%80%D1%8B%D1%82%D0%B8%D1%8F-16%2F16%20%D1%81%D1%82%D1%80%D0%BE%D0%BA-4c7fd4?style=flat-square"></a>
+  <img alt="python" src="https://img.shields.io/badge/Python-3.13%2B-3776AB?style=flat-square&logo=python&logoColor=white">
+</p>
 
-Эталонный фреймворк для тестирования API и интерфейса на Python, проверенный на настоящем продукте: [Vikunja](https://github.com/go-vikunja/vikunja), самостоятельно размещаемый менеджер задач, зафиксированный на версии 2.6.0 и работающий на локальном стенде из восьми контейнеров.
+<p align="center">
+  <a href="README.md">English</a> · <b>Русский</b>
+</p>
 
-Это не набор CRUD-проверок против публичной песочницы. Здесь то, что обычно пропускают: изоляция, которая выдерживает полную параллельность, контрактная проверка, ничего не стоящая каждому тесту, матрица доступа на данных, проверка через базу и через сервисы вокруг продукта, сравнение двух версий API, которые продукт держит рядом, и вторая дверь к тем же данным по CalDAV.
+---
 
-**В продукте найдено шестнадцать дефектов**, у каждого есть воспроизведение, которое отрабатывает за секунды и ничего не импортирует из фреймворка. Подробности в [docs/findings](docs/findings/).
+Объект тестирования — [Vikunja](https://github.com/go-vikunja/vikunja), самостоятельно размещаемый менеджер задач, зафиксированный на версии 2.6.0. Он выбран потому, что держит рядом две версии API и дверь CalDAV к тем же данным, а это позволяет задавать вопросы, на которые публичная песочница ответить не может.
+
+Это не набор CRUD-проверок. Здесь то, что обычно пропускают: изоляция, выдерживающая полную параллельность, контрактная проверка, ничего не стоящая каждому тесту, матрица доступа на данных, проверка через базу и через сервисы вокруг продукта, согласованность двух версий API и поведение при отказе зависимости.
+
+## С чего начать
+
+Пять минут, в таком порядке:
+
+| | |
+|---|---|
+| **[Живой отчёт](https://petprojectsaqa.github.io/qa-framework-vikunja/)** | каждый прогон публикуется, с историей, поэтому видны тенденции, а не одна зелёная галочка |
+| **[Что найдено](docs/findings/)** | шестнадцать дефектов, каждый воспроизводится за две минуты скриптом, который ничего не импортирует из фреймворка |
+| **[Почему устроено так](docs/strategy.ru.md)** | каждое решение вместе с альтернативой, от которой отказались в его пользу |
+| **[Что покрыто](docs/coverage-matrix.ru.md)** | матрица, к которой привязан каждый тест, и число за каждой строкой |
+
+Один файл, по которому видно устройство: [`src/vikunja_qa/testing/plugin.py`](src/vikunja_qa/testing/plugin.py), плагин, благодаря которому соглашения набора выполняются, а не остаются пожеланием.
+
+## Стек
+
+**Тестирование**
+<p>
+  <img alt="pytest" src="https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white">
+  <img alt="pytest-xdist" src="https://img.shields.io/badge/pytest--xdist-0A9EDC?style=flat-square">
+  <img alt="Playwright" src="https://img.shields.io/badge/Playwright-2EAD33?style=flat-square">
+  <img alt="requests" src="https://img.shields.io/badge/requests-2C5BB4?style=flat-square">
+  <img alt="Allure" src="https://img.shields.io/badge/Allure-2dbd7d?style=flat-square">
+  <img alt="jsonschema" src="https://img.shields.io/badge/jsonschema-6b5b95?style=flat-square">
+  <img alt="OpenAPI" src="https://img.shields.io/badge/OpenAPI%203.1-6BA539?style=flat-square&logo=openapiinitiative&logoColor=white">
+  <img alt="Swagger" src="https://img.shields.io/badge/Swagger%202.0-85EA2D?style=flat-square&logo=swagger&logoColor=black">
+</p>
+
+**Стенд**
+<p>
+  <img alt="Docker Compose" src="https://img.shields.io/badge/Docker%20Compose-2496ED?style=flat-square&logo=docker&logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white">
+  <img alt="Redis" src="https://img.shields.io/badge/Redis-FF4438?style=flat-square&logo=redis&logoColor=white">
+  <img alt="MinIO" src="https://img.shields.io/badge/MinIO-C72E49?style=flat-square&logo=minio&logoColor=white">
+  <img alt="Mailpit" src="https://img.shields.io/badge/Mailpit-1f6feb?style=flat-square">
+  <img alt="Prometheus" src="https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white">
+  <img alt="Grafana" src="https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white">
+  <img alt="CalDAV" src="https://img.shields.io/badge/CalDAV-RFC%205545-555555?style=flat-square">
+</p>
+
+**Ворота качества**
+<p>
+  <img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white">
+  <img alt="uv" src="https://img.shields.io/badge/uv-DE5FE9?style=flat-square&logo=uv&logoColor=white">
+  <img alt="ruff" src="https://img.shields.io/badge/ruff-D7FF64?style=flat-square&logo=ruff&logoColor=black">
+  <img alt="mypy" src="https://img.shields.io/badge/mypy%20strict-2a6db2?style=flat-square">
+  <img alt="psycopg" src="https://img.shields.io/badge/psycopg-336791?style=flat-square">
+</p>
+
+## Как это устроено
+
+```mermaid
+flowchart LR
+    subgraph suite["набор"]
+        direction TB
+        U["unit<br/>собственные тесты фреймворка<br/>без стенда, сеть запрещена"]
+        A["api<br/>HTTP, обе версии<br/>и дверь CalDAV"]
+        B["ui<br/>Playwright, вход<br/>подставляется через API"]
+        R["resilience<br/>гасит контейнеры<br/>отдельный прогон"]
+    end
+
+    V["Vikunja v2.6.0<br/>API v1 · API v2 · CalDAV"]
+
+    subgraph around["с чем работает продукт"]
+        direction TB
+        PG[("PostgreSQL<br/>проверки по строкам")]
+        RD[("Redis")]
+        S3["MinIO<br/>вложения"]
+        MAIL["Mailpit<br/>письма подтверждения и сброса"]
+        HOOK["приёмник вебхуков<br/>свой путь у каждого теста"]
+        PROM["Prometheus<br/>счётчики"]
+    end
+
+    A --> V
+    B --> V
+    R -. "убирает одно из них" .-> around
+    V --> PG
+    V --> RD
+    V --> S3
+    V --> MAIL
+    V --> HOOK
+    V --> PROM
+    A -. "проверяет напрямую" .-> PG
+    A -. "читает" .-> MAIL
+    A -. "читает" .-> HOOK
+    A -. "читает" .-> S3
+    A -. "читает" .-> PROM
+
+    style V fill:#4c7fd4,stroke:#2f5596,color:#fff
+    style suite fill:#f6f8fa,stroke:#d0d7de
+    style around fill:#f6f8fa,stroke:#d0d7de
+```
+
+Каждый ответ, который набор получает в любом тесте, по дороге проверяется против схемы своей операции. Именно поэтому контрактное покрытие доходит до 99% обеих версий API, и при этом не написано ни одного контрактного теста.
+
+## Как это сделано
 
 **AI-first инженерия.** Фреймворк построен так, как я работаю: с ИИ в контуре. ИИ ускоряет реализацию и расширяет поиск дефектов, а архитектура, стратегия тестирования и каждый компромисс остаются инженерными решениями, и каждое записано в [docs/strategy.ru.md](docs/strategy.ru.md) вместе с альтернативами, от которых я отказался в его пользу. Именно это сочетание позволяет одному инженеру дать такую глубину покрытия: большая часть набора порождается из описаний API самого продукта, и он уже нашёл шестнадцать настоящих дефектов.
 
