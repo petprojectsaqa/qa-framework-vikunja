@@ -1,0 +1,9 @@
+POST http://localhost:3456/api/v1/user/confirm
+as: anonymous
+sent: {
+  "token": "bRXP4oAATYzDkoLx1nozYlCmKRAwJa0CaqO2iWjcFxtqsqjezTJCCUUiqy5WrpS7"
+}
+status: 200  (182 ms)
+body: {
+  "message": "The email was confirmed successfully."
+}

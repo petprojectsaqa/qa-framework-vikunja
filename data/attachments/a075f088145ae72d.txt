@@ -1,9 +1,0 @@
-POST http://localhost:3456/api/v1/user/password/token
-as: session:ownerswordresetsendsatokengw1370d40d0
-sent: {
-  "email": "ownerswordresetsendsatokengw1370d40d0@qa.local"
-}
-status: 200  (6 ms)
-body: {
-  "message": "Token was sent."
-}
