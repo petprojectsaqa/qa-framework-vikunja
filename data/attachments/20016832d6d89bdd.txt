@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/user/settings/webhooks/999999999
+as: anonymous
+status: 401  (28 ms)
+domain code: 11
+body: {
+  "code": 11,
+  "message": "missing, malformed, expired or otherwise invalid token provided"
+}
