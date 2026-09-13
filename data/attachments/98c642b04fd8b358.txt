@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneredeleteprojectssharesgw5618337c9",
+  "password": "VikunjaQA123!",
+  "email": "owneredeleteprojectssharesgw5618337c9@qa.local"
+}
+status: 200  (297 ms)
+body: {
+  "id": 88,
+  "name": "",
+  "username": "owneredeleteprojectssharesgw5618337c9",
+  "created": "2026-09-13T07:46:21Z",
+  "updated": "2026-09-13T07:46:21.568531538Z"
+}

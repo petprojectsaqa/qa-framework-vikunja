@@ -1,0 +1,42 @@
+GET http://localhost:3456/api/v2/tasks/56
+as: session:readertestcrossversionpygw36d8ce4ca
+status: 200  (23 ms)
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/TaskReadOneBody.json",
+  "id": 56,
+  "title": "task task",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 163,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": null,
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": {},
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-13T07:46:27Z",
+  "updated": "2026-09-13T07:46:27Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 124,
+    "name": "",
+    "username": "ownertestcrossversionpygw3fab2b3f7",
+    "created": "2026-09-13T07:46:24Z",
+    "updated": "2026-09-13T07:46:25Z"
+  },
+  "max_permission": 0
+}

@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "owneredonebucketfinishesitgw7f18d00ae",
+  "password": "VikunjaQA123!"
+}
+status: 200  (160 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyODYxOTAsImlkIjoxODcsImlzX2FkbWluIjpmYWxzZSwianRpIjoiNjYzYWJjZTEtYzI3ZS00YTIyLWFlYjgtM2QyNzM3OTc0ZDdmIiwic2lkIjoiNDgwMmI0ZjktY2RiZC00ZWVlLWFkNjctZmRlMGY4YTQzY2M2IiwidHlwZSI6MSwidXNlcm5hbWUiOiJvd25lcmVkb25lYnVja2V0ZmluaXNoZXNpdGd3N2YxOGQwMGFlIn0.ZGtrhRUbD2I_SgxNjwFpby0ptluJGdmCuEdFwIl22yE"
+}

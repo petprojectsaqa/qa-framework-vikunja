@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/projects/999999999/views/999999999/buckets
-as: session:ownertprojectsviewsbucketsgw1a8ed02f8
-status: 404  (13 ms)
-domain code: 3014
-body: {
-  "code": 3014,
-  "message": "This project view does not exist."
-}

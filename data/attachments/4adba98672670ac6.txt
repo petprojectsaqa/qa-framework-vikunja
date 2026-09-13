@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/20/teams
+as: session:ownertestaccessmatrixpygw1191a3244
+sent: {
+  "team_id": 1,
+  "permission": 1
+}
+status: 201  (83 ms)
+body: {
+  "id": 1,
+  "team_id": 1,
+  "permission": 1,
+  "created": "2026-09-13T07:46:15.867671964Z",
+  "updated": "2026-09-13T07:46:15.86767599Z"
+}

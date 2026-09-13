@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:tokenstesttokenscopespygw6a08c6d75
+sent: {
+  "title": "scope filters.read_one",
+  "permissions": {
+    "filters": [
+      "read_one"
+    ]
+  },
+  "expires_at": "2026-10-13T07:46:16Z"
+}
+status: 201  (7 ms)
+body: {
+  "id": 27,
+  "title": "scope filters.read_one",
+  "token": "tk_94c4ba05aa27afa87603e2d1ab953bb3e586ab25",
+  "permissions": {
+    "filters": [
+      "read_one"
+    ]
+  },
+  "expires_at": "2026-10-13T07:46:16Z",
+  "created": "2026-09-13T07:46:16.375282508Z",
+  "owner_id": 39
+}

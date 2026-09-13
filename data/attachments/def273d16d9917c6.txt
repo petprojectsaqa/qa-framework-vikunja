@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerhtshapenothexadecimalgw5ca540cc8",
+  "password": "VikunjaQA123!"
+}
+status: 200  (249 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkyODYxNzgsImlkIjo1OCwiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiJiODFlMDdiZS1jZjM1LTQ2MmUtOWIzZS1kNTExYmNmNmRmYmQiLCJzaWQiOiI5OGM1YzZlNi1kN2Q1LTQyNzYtODI5Mi0yYTJkODczMDc4ZDIiLCJ0eXBlIjoxLCJ1c2VybmFtZSI6Im93bmVyaHRzaGFwZW5vdGhleGFkZWNpbWFsZ3c1Y2E1NDBjYzgifQ.WlPix7NWxMyG-p4ep1sPK9ZctkNTfMOj_GBWU0Pur5A"
+}

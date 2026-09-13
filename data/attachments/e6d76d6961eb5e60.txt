@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/projects/203
+as: session:outsiderlevelisrefusedbooleangw05536d6e4
+status: 403  (7 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "You don't have the permission to see this"
+}

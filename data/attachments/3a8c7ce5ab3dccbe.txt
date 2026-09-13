@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/teams/999999999/members/nobody999
+as: session:owneruredeleteteamsmembersgw2d2f2dcbe
+status: 404  (6 ms)
+domain code: 1005
+body: {
+  "code": 1005,
+  "message": "The user does not exist."
+}

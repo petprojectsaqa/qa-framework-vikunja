@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/projects/19
-as: session:writertestaccessmatrixpygw19d5636d8
-status: 403  (30 ms)
-domain code: 0
-body: {
-  "code": 0,
-  "message": "Forbidden"
-}
