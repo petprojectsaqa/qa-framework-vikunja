@@ -18,7 +18,7 @@ Every finding reproduces in two minutes and asks for no trust in the author: eac
 | [VKJ-008](VKJ-008-v2-auth-errors-wrong-format/) | v2 authorization errors arrive in a shape that version does not describe | high | operation sweep |
 | [VKJ-009](VKJ-009-binary-endpoints-described-as-json/) | two v1 operations serving binary content declare `application/json` | low | comparing the two descriptions |
 | [VKJ-010](VKJ-010-failed-upload-returns-200/) | a failed upload answers 200, with the failure hidden in the body | high | dependency outage |
-| [VKJ-011](VKJ-011-redis-outage-hangs-every-request/) | with Redis gone, requests hang instead of failing | high | dependency outage |
+| [VKJ-011](VKJ-011-redis-outage-hangs-every-request/) | with Redis gone, requests on the common path wait with no bound the product sets | high | dependency outage |
 | [VKJ-012](VKJ-012-calendar-home-get-500/) | GET on the CalDAV calendar home answers 500 with an empty body | low | CalDAV slice |
 | [VKJ-013](VKJ-013-mail-daemon-stale-connection/) | after the mail server restarts, mail is lost until traffic pauses for 30 seconds | high | dependency outage |
 | VKJ-014 | held until the product's maintainers respond | low | CalDAV slice |

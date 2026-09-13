@@ -88,41 +88,63 @@ def register() -> str:
     return str(session["token"])
 
 
+#: How much slower the first request has to be before this is a finding
+#: rather than noise. Normal is hundredths of a second, so twenty times is
+#: a low bar deliberately: what is being shown is that the product puts no
+#: bound of its own on the wait, not that the wait has a particular length.
+#: How long it actually lasts is the host's business, and it varies — see
+#: "What this depends on" in the report.
+DEGRADATION = 20
+
+
+def probe(token: str, label: str, budget: float) -> tuple[int | None, float]:
+    started = time.monotonic()
+    try:
+        status, _ = call("GET", f"{API}/api/v1/user", token=token, timeout=budget)
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        waited = time.monotonic() - started
+        print(f"   {label:34} no answer in {waited:.1f}s ({type(exc).__name__})")
+        return None, waited
+    waited = time.monotonic() - started
+    print(f"   {label:34} {status} in {waited:.2f}s")
+    return status, waited
+
+
 def main() -> int:
     token = register()
 
-    started = time.monotonic()
-    status, _ = call("GET", f"{API}/api/v1/user", token=token, timeout=BUDGET_S)
-    print(f"with Redis up:   GET /user -> {status} in {time.monotonic() - started:.1f}s")
+    print("== GET /api/v1/user, the plainest authenticated call there is\n")
+    _, healthy = probe(token, "with Redis up", BUDGET_S)
 
-    print("stopping Redis")
     compose("stop", "redis")
-    answered: int | None = None
-    waited = 0.0
     try:
-        started = time.monotonic()
-        try:
-            answered, _ = call("GET", f"{API}/api/v1/user", token=token, timeout=BUDGET_S)
-        except (urllib.error.URLError, TimeoutError, OSError) as exc:
-            reason = type(exc).__name__
-        else:
-            reason = ""
-        waited = time.monotonic() - started
+        first, blocked = probe(token, "with Redis stopped, first call", BUDGET_S)
+        # Asked again, because the answer changes. The product gives up on
+        # the store after the first attempts and serves the rest quickly,
+        # which is what makes a single measurement of this misleading.
+        probe(token, "and again", BUDGET_S)
+        probe(token, "and again", BUDGET_S)
     finally:
         compose("start", "redis")
-        print("Redis started again")
+        print("\n   Redis started again")
 
-    if answered is None:
-        print(f"with Redis down: GET /user -> no answer in {waited:.0f}s ({reason})")
-    else:
-        print(f"with Redis down: GET /user -> {answered} in {waited:.1f}s")
-
-    print("\nExpected: losing a cache degrades the product; the request still answers.")
-    print("Actual:   the request never answers, so the caller's connection pool drains.")
-
-    reproduced = answered is None
     print(
-        "\nFinding reproduced." if reproduced else "\nNot reproduced; the product may have changed."
+        "\nExpected: losing a cache degrades the product, and the product decides\n"
+        "          by how much — a call on the common path answers, or fails, within\n"
+        "          a bound it sets itself.\n"
+        "Actual:   the first calls after the store goes away block for as long as the\n"
+        "          host takes to give up on the connection. The product sets no bound;\n"
+        "          it inherits whatever the network does. Once it has given up, it\n"
+        "          serves the rest normally, which is why one measurement is not enough."
+    )
+
+    floor = max(healthy * DEGRADATION, 1.0)
+    reproduced = first is None or blocked >= floor
+    print(
+        f"\nFinding reproduced: the first call took {blocked:.1f}s against {healthy:.2f}s healthy."
+        if reproduced
+        else f"\nNot reproduced: the first call took {blocked:.1f}s, under the {floor:.1f}s "
+        "this looks for. The product may have gained a timeout of its own."
     )
     return 0 if reproduced else 1
 
