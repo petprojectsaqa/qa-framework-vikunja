@@ -110,15 +110,15 @@ Every response the suite receives, from any test, is validated against the schem
 
 | | |
 |---|---|
-| Main run | 1126 passing, 16 skipped, 5 expected failures |
-| Generated from the product's own descriptions | 790 of 929 matrix-bound tests |
-| Run time on eight workers | about 40 seconds |
+| Main run | 1200 passing, 16 skipped, 5 expected failures |
+| Generated from the product's own descriptions | 791 of 940 matrix-bound tests |
+| Run time on eight workers | about 50 seconds |
 | API operations exercised | 99% of both versions |
-| The framework's own tests, no stand needed | 190 in 13 seconds |
+| The framework's own tests, no stand needed | 253 in 15 seconds |
 | Resilience layer, run on its own | 6 |
 | Defects found in the product | 16 |
 
-Every row of the [coverage matrix](docs/coverage-matrix.md) has tests behind it, and the run prints the table at the end so a gap cannot open quietly. The thin ones are error codes and negative input, where the intent is a family rather than the handful written so far.
+Every row of the [coverage matrix](docs/coverage-matrix.md) has tests behind it, and the run prints the table at the end so a gap cannot open quietly. Three things end a run red beyond a failing test: a response that deviates from its contract in a way the baseline does not already account for, a matrix check of the required priority that ran nothing at all, and a module that breaks the suite's conventions.
 
 ## Quick start
 

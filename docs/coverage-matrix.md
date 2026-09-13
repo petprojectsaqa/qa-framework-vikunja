@@ -71,17 +71,17 @@ Each row is a kind of check. A test declares the ones it provides with `@pytest.
 | Code | Check | How | Priority | Tests |
 |---|---|---|---|---|
 | <a id="con"></a>`CON` | Responses match their contract | generated | P0 | 362 |
-| <a id="aut"></a>`AUT` | Every operation demands a credential | generated | P0 | 349 |
-| <a id="err"></a>`ERR` | Domain error codes are preserved | generated | P0 | 49 |
+| <a id="aut"></a>`AUT` | Every operation demands a credential | generated | P0 | 366 |
+| <a id="err"></a>`ERR` | Domain error codes are preserved | generated | P0 | 50 |
 | <a id="scp"></a>`SCP` | API token scopes hold | generated | P0 | 37 |
-| <a id="acl"></a>`ACL` | Access matrix | table-driven | P0 | 49 |
+| <a id="acl"></a>`ACL` | Access matrix | table-driven | P0 | 53 |
 | <a id="int"></a>`INT` | Data integrity, verified in the database | hand-written | P0 | 6 |
 | <a id="cve"></a>`CVE` | Regressions for published vulnerabilities | hand-written | P0 | 5 |
 | <a id="fun"></a>`FUN` | Business rules | hand-written | P1 | 8 |
 | <a id="neg"></a>`NEG` | Boundaries and invalid input | hand-written | P1 | 28 |
 | <a id="asy"></a>`ASY` | Asynchronous side effects | hand-written | P1 | 6 |
 | <a id="xvr"></a>`XVR` | Consistency across API versions | hand-written | P1 | 9 |
-| <a id="ui"></a>`UI` | Behaviour only a browser can check | Playwright | P1 | 4 |
+| <a id="ui"></a>`UI` | Behaviour only a browser can check | Playwright | P1 | 13 |
 | <a id="cnc"></a>`CNC` | Concurrency and idempotency | hand-written | P2 | 5 |
 | <a id="i18"></a>`I18` | Languages, time zones and formats | Playwright | P2 | 4 |
 | <a id="dav"></a>`DAV` | Calendar protocol, a thin slice | hand-written | P2 | 16 |
@@ -300,12 +300,22 @@ Three of the four expectations are not met, which is a fair return for six tests
 
 Only what cannot be checked through the API. Data is prepared with API calls and the browser's session storage is filled in advance, so a page opens signed in and looking at the thing under examination.
 
-1. Quick-add parses a label and a priority out of a plain sentence, and strips the markers from the title.
-2. A task shows up in more than one view of its project.
-3. A project shared read-only offers no control for adding a task.
-4. Language and layout, as in section 14.
+Each row below names the thing the API cannot be asked. Where a claim is an absence, it is paired with the presence that proves the absence means something: a control missing from a read-only share is only evidence if the same page shows it to a writable one.
 
-A large browser suite duplicating API coverage would be slower, more fragile and worth less. This one is deliberately small.
+| What | Why only a browser can answer it |
+|---|---|
+| quick-add parses a label and a priority out of a plain sentence, and strips the markers from the title | the parsing is frontend work; the API only sees the result |
+| a task appears in every view that lists tasks — list, table and board | four views are four pieces of frontend code over one set of data, which is how two of them come to disagree. Gantt is excluded by name: it plots by date and correctly shows nothing for a task without one |
+| ticking the box in a list row finishes that task and no other | the row decides which task it is for. A list that sends a row's position rather than a task's identity passes every check made of one task alone |
+| dragging a card into the last column of the board finishes the task, and dragging it into an ordinary column does not | the drop has no API shape: it is the frontend turning a press, a path and a release into one call. The board has no `draggable` attribute, so the gesture is delivered as a path |
+| a public link shows the project to a visitor with no account, and offers a control for adding a task only where the share allows it | the whole public route is frontend: hash for token, token out of the path, project rendered for someone who has never signed in |
+| a public link pointed at another project sends the visitor to sign in | the boundary GHSA-2pv8-4c52-mf8j crossed, asked as a URL a curious visitor can type |
+| a share behind a password renders nothing until the password is given | the only place this product asks a stranger for a secret |
+| a project shared read-only offers no control for adding a task, while its owner gets one | the pairing is the point: an absence asserted on its own is satisfied by a page that has not rendered |
+| arriving at the page that offers to delete a project deletes nothing, and confirming deletes it | the confirmation is entirely frontend, and the route is a URL a person can be sent |
+| language and layout, as in section 14 | |
+
+A large browser suite duplicating API coverage would be slower, more fragile and worth less. This one is deliberately small, and the rows it does not have are deliberate too: teams, labels, saved filters and notifications have no browser tests, because everything they do through the interface is a form that the API already answers for.
 
 ---
 

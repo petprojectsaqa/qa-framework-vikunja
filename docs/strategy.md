@@ -44,7 +44,9 @@ The rule for using them is strict, because the temptation is large.
 
 **Forbidden everywhere else.** Ordinary data is prepared through the public API only. The reason is not stylistic: a test that assembles state behind the product's back is testing its own idea of the schema rather than the product. It breaks at the first migration and finds no real defects.
 
-Every use of the testing API is marked in the code and appears in the report as its own step, so a reader can see where a corner was cut and why.
+**What the suite actually uses, today: the first case and nothing else.** `scripts/check_stand.py` empties every table once, before a run begins, in a function called `reset_the_stand` that says in its own name and in its output that it is destructive. No test touches those endpoints. The second allowance has not been needed yet, because everything the suite has wanted so far has been reachable through the public API; it stays written down here because the day it is needed, the rule for it should already exist.
+
+The other half of the rule is a guard rather than a habit. The generated sweep walks every operation both descriptions publish, and two of those operations are exactly these — so `contracts/sweep.py` names them in `NEVER_CALL` and matches them by shape rather than by parameter name, because a description that renames `{table}` must not be able to turn the sweep into a reset.
 
 ---
 
