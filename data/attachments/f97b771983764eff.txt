@@ -1,6 +1,0 @@
-DELETE http://localhost:3456/api/v1/tasks/41
-as: link-share:u22NoW4u
-status: 200  (175 ms)
-body: {
-  "message": "Successfully deleted."
-}

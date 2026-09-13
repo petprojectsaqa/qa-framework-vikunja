@@ -1,0 +1,12 @@
+PUT http://localhost:3456/api/v1/projects/157/users
+as: session:ownernotdeterminedsentinelgw75a4718bd
+sent: {
+  "username": "outsidernotdeterminedsentinelgw721053aa3",
+  "permission": -1
+}
+status: 400  (26 ms)
+domain code: 9001
+body: {
+  "code": 9001,
+  "message": "The permission is invalid."
+}

@@ -1,0 +1,10 @@
+GET http://localhost:3456/api/v1/user/settings/token/caldav
+as: session:aliceatwasnotrevokedsayssogw5ccb31c46
+status: 200  (11 ms)
+body: [
+  {
+    "id": 152,
+    "token": "",
+    "created": "2026-09-13T23:46:17Z"
+  }
+]

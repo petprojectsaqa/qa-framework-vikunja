@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v2/projects
+as: session:ownerwithdifferentstatusesgw458c31a35
+sent: {
+  "title": ""
+}
+status: 422  (9 ms)
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Unprocessable Entity",
+  "status": 422,
+  "detail": "validation failed",
+  "errors": [
+    {
+      "message": "expected length >= 1",
+      "location": "body.title",
+      "value": ""
+    }
+  ]
+}

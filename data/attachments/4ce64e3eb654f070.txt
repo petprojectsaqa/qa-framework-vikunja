@@ -1,0 +1,4 @@
+DELETE http://localhost:3456/dav/projects/267/a9f77fff-4ebc-4d7a-87cd-55a2ab400c19.ics
+as: basic:ownerdarclientleavestheapigw29d662ef4
+status: 204  (167 ms)
+body: 

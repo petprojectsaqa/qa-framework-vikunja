@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/tasks/37
-as: session:readertestaccessmatrixpygw06ea210a7
-status: 403  (59 ms)
-domain code: 0
-body: {
-  "code": 0,
-  "message": "Forbidden"
-}

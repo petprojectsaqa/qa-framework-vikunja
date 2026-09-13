@@ -1,0 +1,21 @@
+PUT http://localhost:3456/api/v1/labels
+as: session:ownerhesamemomentlandsoncegw4688b0e1e
+sent: {
+  "title": "racy"
+}
+status: 201  (26 ms)
+body: {
+  "id": 1,
+  "title": "racy",
+  "description": "",
+  "hex_color": "",
+  "created_by": {
+    "id": 111,
+    "name": "",
+    "username": "ownerhesamemomentlandsoncegw4688b0e1e",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-13T23:46:11.87322775Z",
+  "updated": "2026-09-13T23:46:11.873232629Z"
+}

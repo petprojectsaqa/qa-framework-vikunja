@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/999999999/comments
+as: session:owneriluregettaskscommentsgw506e00290
+status: 404  (8 ms)
+domain code: 4002
+body: {
+  "code": 4002,
+  "message": "This task does not exist"
+}

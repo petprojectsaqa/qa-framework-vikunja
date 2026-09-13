@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v1/shares/Ps5Umym4gSqLOAkTbE3sz3fgrb5o00Z0Zu86zNjZ/auth
+as: session:ownerchesonlyitsownprojectgw5b3f17cf0
+sent: {
+  "hash": "Ps5Umym4gSqLOAkTbE3sz3fgrb5o00Z0Zu86zNjZ"
+}
+status: 200  (8 ms)
+body: {
+  "token": "<redacted, 259 characters>",
+  "id": 7,
+  "hash": "Ps5Umym4gSqLOAkTbE3sz3fgrb5o00Z0Zu86zNjZ",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-13T23:46:19Z",
+  "updated": "2026-09-13T23:46:19Z",
+  "project_id": 214
+}

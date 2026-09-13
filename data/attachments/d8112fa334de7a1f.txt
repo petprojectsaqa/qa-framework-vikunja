@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/87
+as: session:ownerdarclientleavestheapigw29d662ef4
+status: 404  (10 ms)
+domain code: 4002
+body: {
+  "code": 4002,
+  "message": "This task does not exist"
+}

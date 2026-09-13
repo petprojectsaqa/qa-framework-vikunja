@@ -1,6 +1,0 @@
-GET http://localhost:3456/dav/projects/120
-as: basic:ownerongeropensthecalendargw7b141bece
-status: 401  (361 ms)
-body: {
-  "message": "Unauthorized"
-}

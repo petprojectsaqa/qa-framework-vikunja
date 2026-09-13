@@ -1,0 +1,9 @@
+POST http://localhost:3456/api/v1/user/password/token
+as: session:ownerswordresetsendsatokengw720edb87a
+sent: {
+  "email": "ownerswordresetsendsatokengw720edb87a@qa.local"
+}
+status: 200  (13 ms)
+body: {
+  "message": "Token was sent."
+}

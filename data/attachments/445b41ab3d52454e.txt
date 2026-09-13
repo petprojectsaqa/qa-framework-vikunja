@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerthingschemewithaspacegw7f511afc7",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerthingschemewithaspacegw7f511afc7@qa.local"
+}
+status: 200  (953 ms)
+body: {
+  "id": 47,
+  "name": "",
+  "username": "ownerthingschemewithaspacegw7f511afc7",
+  "created": "2026-09-13T23:45:58Z",
+  "updated": "2026-09-13T23:45:58.823697795Z"
+}

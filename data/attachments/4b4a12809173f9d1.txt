@@ -1,0 +1,20 @@
+GET http://localhost:3456/api/v1/tasks/50/labels
+as: session:ownerhesamemomentlandsoncegw4688b0e1e
+status: 200  (165 ms)
+body: [
+  {
+    "id": 1,
+    "title": "racy",
+    "description": "",
+    "hex_color": "",
+    "created_by": {
+      "id": 111,
+      "name": "",
+      "username": "ownerhesamemomentlandsoncegw4688b0e1e",
+      "created": "2026-09-13T23:46:10Z",
+      "updated": "2026-09-13T23:46:11Z"
+    },
+    "created": "2026-09-13T23:46:11Z",
+    "updated": "2026-09-13T23:46:11Z"
+  }
+]
