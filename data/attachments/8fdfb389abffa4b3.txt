@@ -1,0 +1,7 @@
+GET http://localhost:3456/api/v2/health
+as: anonymous
+status: 200  (90 ms)
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/HealthBodyBody.json",
+  "status": "OK"
+}

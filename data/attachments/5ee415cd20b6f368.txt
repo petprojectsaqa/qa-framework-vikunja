@@ -1,0 +1,20 @@
+POST http://localhost:3456/api/v1/shares/gu7QaO96dySXGbLqNFbxzyv406qycD3EG430QmXt/auth
+as: session:ownersswordisgivenchromiumgw06b26b800
+sent: {
+  "hash": "gu7QaO96dySXGbLqNFbxzyv406qycD3EG430QmXt",
+  "password": "a-shared-secret-123"
+}
+status: 200  (282 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODk1OTQ3ODYsImhhc2giOiJndTdRYU85NmR5U1hHYkxxTkZieHp5djQwNnF5Y0QzRUc0MzBRbVh0IiwiaWQiOjMsInBlcm1pc3Npb24iOjAsInByb2plY3RfaWQiOjI4LCJzaGFyZWRCeUlEIjoxNCwidHlwZSI6Mn0.tT0FzoFzCHvBwjCIx5cW4nDqA8uRtilMI0eqXlMabDs",
+  "id": 3,
+  "hash": "gu7QaO96dySXGbLqNFbxzyv406qycD3EG430QmXt",
+  "name": "locked",
+  "permission": 0,
+  "sharing_type": 2,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-13T21:39:46Z",
+  "updated": "2026-09-13T21:39:46Z",
+  "project_id": 28
+}

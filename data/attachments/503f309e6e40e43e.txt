@@ -1,0 +1,65 @@
+POST http://localhost:3456/api/v1/projects/256/views/1802/buckets/1347/tasks
+as: session:owneredonebucketfinishesitgw19efbe297
+sent: {
+  "task_id": 81
+}
+status: 200  (66 ms)
+body: {
+  "bucket_id": 1347,
+  "bucket": {
+    "id": 1347,
+    "title": "Done",
+    "project_view_id": 1802,
+    "limit": 0,
+    "count": 1,
+    "position": 300,
+    "created": "2026-09-13T21:39:34Z",
+    "updated": "2026-09-13T21:39:34Z",
+    "created_by": null
+  },
+  "task_id": 81,
+  "project_view_id": 1802,
+  "task": {
+    "id": 81,
+    "title": "drag me",
+    "description": "",
+    "done": true,
+    "done_at": "2026-09-13T21:39:34.523158985Z",
+    "due_date": "0001-01-01T00:00:00Z",
+    "reminders": null,
+    "project_id": 256,
+    "repeat_after": 0,
+    "repeat_mode": 0,
+    "priority": 0,
+    "start_date": "0001-01-01T00:00:00Z",
+    "end_date": "0001-01-01T00:00:00Z",
+    "assignees": null,
+    "labels": null,
+    "hex_color": "",
+    "percent_done": 0,
+    "identifier": "#1",
+    "index": 1,
+    "related_tasks": {},
+    "attachments": null,
+    "cover_image_attachment_id": 0,
+    "is_favorite": false,
+    "subscription": {
+      "id": 73,
+      "entity": "task",
+      "entity_id": 81,
+      "created": "2026-09-13T21:39:34Z"
+    },
+    "created": "2026-09-13T21:39:34Z",
+    "updated": "2026-09-13T21:39:34.523178982Z",
+    "bucket_id": 0,
+    "position": 0,
+    "reactions": null,
+    "created_by": {
+      "id": 192,
+      "name": "",
+      "username": "owneredonebucketfinishesitgw19efbe297",
+      "created": "2026-09-13T21:39:33Z",
+      "updated": "2026-09-13T21:39:33Z"
+    }
+  }
+}

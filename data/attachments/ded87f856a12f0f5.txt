@@ -1,0 +1,6 @@
+DELETE http://localhost:3456/api/v1/tasks/77
+as: session:ownereapileavesthecalendargw459bca373
+status: 200  (168 ms)
+body: {
+  "message": "Successfully deleted."
+}

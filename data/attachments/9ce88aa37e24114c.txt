@@ -1,0 +1,10 @@
+PUT http://localhost:3456/api/v1/tasks/68/assignees
+as: session:ownerdtosomeonewhocanseeitgw2907c3f7f
+sent: {
+  "user_id": 181
+}
+status: 201  (189 ms)
+body: {
+  "user_id": 181,
+  "created": "0001-01-01T00:00:00Z"
+}

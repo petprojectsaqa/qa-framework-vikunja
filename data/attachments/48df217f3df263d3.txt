@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerredeletesubscriptionsgw20269290e",
+  "password": "VikunjaQA123!"
+}
+status: 200  (221 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkzMzYxNjIsImlkIjoxMDgsImlzX2FkbWluIjpmYWxzZSwianRpIjoiYmI3Y2M0OTEtNTU1NC00M2E0LTliZDYtMDQxMWQ5YjdjMTkxIiwic2lkIjoiMmVhMGYyNWItMzAxNi00M2VjLWEzZWQtZGEzODQ2MmQzZGNmIiwidHlwZSI6MSwidXNlcm5hbWUiOiJvd25lcnJlZGVsZXRlc3Vic2NyaXB0aW9uc2d3MjAyNjkyOTBlIn0.I4KQI6TZ35TNDUkv_5ny51NcCc9iwoKvm0_ZIT4Z03Y"
+}

@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/19/tasks
+as: session:ownertestaccessmatrixpygw2ff7f22af
+sent: {
+  "title": "spare for a mutating row"
+}
+status: 201  (124 ms)
+body: {
+  "id": 26,
+  "title": "spare for a mutating row",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 19,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#17",
+  "index": 17,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-13T21:39:14.151555003Z",
+  "updated": "2026-09-13T21:39:14.151558049Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 11,
+    "name": "",
+    "username": "ownertestaccessmatrixpygw2ff7f22af",
+    "created": "2026-09-13T21:39:03Z",
+    "updated": "2026-09-13T21:39:03Z"
+  }
+}

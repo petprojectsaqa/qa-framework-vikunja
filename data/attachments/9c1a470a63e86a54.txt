@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/999999999/999999999/reactions
-as: api-token:reactions.read_all
-status: 400  (74 ms)
-domain code: 4025
-body: {
-  "code": 4025,
-  "message": "The reaction kind '999999999' is invalid."
-}

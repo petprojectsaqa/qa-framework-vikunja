@@ -1,0 +1,10 @@
+PUT http://localhost:3456/api/v1/tasks/72/labels
+as: session:ownernnotbeputonatasktwicegw66584b17c
+sent: {
+  "label_id": 2
+}
+status: 201  (204 ms)
+body: {
+  "label_id": 2,
+  "created": "2026-09-13T21:39:32.10781985Z"
+}

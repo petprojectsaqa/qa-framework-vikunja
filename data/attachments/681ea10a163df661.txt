@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:ownerorrevokedbyanyoneelsegw15c388549
+sent: {
+  "title": "victim token",
+  "permissions": {
+    "labels": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-13T21:39:31Z"
+}
+status: 201  (29 ms)
+body: {
+  "id": 43,
+  "title": "victim token",
+  "token": "tk_61440f11cf1ed0443d9b44a07bcc00ae3a3e7e43",
+  "permissions": {
+    "labels": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-13T21:39:31Z",
+  "created": "2026-09-13T21:39:31.946394878Z",
+  "owner_id": 180
+}

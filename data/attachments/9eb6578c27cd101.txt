@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "aliceatwasnotrevokedsayssogw5cb3ccac3",
+  "password": "VikunjaQA123!"
+}
+status: 200  (185 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkzMzYxNjYsImlkIjoxNDMsImlzX2FkbWluIjpmYWxzZSwianRpIjoiZWE5NGNiMDktY2QzMy00NzYyLTgxYTEtNTgxYTJlYTRmOGU3Iiwic2lkIjoiYmJkNDNjZmUtZjYzZi00ZTgxLWJhY2MtMWNlNmQ0ODYyYmVjIiwidHlwZSI6MSwidXNlcm5hbWUiOiJhbGljZWF0d2Fzbm90cmV2b2tlZHNheXNzb2d3NWNiM2NjYWMzIn0.EYMF5QHrfW5zX3X3fRdrYdauQeeY7eHy67ycKjrFU_E"
+}

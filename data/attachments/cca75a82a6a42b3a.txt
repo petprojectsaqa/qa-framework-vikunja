@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:tokenstesttokenscopespygw76a161bbc
+sent: {
+  "title": "scope notifications.read_all",
+  "permissions": {
+    "notifications": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-13T21:39:10Z"
+}
+status: 201  (25 ms)
+body: {
+  "id": 31,
+  "title": "scope notifications.read_all",
+  "token": "tk_42603d50b8ac97189b5f020560a5c24be329bc06",
+  "permissions": {
+    "notifications": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-13T21:39:10Z",
+  "created": "2026-09-13T21:39:10.486835228Z",
+  "owner_id": 39
+}

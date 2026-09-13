@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerluredeletetaskslabelsgw682084744",
+  "password": "VikunjaQA123!"
+}
+status: 200  (270 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkzMzYxNjQsImlkIjoxMjcsImlzX2FkbWluIjpmYWxzZSwianRpIjoiNTc0MzlmOWYtOTUzNi00MjVjLTk5YjktZDAxNDQwYmI1OWQxIiwic2lkIjoiNGYyOTM5ZjYtMGY5My00NGQ1LWJkMmQtMGRiMjZlNDM4ZjA4IiwidHlwZSI6MSwidXNlcm5hbWUiOiJvd25lcmx1cmVkZWxldGV0YXNrc2xhYmVsc2d3NjgyMDg0NzQ0In0.2g5e78rp8_hBDhGOJQn3coBwNWu0QzTrEXc7x0YR_Xo"
+}
