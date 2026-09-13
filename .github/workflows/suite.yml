@@ -28,6 +28,34 @@ jobs:
       - run: uv run ruff format --check src tests scripts docs
       - run: uv run mypy src scripts
 
+  # Seconds, and no stand either. A suite that tests somebody else's
+  # product should be able to say something about its own supply chain.
+  supply-chain:
+    name: secrets and dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      # The working tree, not the history: see the note in .gitleaks.toml.
+      # A secret reaching the repository is the thing to stop, and this
+      # project has a reason to care — the report it publishes carried
+      # three thousand session tokens before the transport layer learned to
+      # redact them.
+      - name: no secrets in the repository
+        run: >
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest
+          detect --source=/repo --no-git --redact --verbose --config=/repo/.gitleaks.toml
+
+      # Audited from the lock file rather than from the environment, so what
+      # is checked is what CI actually installs.
+      - name: no known vulnerabilities in what we depend on
+        run: |
+          uv export --frozen --no-emit-project --all-extras --format requirements-txt -o requirements.txt
+          uvx pip-audit --requirement requirements.txt --disable-pip
+
   self-test:
     name: the framework's own tests
     runs-on: ubuntu-latest

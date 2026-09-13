@@ -18,3 +18,6 @@ playwright-report/
 .env
 docker/.env
 docker-compose.override.yml
+
+# Written by the supply-chain job so pip-audit reads what CI installs.
+requirements.txt

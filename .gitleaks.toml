@@ -1,0 +1,36 @@
+# What counts as a secret in this repository, and what does not.
+#
+# Scanned as a working tree rather than as history, deliberately. The
+# property worth enforcing is that nothing sensitive is in the repository
+# now; scanning history would also drag in the published report branch,
+# where every run's attachments used to carry the session tokens of stands
+# that no longer exist, and a check that is permanently red teaches
+# everyone to ignore it.
+#
+# The stand's credentials are here on purpose and are not secrets: they are
+# fixed, published in docker/README.md, and belong to a throwaway instance
+# on localhost. They are allowlisted by path so that a *new* credential
+# appearing anywhere else still stops the build.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "third-party code, build output, and the stand's published credentials"
+paths = [
+  '''(^|/)\.venv/''',
+  '''(^|/)\.mypy_cache/''',
+  '''(^|/)\.pytest_cache/''',
+  '''(^|/)\.ruff_cache/''',
+  '''(^|/)node_modules/''',
+  '''(^|/)allure-results/''',
+  '''(^|/)allure-report/''',
+  '''(^|/)test-results/''',
+]
+regexes = [
+  # The stand's own fixed credentials. Written down in docker/README.md so
+  # anyone can bring the same stand up; worth nothing anywhere else.
+  '''qa-stand-testing-token''',
+  '''minioadmin''',
+  '''VikunjaQA123!''',
+]

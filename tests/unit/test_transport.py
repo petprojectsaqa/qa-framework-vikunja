@@ -95,3 +95,56 @@ def test_success_is_the_2xx_range(status: int) -> None:
 @pytest.mark.parametrize("status", [199, 300, 404, 500])
 def test_anything_outside_2xx_is_not_success(status: int) -> None:
     assert not _client(CannedAdapter(status)).get("/user").ok
+
+
+class TestSecretsNeverReachTheReport:
+    """What `describe` renders is published.
+
+    It feeds the message on a failed assertion and the attachments in an
+    Allure report this project puts on the open web. A scan of that report
+    found three thousand session tokens and the fixed test password, in
+    plain text, on every registration and every login. The stands behind
+    them were long gone, so nothing was at risk — but a testing tool that
+    prints credentials into a public page is teaching the wrong habit, and
+    a reader debugging a failure has never needed the literal string.
+    """
+
+    SECRET = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.aaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbb"
+
+    def _response(self, body: object, sent: object = None) -> ApiResponse:
+        return ApiResponse(
+            method="POST",
+            url="http://host/api/v1/login",
+            status=200,
+            headers={},
+            body=body,
+            elapsed_ms=1.0,
+            request_body=sent,
+        )
+
+    def test_a_token_in_the_answer_is_redacted(self) -> None:
+        described = self._response({"id": 7, "token": self.SECRET}).describe()
+
+        assert self.SECRET not in described
+        assert "redacted" in described
+        assert "id" in described, "redaction must not swallow the rest of the body"
+
+    def test_a_password_in_the_request_is_redacted(self) -> None:
+        described = self._response(
+            {"id": 7}, sent={"username": "someone", "password": "VikunjaQA123!"}
+        ).describe()
+
+        assert "VikunjaQA123!" not in described
+        assert "someone" in described, "only the credential goes, not the context around it"
+
+    def test_a_token_nested_in_a_collection_is_redacted(self) -> None:
+        described = self._response({"tokens": [{"id": 1, "token": self.SECRET}]}).describe()
+
+        assert self.SECRET not in described
+
+    def test_the_body_itself_is_untouched(self) -> None:
+        """Redaction is a property of the rendering, not of the answer. A
+        test that mints a token still has to be able to use it."""
+        response = self._response({"token": self.SECRET})
+
+        assert response["token"] == self.SECRET

@@ -107,9 +107,50 @@ class ApiResponse:
         return self.describe()
 
 
+#: Fields whose value is a credential, whatever it is worth.
+#:
+#: `describe` feeds two places: the message on a failed assertion, and the
+#: attachments in a report this project publishes to the open web. Neither
+#: needs the literal string. A reader debugging a failure needs to know a
+#: token was there and roughly how long it was; nobody needs to be able to
+#: replay it, and a testing tool that prints credentials into a public page
+#: is teaching the wrong habit even when the stand behind them is gone.
+#:
+#: This redacts the rendering and nothing else. `body` is untouched, so a
+#: test that reads `response["token"]` still gets the token.
+SECRET_FIELDS = frozenset(
+    {
+        "token",
+        "access_token",
+        "refresh_token",
+        "password",
+        "new_password",
+        "old_password",
+        "secret",
+        "totp_passcode",
+        "passcode",
+    }
+)
+
+
+def _redacted(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: (
+                f"<redacted, {len(str(item))} characters>"
+                if str(key).lower() in SECRET_FIELDS and item
+                else _redacted(item)
+            )
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_redacted(item) for item in value]
+    return value
+
+
 def _render(value: Any, limit: int) -> str:
     if isinstance(value, (dict, list)):
-        rendered = json.dumps(value, ensure_ascii=False, indent=2, default=str)
+        rendered = json.dumps(_redacted(value), ensure_ascii=False, indent=2, default=str)
     else:
         rendered = str(value)
     if len(rendered) > limit:
