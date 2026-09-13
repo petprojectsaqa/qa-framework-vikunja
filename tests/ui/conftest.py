@@ -24,7 +24,13 @@ from vikunja_qa.actors.actor import Actor
 from vikunja_qa.config import Settings
 from vikunja_qa.scenes import Scene, SceneBuilder
 from vikunja_qa.ui.pages.project import ProjectPage
-from vikunja_qa.ui.session import DEFAULT_LOCALE, VIEWPORT, PageOpener, sign_in
+from vikunja_qa.ui.session import (
+    DEFAULT_LOCALE,
+    VIEWPORT,
+    AnonymousOpener,
+    PageOpener,
+    sign_in,
+)
 
 NewContext = Callable[..., BrowserContext]
 
@@ -134,6 +140,29 @@ def open_as(new_context: NewContext, request: pytest.FixtureRequest) -> Iterator
 
 
 @pytest.fixture
+def open_anonymously(
+    new_context: NewContext, request: pytest.FixtureRequest
+) -> Iterator[AnonymousOpener]:
+    """A page with no session at all, for the routes meant to work without one.
+
+    Deliberately not `open_as` with something falsy. A public link has to work
+    for a visitor who has never signed in, and a context that merely holds a
+    bad token is a different situation with a different failure.
+    """
+    opened: list[BrowserContext] = []
+
+    def open_page(path: str) -> Page:
+        context = new_context(locale=DEFAULT_LOCALE)
+        opened.append(context)
+        page = context.new_page()
+        page.goto(path)
+        return page
+
+    yield open_page
+    _attach_on_failure(request, opened)
+
+
+@pytest.fixture
 def project_page(page: Page) -> ProjectPage:
     return ProjectPage(page)
 
@@ -151,13 +180,26 @@ def _attach_on_failure(request: pytest.FixtureRequest, contexts: list[BrowserCon
         return
     for context in contexts:
         for number, open_page in enumerate(context.pages, start=1):
-            reporting.attach(
-                open_page.screenshot(full_page=True),
-                name=f"screen {number} at failure",
-                kind=AttachmentType.PNG,
-            )
-            reporting.attach(
-                open_page.content(),
-                name=f"page {number} source at failure",
-                kind=AttachmentType.HTML,
-            )
+            # Guarded, because this runs at exactly the moment a page is
+            # least likely to be photographable: a test that failed may have
+            # left it closed, crashed or mid-navigation, and both calls below
+            # raise in those states. An exception here becomes a teardown
+            # error whose traceback points at this helper, hiding the
+            # assertion it was meant to illustrate. A note is worth less than
+            # a screenshot and far more than that.
+            try:
+                reporting.attach(
+                    open_page.screenshot(full_page=True),
+                    name=f"screen {number} at failure",
+                    kind=AttachmentType.PNG,
+                )
+                reporting.attach(
+                    open_page.content(),
+                    name=f"page {number} source at failure",
+                    kind=AttachmentType.HTML,
+                )
+            except Exception as exc:  # noqa: BLE001 - never outrank the failure
+                reporting.attach(
+                    f"could not photograph page {number}: {type(exc).__name__}: {exc}",
+                    name=f"screen {number} at failure (unavailable)",
+                )

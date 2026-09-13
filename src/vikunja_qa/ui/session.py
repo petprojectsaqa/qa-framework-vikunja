@@ -48,6 +48,18 @@ class PageOpener(Protocol):
     def __call__(self, actor: Actor, *, locale: str = DEFAULT_LOCALE) -> Page: ...
 
 
+class AnonymousOpener(Protocol):
+    """Opens a page at a path with no credential of any kind.
+
+    Its own type rather than `PageOpener` with something falsy, because the
+    two are different situations: a visitor who has never signed in is what
+    a public link is for, and a context holding a bad token is a different
+    question with a different failure.
+    """
+
+    def __call__(self, path: str) -> Page: ...
+
+
 def session_token_of(actor: Actor) -> str:
     if not isinstance(actor.auth, SessionToken):
         raise NotASessionError(

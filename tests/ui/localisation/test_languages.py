@@ -26,10 +26,13 @@ def test_the_interface_follows_the_browser_language(
     project = ProjectPage(open_as(ui_scene.owner, locale=locale)).open(ui_scene.project_id)
 
     expect(project.add_task_field).to_be_visible()
-    placeholder = project.add_task_field.get_attribute("placeholder")
-
-    assert placeholder, f"no placeholder rendered for {locale}"
-    assert placeholder != ENGLISH_PLACEHOLDER, f"{locale} fell back to English: {placeholder!r}"
+    # Both of these retry, which is the point. The language bundles are
+    # fetched after the page mounts, so the field is visible for a moment
+    # still carrying the English fallback. A single `get_attribute` read
+    # lands in that moment often enough to look like the product failing to
+    # translate, and the message even said so.
+    expect(project.add_task_field).not_to_have_attribute("placeholder", "")
+    expect(project.add_task_field).not_to_have_attribute("placeholder", ENGLISH_PLACEHOLDER)
 
 
 def test_english_is_the_pinned_default(project_page: ProjectPage, ui_scene: Scene) -> None:
@@ -50,13 +53,28 @@ def test_a_long_title_is_not_cut_off_by_its_container(
     assert created.ok, created.describe()
 
     project_page.open(ui_scene.project_id)
-    element = project_page.task(long_title)
+    element = project_page.task_text(long_title)
     expect(element).to_be_visible()
 
     geometry = element.evaluate(
-        "el => ({ scroll: el.scrollWidth, client: el.clientWidth,"
-        " overflow: getComputedStyle(el).textOverflow })"
+        "el => { const style = getComputedStyle(el); return {"
+        "   scroll: el.scrollWidth, client: el.clientWidth,"
+        "   overflow: style.overflow, textOverflow: style.textOverflow,"
+        "   whiteSpace: style.whiteSpace }; }"
+    )
+
+    # Said first, because everything below is meaningless without it: an
+    # inline box reports zero for both widths, so a measurement taken on one
+    # answers "it fits" for any text at all, and this check used to.
+    assert geometry["client"] > 0, (
+        f"measured an element with no layout box, so nothing was measured: {geometry}"
     )
     fits = geometry["scroll"] <= geometry["client"] + 1
-    trimmed = geometry["overflow"] == "ellipsis"
+    # An ellipsis trims nothing on its own: the box also has to hide its
+    # overflow and keep the text on one line for it to have any effect.
+    trimmed = (
+        geometry["textOverflow"] == "ellipsis"
+        and geometry["overflow"] != "visible"
+        and geometry["whiteSpace"] in ("nowrap", "pre")
+    )
     assert fits or trimmed, f"a long title overflows its container untrimmed: {geometry}"
