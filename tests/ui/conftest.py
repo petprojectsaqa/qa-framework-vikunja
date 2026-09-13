@@ -67,6 +67,17 @@ def _expect_timeout() -> None:
     expect.set_options(timeout=EXPECT_TIMEOUT_MS)
 
 
+@pytest.fixture(autouse=True)
+def _record_the_engine(request: pytest.FixtureRequest, browser_name: str) -> None:
+    """Say which engine a result came from, in the report.
+
+    The same test runs on three of them, so without this the report shows
+    three results with one name and no way to tell which is which — and the
+    first question about a browser failure is always which browser.
+    """
+    request.node.add_marker(pytest.mark.allure_label(browser_name, label_type="tag"))
+
+
 # --- data -------------------------------------------------------------------
 
 
