@@ -37,6 +37,16 @@ SWAGGER_2 = {
             "get": {"operationId": "getView", "responses": {"default": {"schema": {}}}}
         },
         "/users": {"get": {"operationId": "listUsers", "responses": {"4XX": {"schema": {}}}}},
+        # A status declared with no schema at all, which is how Swagger 2.0
+        # spells 204 No Content and how OpenAPI spells a binary download.
+        # Declared and unschemaed is a third state, distinct from both
+        # "declared with a schema" and "not declared".
+        "/labels/{id}": {
+            "delete": {
+                "operationId": "deleteLabel",
+                "responses": {"204": {"description": "deleted"}, "403": {"schema": {}}},
+            }
+        },
     },
     "definitions": {"Task": {"type": "object", "properties": {"id": {"type": "integer"}}}},
 }
@@ -96,6 +106,90 @@ class TestStatusLookup:
         operation = spec.operation("GET", "/tasks/{id}")
         assert operation is not None
         assert operation.schema_for(401) is None
+
+
+class TestDeclaredButUnschemaed:
+    """ "The description mentions this status" and "the description gives a
+    schema for its body" are different questions.
+
+    Conflating them made the suite report a description as wrong about a
+    status it had got right, and then, having dropped the status, fall
+    through to the operation's catch-all — which on v2 is the error model,
+    so a successful download was one step from being reported as failing to
+    look like an error.
+
+    Asserted here because nothing did. A `declares` that always answered
+    yes passed all 253 of the suite's own tests, which is to say the gate on
+    the whole undeclared-status check was unguarded.
+    """
+
+    def test_a_status_declared_with_no_schema_is_still_declared(self, spec: SpecIndex) -> None:
+        operation = spec.operation("DELETE", "/labels/{id}")
+        assert operation is not None
+
+        assert operation.declares(204) is True
+        assert operation.schema_for(204) is None, (
+            "a 204 declared with no body must yield no schema to validate against"
+        )
+
+    def test_a_status_declared_with_a_schema_yields_it(self, spec: SpecIndex) -> None:
+        operation = spec.operation("DELETE", "/labels/{id}")
+        assert operation is not None
+
+        assert operation.declares(403) is True
+        assert operation.schema_for(403) is not None
+
+    def test_a_status_the_description_never_mentions_is_not_declared(self, spec: SpecIndex) -> None:
+        operation = spec.operation("DELETE", "/labels/{id}")
+        assert operation is not None
+
+        assert operation.declares(500) is False
+        assert operation.schema_for(500) is None
+
+    def test_a_range_and_a_catch_all_both_count_as_declaring(self, spec: SpecIndex) -> None:
+        by_range = spec.operation("GET", "/users")
+        catch_all = spec.operation("GET", "/projects/{project}/views/{view}")
+        assert by_range is not None
+        assert catch_all is not None
+
+        assert by_range.declares(404) is True, "a 4XX entry declares 404"
+        assert catch_all.declares(418) is True, "a default entry declares anything"
+
+    def test_the_validator_reports_only_the_status_that_is_absent(self, spec: SpecIndex) -> None:
+        """The behaviour, through the hook, since that is what matters.
+
+        The 204 is declared without a body and must pass in silence. The 500
+        is not declared at all and must be reported. One response each, so
+        neither result can be borrowed from the other.
+        """
+        validator = ContractValidator([spec], mode=Mode.COLLECT, baseline=Baseline(()))
+
+        validator(_labels_response(204))
+        assert validator.violations == [], (
+            "a 204 the description declares without a body was reported as a deviation"
+        )
+
+        validator(_labels_response(500))
+        kinds = [violation.kind for violation in validator.violations]
+        assert kinds == ["undeclared status"], (
+            f"a status the description never mentions went unreported: {kinds}"
+        )
+        assert "204, 403" in validator.violations[0].detail, (
+            "the report should list what the operation does declare: "
+            f"{validator.violations[0].detail!r}"
+        )
+
+
+def _labels_response(status: int) -> ApiResponse:
+    return ApiResponse(
+        method="DELETE",
+        url="http://host/api/v1/labels/7",
+        status=status,
+        headers={},
+        body="",
+        elapsed_ms=1.0,
+        parsed=False,
+    )
 
 
 def test_resolvable_carries_shared_definitions() -> None:

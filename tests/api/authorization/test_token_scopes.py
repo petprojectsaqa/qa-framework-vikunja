@@ -104,10 +104,18 @@ def test_a_scoped_token_is_refused_its_siblings(
 def test_a_scoped_token_cannot_reach_another_area(
     scoped_client: Callable[[ScopeCase], HttpClient],
 ) -> None:
-    """The coarsest boundary, stated on its own so a failure is unmistakable."""
+    """The coarsest boundary, stated on its own so a failure is unmistakable.
+
+    Asserted rather than skipped when the area is missing. A skip here reads
+    as a pass, and this is the check that says a token scoped to one area
+    cannot touch another — the one that should be hardest to switch off by
+    accident.
+    """
     labels = next((case for case in CASES if case.area == "labels"), None)
-    if labels is None:
-        pytest.skip("the catalogue has no labels area to scope a token to")
+    assert labels is not None, (
+        "the catalogue has no labels area to scope a token to; it offers "
+        f"{sorted({case.area for case in CASES})}"
+    )
     client = scoped_client(labels)
 
     reached = [

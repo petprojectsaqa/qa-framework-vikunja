@@ -136,13 +136,22 @@ def test_a_kanban_bucket_cannot_be_destroyed_without_rights_on_its_project(
     victim = scene.project().done()
     views = victim.owner.api.projects.views(victim.project_id)
     assert views.ok, views.describe()
-    kanban = next((v for v in views.json if v.get("view_kind") in ("kanban", 3)), views.json[0])
+
+    # Asserted, not fallen back from, and not skipped over. Both of those
+    # were here, and together they let this check quietly stop running: with
+    # no board among the views it took whichever view came first, that view
+    # has no columns, and the test then skipped itself. A regression test for
+    # a published vulnerability is the last thing that should be able to opt
+    # out of running, so every step that could go missing now says so.
+    kanban = next((view for view in views.json if view.get("view_kind") == "kanban"), None)
+    assert kanban is not None, (
+        f"the project has no board to aim at: {[view.get('view_kind') for view in views.json]}"
+    )
     view_id = int(kanban["id"])
 
     buckets = victim.owner.api.projects.buckets(victim.project_id, view_id)
     assert buckets.ok, buckets.describe()
-    if not buckets.json:
-        pytest.skip("this view carries no buckets to aim at")
+    assert buckets.json, "the board has no columns to aim at, and a new project is given four"
     bucket_id = int(buckets.json[0]["id"])
 
     attacker = build(actors).done()
