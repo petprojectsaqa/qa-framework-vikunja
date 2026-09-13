@@ -344,6 +344,35 @@ Report fields: summary, severity, affected version, environment, steps, expected
 
 ---
 
+## 17a. What grows with the instance <a id="scaling"></a>
+
+Every assertion in this suite passes as well at ten rows as at ten thousand. A correctness check cannot see an operation whose cost follows the size of the table — that only shows as a clock, and it showed here as a flaky test, which is how [VKJ-017](findings/VKJ-017-project-update-rewrites-every-project/) was found.
+
+`scripts/measure_scaling.py` asks the question on purpose. It times every write the product offers at three instance sizes and reports how each cost moves. An operation on one row should cost the same whatever else exists; one that rises with the table is reaching further than it was asked to.
+
+Measured on an empty stand, at 28, 259 and 1015 projects:
+
+| Operation | 28 | 259 | 1015 | growth |
+|---|---|---|---|---|
+| rename a project | 26 ms | 115 ms | 420 ms | **16.0x** — [VKJ-017](findings/VKJ-017-project-update-rewrites-every-project/) |
+| list projects | 15 ms | 21 ms | 35 ms | 2.2x |
+| read a project | 9 ms | 10 ms | 14 ms | 1.6x |
+| create a project | 38 ms | 43 ms | 49 ms | 1.3x |
+| create a task | 21 ms | 22 ms | 26 ms | 1.2x |
+| read a task | 13 ms | 15 ms | 18 ms | 1.3x |
+| rename a task | 12 ms | 16 ms | 14 ms | 1.1x |
+| rename a team | 10 ms | 10 ms | 11 ms | 1.1x |
+| rename a label | 6 ms | 6 ms | 6 ms | 1.0x |
+| read own profile | 4 ms | 3 ms | 4 ms | 1.0x |
+
+The negative result is worth as much as the positive one: of ten writes, exactly one has this shape. The rest stay their own size, so the product does not do this generally — which is what makes the one that does worth reporting.
+
+Known growers are listed in the script with the finding that explains them, the same way the contract baseline works and for the same reason. The list may only shrink: an entry that stops growing fails too, because a note nobody removed is worse than none. It runs on the nightly schedule rather than on every push, because a timing measurement on a shared runner is too noisy to gate a push on.
+
+It refuses to run on an instance that is not empty. The figures are ratios between a small instance and a larger one, and a run starting from four thousand projects compares four thousand against five: every column comes out flat and the conclusion is that nothing grows. That is worse than no measurement, and it is what the first run of the script did.
+
+---
+
 ## 18. What is deliberately not covered
 
 - Imports from external systems: they need credentials for those systems.

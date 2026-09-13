@@ -213,6 +213,29 @@ jobs:
         if: failure()
         run: docker compose -f docker/docker-compose.yml logs --tail 300
 
+  # Timing, so it runs on the schedule rather than on every push: a shared
+  # runner's clock is noisy enough that a per-push gate on it would teach
+  # everyone to rerun rather than to look. It needs an empty instance and
+  # gets one, since every job brings up its own stand.
+  scaling:
+    name: what grows with the instance
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --extra dev
+      - name: bring the stand up
+        run: docker compose -f docker/docker-compose.yml up -d --quiet-pull
+      - name: wait for the stand
+        run: uv run python scripts/check_stand.py
+      # An operation on one row whose cost follows the size of the table is
+      # reaching further than it was asked to. One does — VKJ-017 — and it is
+      # on the known list, so this is green until a second one appears.
+      - run: uv run python scripts/measure_scaling.py
+
   resilience:
     name: dependency outages
     runs-on: ubuntu-latest
