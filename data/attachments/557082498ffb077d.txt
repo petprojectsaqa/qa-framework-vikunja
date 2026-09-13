@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/labels/999999999
+as: session:ownermefailuredeletelabelsgw08f174598
+status: 404  (15 ms)
+domain code: 8002
+body: {
+  "code": 8002,
+  "message": "This label does not exist."
+}

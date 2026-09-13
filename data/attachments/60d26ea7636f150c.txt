@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/63/users
+as: session:ownersanexistinggrantalonegw21f63f92e
+sent: {
+  "username": "outsidersanexistinggrantalonegw2a9ac3e62",
+  "permission": 0
+}
+status: 201  (115 ms)
+body: {
+  "id": 9,
+  "username": "outsidersanexistinggrantalonegw2a9ac3e62",
+  "permission": 0,
+  "created": "2026-09-13T23:51:27.329236331Z",
+  "updated": "2026-09-13T23:51:27.329240199Z"
+}

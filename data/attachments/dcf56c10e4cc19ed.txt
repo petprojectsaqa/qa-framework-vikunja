@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/subscriptions/task/999999999
+as: session:ownerredeletesubscriptionsgw6af9cbc61
+status: 404  (5 ms)
+domain code: 4002
+body: {
+  "code": 4002,
+  "message": "This task does not exist"
+}

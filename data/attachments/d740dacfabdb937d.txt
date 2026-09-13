@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/8/tasks
+as: session:ownerpinneddefaultchromiumgw24a39119e
+sent: {
+  "title": "write the report"
+}
+status: 201  (76 ms)
+body: {
+  "id": 3,
+  "title": "write the report",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 8,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-13T23:51:33.630473756Z",
+  "updated": "2026-09-13T23:51:33.630477624Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 4,
+    "name": "",
+    "username": "ownerpinneddefaultchromiumgw24a39119e",
+    "created": "2026-09-13T23:51:33Z",
+    "updated": "2026-09-13T23:51:33Z"
+  }
+}

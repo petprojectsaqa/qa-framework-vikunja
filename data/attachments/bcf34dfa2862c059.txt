@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "readeraddtaskcontrolfirefoxgw06f935a24",
+  "password": "<redacted, 13 characters>",
+  "email": "readeraddtaskcontrolfirefoxgw06f935a24@qa.local"
+}
+status: 200  (272 ms)
+body: {
+  "id": 5,
+  "name": "",
+  "username": "readeraddtaskcontrolfirefoxgw06f935a24",
+  "created": "2026-09-13T23:51:30Z",
+  "updated": "2026-09-13T23:51:30.510346369Z"
+}

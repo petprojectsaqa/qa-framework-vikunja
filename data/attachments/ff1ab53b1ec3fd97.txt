@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerhesamemomentlandsoncegw5bce1c087",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerhesamemomentlandsoncegw5bce1c087@qa.local"
+}
+status: 200  (672 ms)
+body: {
+  "id": 78,
+  "name": "",
+  "username": "ownerhesamemomentlandsoncegw5bce1c087",
+  "created": "2026-09-13T23:51:31Z",
+  "updated": "2026-09-13T23:51:31.244350758Z"
+}

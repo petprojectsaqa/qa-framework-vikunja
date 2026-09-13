@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownertestcrossversionpygw4bde89e1e",
+  "password": "<redacted, 13 characters>"
+}
+status: 200  (559 ms)
+body: {
+  "token": "<redacted, 335 characters>"
+}
