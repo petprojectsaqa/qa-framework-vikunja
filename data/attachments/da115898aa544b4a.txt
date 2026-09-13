@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/108/tasks
+as: session:ownerhesamemomentlandsoncegw4255e1c25
+sent: {
+  "title": "labelled"
+}
+status: 201  (101 ms)
+body: {
+  "id": 47,
+  "title": "labelled",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 108,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-13T22:57:49.174122544Z",
+  "updated": "2026-09-13T22:57:49.174126301Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 83,
+    "name": "",
+    "username": "ownerhesamemomentlandsoncegw4255e1c25",
+    "created": "2026-09-13T22:57:48Z",
+    "updated": "2026-09-13T22:57:48Z"
+  }
+}

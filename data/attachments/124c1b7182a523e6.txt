@@ -1,0 +1,66 @@
+PUT http://localhost:3456/api/v1/projects
+as: session:ownerumberwithinitsprojectgw0b287950b
+sent: {
+  "title": "somewhere else"
+}
+status: 201  (121 ms)
+body: {
+  "id": 250,
+  "title": "somewhere else",
+  "description": "",
+  "identifier": "",
+  "hex_color": "",
+  "parent_project_id": 0,
+  "owner": {
+    "id": 186,
+    "name": "",
+    "username": "ownerumberwithinitsprojectgw0b287950b",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "is_archived": false,
+  "background_information": null,
+  "background_blur_hash": "",
+  "is_favorite": false,
+  "position": 16384000,
+  "views": [
+    {
+      "id": 1761,
+      "title": "List",
+      "project_id": 250,
+      "view_kind": "list",
+      "filter": {
+        "s": "",
+        "sort_by": null,
+        "order_by": null,
+        "filter": "done = false",
+        "filter_include_nulls": false
+      },
+      "position": 100,
+      "bucket_configuration_mode": "none",
+      "bucket_configuration": null,
+      "default_bucket_id": 0,
+      "done_bucket_id": 0,
+      "updated": "2026-09-13T22:58:04.690381708Z",
+      "created": "2026-09-13T22:58:04.688294923Z"
+    },
+    {
+      "id": 1763,
+      "title": "Gantt",
+      "project_id": 250,
+      "view_kind": "gantt",
+      "filter": null,
+      "position": 200,
+      "bucket_configuration_mode": "none",
+      "bucket_configuration": null,
+      "default_bucket_id": 0,
+      "done_bucket_id": 0,
+      "updated": "2026-09-13T22:58:04.734312276Z",
+      "created": "2026-09-13T22:58:04.733866752Z"
+    },
+    {
+      "id": 1765,
+      "title": "Table",
+      "project_id": 250,
+      "view_kind": "table",
+      "filter"... [799 more characters]

@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/projects/999999999/shares
-as: api-token:projects_shares.read_all
-status: 404  (48 ms)
-domain code: 3001
-body: {
-  "code": 3001,
-  "message": "This project does not exist."
-}

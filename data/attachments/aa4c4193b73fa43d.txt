@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerddtaskcontrolchromiumgw26344a3f9",
+  "password": "VikunjaQA123!"
+}
+status: 200  (300 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkzNDA4NjMsImlkIjo1LCJpc19hZG1pbiI6ZmFsc2UsImp0aSI6IjE1N2E5NGRjLWU3YTYtNDFkOS05NjE4LTI4YTFkYjAyNTkyZCIsInNpZCI6IjZhNDFiNzQxLWNhZjItNGIyMS1iZWZjLTMzYTRmN2NlNzc3MCIsInR5cGUiOjEsInVzZXJuYW1lIjoib3duZXJkZHRhc2tjb250cm9sY2hyb21pdW1ndzI2MzQ0YTNmOSJ9.8qtZXjIpBcvkpmNaGkId-xU_-DmUjamUrAxYdfsPxwY"
+}

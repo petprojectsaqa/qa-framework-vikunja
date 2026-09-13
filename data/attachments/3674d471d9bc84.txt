@@ -1,0 +1,6 @@
+DELETE http://localhost:3456/api/v1/user/settings/token/caldav/159
+as: session:bobatwasnotrevokedsayssogw14e0baf8a
+status: 200  (13 ms)
+body: {
+  "message": "The token was deleted successfully."
+}

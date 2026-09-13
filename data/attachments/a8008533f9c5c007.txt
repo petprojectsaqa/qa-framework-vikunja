@@ -1,0 +1,5 @@
+PUT http://localhost:3456/dav/projects/263/71b5fe08-20b0-4b2d-8420-b6297b419f6e.ics
+as: basic:ownerarclientreachestheapigw782dd58c0
+sent: b'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//vikunja-qa//tests//EN\r\nBEGIN:VTODO\r\nUID:71b5fe08-20b0-4b2d-8420-b6297b419f6e\r\nDTSTAMP:20260913T225805Z\r\nSUMMARY:renew the lease\r\nEND:VTODO\r\nEND:VCALENDAR\r\n'
+status: 201  (299 ms)
+body: 

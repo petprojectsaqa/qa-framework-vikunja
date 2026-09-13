@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/tasks/bulk
+as: session:ownerkupdatechangesnothinggw0990392f2
+sent: {
+  "task_ids": [
+    57,
+    58
+  ],
+  "title": "changed by a bulk write"
+}
+status: 403  (31 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "Forbidden"
+}

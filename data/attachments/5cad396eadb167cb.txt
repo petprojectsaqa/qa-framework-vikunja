@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerluredeletetaskslabelsgw001407711",
+  "password": "VikunjaQA123!",
+  "email": "ownerluredeletetaskslabelsgw001407711@qa.local"
+}
+status: 200  (816 ms)
+body: {
+  "id": 126,
+  "name": "",
+  "username": "ownerluredeletetaskslabelsgw001407711",
+  "created": "2026-09-13T22:57:54Z",
+  "updated": "2026-09-13T22:57:55.287305884Z"
+}

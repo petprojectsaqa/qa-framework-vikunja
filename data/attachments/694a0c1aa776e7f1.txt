@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v1/shares/l5jgpsMbWO3HDbvBTlfzkBpVC71qkKVTr5tfKQvq/auth
+as: session:owneredforchromiumreadonlygw1fad31d28
+sent: {
+  "hash": "l5jgpsMbWO3HDbvBTlfzkBpVC71qkKVTr5tfKQvq"
+}
+status: 200  (37 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODk1OTk0NzYsImhhc2giOiJsNWpncHNNYldPM0hEYnZCVGxmemtCcFZDNzFxa0tWVHI1dGZLUXZxIiwiaWQiOjEsInBlcm1pc3Npb24iOjAsInByb2plY3RfaWQiOjIxLCJzaGFyZWRCeUlEIjoxMSwidHlwZSI6Mn0.MyliLsMOV65s3wd6TRglvmf0GGtFzqTnO8x_9EX4_uU",
+  "id": 1,
+  "hash": "l5jgpsMbWO3HDbvBTlfzkBpVC71qkKVTr5tfKQvq",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-13T22:57:56Z",
+  "updated": "2026-09-13T22:57:56Z",
+  "project_id": 21
+}

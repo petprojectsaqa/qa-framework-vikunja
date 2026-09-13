@@ -1,0 +1,9 @@
+PUT http://localhost:3456/api/v2/projects
+as: session:ownerionusesdifferentverbsgw4eb5dac53
+sent: {
+  "title": "x"
+}
+status: 405  (6 ms)
+body: {
+  "message": "Method Not Allowed"
+}
