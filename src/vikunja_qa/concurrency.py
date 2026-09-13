@@ -13,6 +13,7 @@ finished, so a test can say which caller got what.
 from __future__ import annotations
 
 import threading
+import time
 from collections.abc import Callable, Sequence
 
 
@@ -51,8 +52,13 @@ def at_the_same_time[T](calls: Sequence[Callable[[], T]], *, timeout: float = 60
     ]
     for thread in threads:
         thread.start()
+    # One deadline for all of them, not one timeout each. `join(timeout)` per
+    # thread gives a worst case of callers times timeout — five minutes for
+    # six callers at the default — while the message below promises the
+    # timeout it was given.
+    deadline = time.monotonic() + timeout
     for thread in threads:
-        thread.join(timeout)
+        thread.join(max(0.0, deadline - time.monotonic()))
 
     still_running = [thread.name for thread in threads if thread.is_alive()]
     if still_running:

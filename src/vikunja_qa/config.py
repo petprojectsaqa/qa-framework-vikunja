@@ -9,6 +9,7 @@ which is how the CI job points the same suite at a different stand.
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,10 +27,13 @@ class Settings(BaseSettings):
     base_url: str = "http://localhost:3456"
 
     # --- stand services the suite asserts against --------------------------
+    # Object storage is deliberately absent: the suite asserts on what the
+    # product did with a file, through the product, so it never talks to
+    # MinIO itself. A setting nothing reads is worse than no setting, since
+    # VQA_MINIO_URL would look like it pointed the suite somewhere.
     mailpit_url: str = "http://localhost:18025"
     webhook_url: str = "http://localhost:18080"
     prometheus_url: str = "http://localhost:19090"
-    minio_url: str = "http://localhost:19000"
 
     # --- database, for integrity checks the API cannot make ----------------
     db_host: str = "localhost"
@@ -37,12 +41,6 @@ class Settings(BaseSettings):
     db_user: str = "vikunja"
     db_password: str = "vikunja"
     db_name: str = "vikunja"
-
-    # --- the product's own test-support API --------------------------------
-    # Matches VIKUNJA_SERVICE_TESTINGTOKEN on the stand. Used only for a
-    # one-off reset and for states the public API cannot reach; see
-    # docs/strategy.md, section 2.
-    testing_token: str = "qa-stand-testing-token"
 
     # --- timings -----------------------------------------------------------
     request_timeout: float = 15.0
@@ -62,7 +60,10 @@ class Settings(BaseSettings):
     # --- contract checking -------------------------------------------------
     # "strict" fails the test that produced a mismatch, "collect" records
     # them and reports at the end of the run, "off" disables the check.
-    contract_mode: str = "strict"
+    # Typed rather than left a plain string: a misspelt VQA_CONTRACT_MODE
+    # used to get as far as the session fixture and error every test in the
+    # run, when it is a usage mistake and should say so at once.
+    contract_mode: Literal["strict", "collect", "off"] = "strict"
 
     @property
     def api_v1(self) -> str:

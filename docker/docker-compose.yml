@@ -79,7 +79,7 @@ services:
       minio-init:
         condition: service_completed_successfully
       mailpit:
-        condition: service_started
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "/app/vikunja/vikunja", "healthcheck"]
       interval: 5s
@@ -154,6 +154,16 @@ services:
     ports:
       - "18025:8025"   # HTTP API and UI, the suite reads messages from here
       - "11025:1025"   # SMTP
+    # Every service the resilience layer stops needs one of these, because
+    # that is what `stand.wait_until_ready` waits for. Without it compose
+    # reports `running` the moment the process exists, the wait returns on
+    # its first poll, and a registration sent right after a restart is lost
+    # in the gap before mailpit is listening.
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
 
   # ---------------------------------------------------------------- webhook sink
   webhook-receiver:

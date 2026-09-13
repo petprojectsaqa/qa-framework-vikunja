@@ -43,6 +43,13 @@ testpaths = ["tests"]
 # without turning every test directory into a package.
 addopts = "-ra --strict-markers --strict-config --import-mode=importlib"
 filterwarnings = ["error"]
+# Every xfail in this suite pins a defect that is written up in docs/findings,
+# and each one says in its own reason that it should turn into an unexpected
+# pass when the product changes. Without this it could not: a non-strict xfail
+# has no outcome that ends a run red, so a finding that got fixed would leave
+# a stale marker behind and nothing would say so. The two markers that opt out
+# again are the ones measuring a timeout, and they say why where they stand.
+xfail_strict = true
 
 [tool.ruff]
 line-length = 100
@@ -59,4 +66,19 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "PT", "RET", "SIM", "AR
 python_version = "3.13"
 strict = true
 warn_unreachable = true
+# Checked: src and scripts, which is what CI runs and what the badge means.
+#
+# Not the tests, and the reason is worth stating rather than leaving a reader
+# to wonder. Two areas deliberately hold a module of the same name —
+# api/side_effects/test_mail.py beside resilience/dependencies/test_mail.py —
+# which is what pytest's importlib mode is for, and mypy refuses the pair as a
+# duplicate unless it is given explicit package bases. Given those, it then
+# resolves `vikunja_qa` through the editable install rather than through src,
+# and every `from vikunja_qa import stand` reads as a missing attribute. The
+# way out is to restructure the package or the test tree to suit the type
+# checker, and neither is worth doing to a suite that is already held by ruff,
+# 244 tests of its own, and a plugin that refuses a module breaking its
+# conventions. What the tests get instead is annotations that a reader can
+# rely on, not ones a tool has verified.
+mypy_path = "src"
 

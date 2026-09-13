@@ -68,7 +68,10 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "--resilience",
         action="store_true",
         default=False,
-        help="include the resilience layer, which stops stand containers; single process only",
+        help=(
+            "run the resilience layer, which stops stand containers, and nothing else; "
+            "single process only"
+        ),
     )
     group.addoption(
         "--fail-uncovered",
@@ -98,7 +101,20 @@ def pytest_configure(config: pytest.Config) -> None:
             "alongside other tests; run it without -n"
         )
 
+    narrowing = ", ".join(flag for flag in ("-k", "-m", "--deselect") if _narrowed_by(config, flag))
+    if config.getoption("fail_uncovered") and narrowing:
+        raise pytest.UsageError(
+            "--fail-uncovered asks whether every check of a priority ran, and "
+            f"{narrowing} means this run was never going to answer that; "
+            "drop one of the two"
+        )
+
     config.stash[state.LEDGER] = Ledger()
+
+
+def _narrowed_by(config: pytest.Config, flag: str) -> bool:
+    option = {"-k": "keyword", "-m": "markexpr", "--deselect": "deselect"}[flag]
+    return bool(getattr(config.option, option, None))
 
 
 def _is_distributed(config: pytest.Config) -> bool:
@@ -172,7 +188,18 @@ def _violations_among(
         if not isinstance(node, pytest.Item):
             continue
         placement = traceability.place(node.path, tests_root)
-        if placement is None or not placement.is_product_test:
+        if placement is None:
+            # Inside the suite but below no layer at all, `tests/test_x.py`.
+            # `place` cannot name a layer for it, and without this it would
+            # be treated like a file from outside the suite and escape every
+            # rule the others are held to.
+            if node.path.parent == tests_root:
+                listed = found.setdefault(_test_name(node), [])
+                problem = "sits directly in tests/; move it under a layer directory"
+                if problem not in listed:
+                    listed.append(problem)
+            continue
+        if not placement.is_product_test:
             continue
         problems = conventions.violations(
             placement, conventions.Declarations.of(node), findings_root
@@ -261,14 +288,22 @@ def _label(
 
 
 def _deselect_resilience(config: pytest.Config, items: list[pytest.Item], tests_root: Path) -> None:
-    if config.getoption("resilience"):
-        return
+    """Keep the resilience layer and the rest of the suite apart, in both
+    directions.
+
+    Without the flag the layer is left out, so a test that stops containers
+    cannot drift into an ordinary run. With the flag, everything else is
+    left out, because a container stopped for one test is stopped for every
+    test sharing the stand, and `testpaths` means a bare `pytest
+    --resilience` would otherwise run the whole suite around the outage.
+    """
+    wanted = config.getoption("resilience")
     kept: list[pytest.Item] = []
     dropped: list[pytest.Item] = []
     for item in items:
         placement = traceability.place(item.path, tests_root)
         in_layer = placement is not None and placement.layer == RESILIENCE_LAYER
-        (dropped if in_layer else kept).append(item)
+        (kept if in_layer == wanted else dropped).append(item)
     if dropped:
         config.hook.pytest_deselected(items=dropped)
         items[:] = kept
@@ -310,8 +345,16 @@ def pytest_runtest_call(item: pytest.Item) -> Generator[None, Any, Any]:
 
 
 def _count(item: pytest.Item, declared: conventions.Declarations | None) -> None:
-    if declared is not None:
-        item.config.stash[state.LEDGER].record_test(declared.codes, generated=declared.generated)
+    """Count this test once, however many times its body runs.
+
+    The browser layer runs with `--reruns 1`, and a rerun replays the same
+    item through the same hook. Counting both would put a number in the
+    matrix table that no reader could reconcile with the number of tests.
+    """
+    if declared is None or item.stash.get(state.COUNTED, False):
+        return
+    item.stash[state.COUNTED] = True
+    item.config.stash[state.LEDGER].record_test(declared.codes, generated=declared.generated)
 
 
 def pytest_sessionfinish(session: pytest.Session) -> None:
@@ -324,25 +367,56 @@ def pytest_sessionfinish(session: pytest.Session) -> None:
     if workeroutput is not None:
         workeroutput[_WIRE_KEY] = ledger.to_wire()
         return
+    _apply_contract_gate(session, ledger)
     _apply_coverage_gate(session, ledger)
+
+
+def _fail(session: pytest.Session) -> None:
+    """Turn a run that would otherwise pass red.
+
+    Only that: an existing failure is already the more useful signal, and
+    overwriting it would say less, not more.
+    """
+    if session.exitstatus == pytest.ExitCode.OK:
+        session.exitstatus = pytest.ExitCode.TESTS_FAILED
+
+
+def _apply_contract_gate(session: pytest.Session, ledger: Ledger) -> None:
+    """End the run red when it found a deviation the baseline does not know.
+
+    In strict mode a deviation fails the test that produced it, at the call
+    site, which is where it reads best. But the families that walk every
+    published operation run with contract checking set to record rather
+    than fail, because they provoke error paths deliberately — and those
+    are precisely the tests that reach the operations no hand-written test
+    touches, so they are where a new deviation is likeliest to turn up.
+    Without this, such a deviation was printed and the run stayed green,
+    while the baseline said in its own first paragraph that anything not on
+    the list fails the run.
+    """
+    new = len(ledger.distinct_violations())
+    if not new:
+        return
+    session.config.stash[state.NEW_DEVIATIONS] = new
+    _fail(session)
 
 
 def _apply_coverage_gate(session: pytest.Session, ledger: Ledger) -> None:
     """Turn a green run red when a required check ran no tests at all.
 
-    Runs on the controller, after every worker's ledger has been merged, and
-    only changes a run that would otherwise pass: an existing failure is
-    already the more useful signal.
+    Runs on the controller, after every worker's ledger has been merged.
     """
     priority = session.config.getoption("fail_uncovered")
-    if not priority:
+    if not priority or session.config.option.collectonly:
+        # Nothing ran, by request. Reporting every check as uncovered would
+        # be true and useless, and it exits non-zero on a run that did
+        # exactly what it was asked to.
         return
     missing = traceability.uncovered(ledger.covered, down_to=priority)
     if not missing:
         return
     session.config.stash[state.UNCOVERED] = missing
-    if session.exitstatus == pytest.ExitCode.OK:
-        session.exitstatus = pytest.ExitCode.TESTS_FAILED
+    _fail(session)
 
 
 def _absorb_validator(config: pytest.Config, ledger: Ledger) -> None:
@@ -355,8 +429,14 @@ def _absorb_validator(config: pytest.Config, ledger: Ledger) -> None:
 
 @pytest.hookimpl(optionalhook=True)
 def pytest_testnodedown(node: Any, error: Any) -> None:  # noqa: ARG001 - hook signature
-    """On the xdist controller: merge what one worker learned."""
-    data = getattr(node, "workeroutput", {}).get(_WIRE_KEY)
+    """On the xdist controller: merge what one worker learned.
+
+    Taken rather than read, because xdist calls this hook twice for a
+    worker that ended badly — once as it goes down and once as an error —
+    and merging the same counts twice would inflate every number in the
+    summary at exactly the moment the reader most needs it to be right.
+    """
+    data = getattr(node, "workeroutput", {}).pop(_WIRE_KEY, None)
     if data:
         node.config.stash[state.LEDGER].merge(Ledger.from_wire(data))
 
@@ -379,30 +459,49 @@ def pytest_terminal_summary(
     _report_coverage_gate(terminalreporter, config)
 
 
+def _count_against_the_summary(reporter: pytest.TerminalReporter, label: str, count: int) -> None:
+    """Make a gate show up in the line everyone actually reads.
+
+    A gate that sets the exit status after the run has finished leaves the
+    terminal disagreeing with it: pytest built its summary from the status
+    it was handed before, so a failed gate printed a red block and then
+    `925 passed` in green underneath. Counting it here puts it in the
+    summary line, where a reader looking at one line sees it.
+    """
+    reporter.stats.setdefault(label, []).extend([label] * count)
+
+
 def _report_contracts(reporter: pytest.TerminalReporter, ledger: Ledger) -> None:
     coverage = ledger.operation_coverage()
-    if not coverage:
-        return
-    reporter.write_sep("-", "contract coverage")
-    for label, (exercised, described) in coverage.items():
-        percent = round(100 * exercised / described) if described else 0
-        reporter.write_line(f"  {label}: {exercised}/{described} operations exercised ({percent}%)")
-    if ledger.accepted:
-        known = ", ".join(f"{name} x{count}" for name, count in sorted(ledger.accepted.items()))
-        reporter.write_line(f"  known deviations seen: {known}")
+    if coverage:
+        # Only when there is a picture to draw. A run that recorded a
+        # deviation without loading a description has nothing to say here,
+        # and used to return at this point — taking the list of new
+        # deviations below with it.
+        reporter.write_sep("-", "contract coverage")
+        for label, (exercised, described) in coverage.items():
+            percent = round(100 * exercised / described) if described else 0
+            reporter.write_line(
+                f"  {label}: {exercised}/{described} operations exercised ({percent}%)"
+            )
+        if ledger.accepted:
+            known = ", ".join(f"{name} x{count}" for name, count in sorted(ledger.accepted.items()))
+            reporter.write_line(f"  known deviations seen: {known}")
 
-    # The baseline may only shrink, so an entry nothing hits is a candidate for
-    # deletion. Said per run rather than as a verdict: a partial run naturally
-    # misses most of them, and only a full one is evidence.
-    unseen = [finding for finding in Baseline().findings if finding not in ledger.accepted]
-    if unseen:
-        reporter.write_line(f"  baseline entries not seen in this run: {', '.join(unseen)}")
+        # The baseline may only shrink, so an entry nothing hits is a
+        # candidate for deletion. Said per run rather than as a verdict: a
+        # partial run naturally misses most of them, and only a full one is
+        # evidence.
+        unseen = [finding for finding in Baseline().findings if finding not in ledger.accepted]
+        if unseen:
+            reporter.write_line(f"  baseline entries not seen in this run: {', '.join(unseen)}")
 
     distinct = ledger.distinct_violations()
     if not distinct:
         reporter.write_line("  no new contract violations")
         return
-    reporter.write_sep("-", f"NEW contract violations ({len(distinct)})")
+    reporter.write_sep("=", f"NEW contract violations ({len(distinct)})", red=True, bold=True)
+    _count_against_the_summary(reporter, "new contract deviations", len(distinct))
     for violation in distinct:
         reporter.write_line(
             f"  [{violation.get('spec')}] {violation.get('operation')} -> "
@@ -432,6 +531,7 @@ def _report_coverage_gate(reporter: pytest.TerminalReporter, config: pytest.Conf
         return
     priority = config.getoption("fail_uncovered")
     reporter.write_sep("=", f"coverage gate {priority} failed", red=True, bold=True)
+    _count_against_the_summary(reporter, "uncovered matrix checks", len(missing))
     for check in missing:
         reporter.write_line(f"  {check.code} ({check.priority}) {check.title}: no test ran")
     reporter.write_line(

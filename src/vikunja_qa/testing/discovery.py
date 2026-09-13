@@ -63,7 +63,9 @@ def permission_catalogue() -> Any:
     """
     settings = get_settings()
     mail = MailpitClient(settings.mailpit_url, timeout=_COLLECTION_MAIL_TIMEOUT)
-    reader = ActorFactory(settings, mail, label="catalogue").user("catalogue")
+    reader = ActorFactory(
+        settings, mail, label="catalogue", mail_timeout=_COLLECTION_MAIL_TIMEOUT
+    ).user("catalogue")
     return reader.api.tokens.routes().body
 
 

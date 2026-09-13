@@ -13,6 +13,7 @@ Exit code 0 means the stand is ready. Anything else means it is not.
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import time
@@ -21,12 +22,24 @@ import urllib.request
 import uuid
 from collections.abc import Callable
 
-VIKUNJA = "http://localhost:3456"
-MAILPIT = "http://localhost:18025"
-WEBHOOKS = "http://localhost:18080"
-MINIO = "http://localhost:19000"
-PROMETHEUS = "http://localhost:19090"
-TESTING_TOKEN = "qa-stand-testing-token"
+
+def _address(name: str, default: str) -> str:
+    """The same VQA_ variable the suite reads, with the same default.
+
+    The gate has to look at the stand the tests are about to use. It cannot
+    import Settings — it runs before the project's dependencies are
+    necessarily installed — so it reads the environment directly, and the
+    defaults here are the ones in vikunja_qa.config.
+    """
+    return os.environ.get(f"VQA_{name}", default).rstrip("/")
+
+
+VIKUNJA = _address("BASE_URL", "http://localhost:3456")
+MAILPIT = _address("MAILPIT_URL", "http://localhost:18025")
+WEBHOOKS = _address("WEBHOOK_URL", "http://localhost:18080")
+PROMETHEUS = _address("PROMETHEUS_URL", "http://localhost:19090")
+MINIO = _address("MINIO_URL", "http://localhost:19000")
+TESTING_TOKEN = os.environ.get("VQA_TESTING_TOKEN", "qa-stand-testing-token")
 
 TIMEOUT = 10
 BOOT_DEADLINE = 120
@@ -100,11 +113,18 @@ def check_infrastructure() -> None:
     wait_for("prometheus", f"{PROMETHEUS}/-/ready")
 
 
-def check_api_versions() -> dict[str, str]:
-    """Locate both API specs. The v2 spec is generated at runtime, so its
-    exact path is discovered rather than assumed."""
+#: The two descriptions, at the exact addresses vikunja_qa.testing.discovery
+#: reads. Checked here rather than anywhere else they might also be served:
+#: four generated families are built from these two documents at collection
+#: time, and a module that cannot read one skips itself. A gate that passed
+#: on a neighbouring path would let the whole generated half of the suite
+#: disappear quietly, which is the failure this gate exists to prevent.
+SPEC_URLS = {"v1": "/api/v1/docs.json", "v2": "/api/v2/openapi.json"}
+
+
+def check_api_versions() -> None:
+    """Prove both API descriptions are readable and describe something."""
     print("api specs")
-    found: dict[str, str] = {}
 
     status, info = request("GET", f"{VIKUNJA}/api/v1/info")
     if status != 200:
@@ -112,46 +132,38 @@ def check_api_versions() -> dict[str, str]:
     version = info.get("version") if isinstance(info, dict) else "?"
     print(f"  ok    product version {version}")
 
-    candidates = [
-        "/api/v1/swagger/doc.json",
-        "/api/v1/docs.json",
-        "/api/v2/openapi.json",
-        "/api/v2/openapi.yaml",
-        "/api/v2/docs.json",
-        "/api/v2/schema",
-    ]
-    for path in candidates:
-        try:
-            status, payload = request("GET", f"{VIKUNJA}{path}")
-        except StandNotReadyError:
-            continue
-        if status == 200 and isinstance(payload, (dict, str)) and payload:
-            marker = ""
-            if isinstance(payload, dict):
-                if "openapi" in payload:
-                    marker = f"openapi {payload['openapi']}"
-                elif "swagger" in payload:
-                    marker = f"swagger {payload['swagger']}"
-                count = len(payload.get("paths", {}))
-                marker += f", {count} paths"
-            print(f"  ok    spec at {path} ({marker})")
-            found[path] = marker
-    if not found:
-        print("  WARN  no spec endpoint found among the candidates")
-    return found
+    for label, path in SPEC_URLS.items():
+        status, payload = request("GET", f"{VIKUNJA}{path}")
+        if status != 200 or not isinstance(payload, dict):
+            raise StandNotReadyError(f"the {label} description at {path} returned {status}")
+        paths = payload.get("paths")
+        if not isinstance(paths, dict) or not paths:
+            raise StandNotReadyError(f"the {label} description at {path} describes no paths")
+        dialect = payload.get("openapi") or payload.get("swagger") or "?"
+        print(f"  ok    {label} description at {path} ({dialect}, {len(paths)} paths)")
 
 
-def check_testing_api() -> None:
-    print("testing api")
-    status, _ = request(
-        "DELETE",
-        f"{VIKUNJA}/api/v1/test/all",
-        raw_auth=TESTING_TOKEN,
-    )
+def reset_the_stand() -> None:
+    """Empty every table, once, before the run begins.
+
+    This is destructive, and it is the only use the suite makes of the
+    product's testing API: the one reset that docs/strategy.md, section 2
+    allows. Nothing during a run touches it, and the generated sweep
+    refuses these routes by name so that walking every published operation
+    cannot wipe the stand out from under itself.
+
+    Do not run this script while a suite is running.
+
+    A refusal is reported and not fatal. Isolation in this suite comes from
+    ownership rather than from a clean database, so a stand that keeps
+    yesterday's rows is still a stand the tests can run against.
+    """
+    print("reset (destructive: empties every table)")
+    status, _ = request("DELETE", f"{VIKUNJA}/api/v1/test/all", raw_auth=TESTING_TOKEN)
     if status in (200, 204):
-        print("  ok    truncate endpoint answers")
+        print("  ok    every table emptied")
     else:
-        print(f"  WARN  truncate endpoint returned {status}")
+        print(f"  WARN  the reset endpoint returned {status}; the run continues on existing data")
 
 
 def confirm_email(email: str) -> None:
@@ -248,21 +260,32 @@ def check_user_path() -> None:
 
 
 def check_metrics_scrape() -> None:
+    """Prove Prometheus is actually scraping the product.
+
+    Waited for and then required, not warned about. The side-effect tests
+    assert on counters read out of Prometheus, so a target that is down is
+    a stand that is not ready, and saying so here names the cause once
+    instead of letting it surface as a test failure that blames the
+    product.
+    """
     print("observability")
-    status, payload = request("GET", f"{PROMETHEUS}/api/v1/targets")
-    if status != 200 or not isinstance(payload, dict):
-        raise StandNotReadyError(f"prometheus targets unreadable: {status}")
-    active = payload.get("data", {}).get("activeTargets", [])
-    vikunja_targets = [t for t in active if t.get("labels", {}).get("job") == "vikunja"]
-    if not vikunja_targets:
-        print("  WARN  prometheus has no vikunja target yet")
-        return
-    health = vikunja_targets[0].get("health")
-    if health == "up":
-        print("  ok    prometheus scrapes vikunja")
-    else:
-        err = vikunja_targets[0].get("lastError", "")
-        print(f"  WARN  vikunja target is {health}: {err}")
+    deadline = time.monotonic() + BOOT_DEADLINE
+    last = "prometheus has no vikunja target yet"
+    while time.monotonic() < deadline:
+        status, payload = request("GET", f"{PROMETHEUS}/api/v1/targets")
+        if status != 200 or not isinstance(payload, dict):
+            last = f"prometheus targets unreadable: {status}"
+        else:
+            active = payload.get("data", {}).get("activeTargets", [])
+            for target in active:
+                if target.get("labels", {}).get("job") != "vikunja":
+                    continue
+                if target.get("health") == "up":
+                    print("  ok    prometheus scrapes vikunja")
+                    return
+                last = f"vikunja target is {target.get('health')}: {target.get('lastError', '')}"
+        time.sleep(1)
+    raise StandNotReadyError(last)
 
 
 def with_retries(step: Callable[[], None], attempts: int = 3) -> None:
@@ -290,7 +313,7 @@ def main() -> int:
     try:
         check_infrastructure()
         check_api_versions()
-        check_testing_api()
+        reset_the_stand()
         with_retries(check_user_path)
         check_metrics_scrape()
     except StandNotReadyError as exc:

@@ -46,12 +46,17 @@ class ActorFactory:
         *,
         label: str = "test",
         hooks: list[ResponseHook] | None = None,
+        mail_timeout: float | None = None,
     ) -> None:
         self._settings = settings
         self._mail = mail
         self._label = self._normalise(label)
         self._hooks = hooks if hooks is not None else []
-        self._created: list[Actor] = []
+        #: How long to wait for the welcome mail. Overridable because
+        #: registering during collection, on a runner where nothing is warm
+        #: yet, needs more patience than registering mid-run; the client's
+        #: own default is never reached, since this is always passed on.
+        self._mail_timeout = settings.mail_timeout if mail_timeout is None else mail_timeout
 
     # --- naming -------------------------------------------------------------
 
@@ -108,7 +113,7 @@ class ActorFactory:
 
             # The mailer is on, so the account is parked until the token
             # from the welcome message is spent.
-            token = self._mail.confirmation_token(email, timeout=self._settings.mail_timeout)
+            token = self._mail.confirmation_token(email, timeout=self._mail_timeout)
             confirmed = unauthenticated.post("/user/confirm", json={"token": token})
             if not confirmed.ok:
                 raise RegistrationError(f"could not confirm {email}\n{confirmed.describe()}")
@@ -119,7 +124,7 @@ class ActorFactory:
             if not logged_in.ok or not logged_in.get("token"):
                 raise RegistrationError(f"could not log in {username}\n{logged_in.describe()}")
 
-            actor = self._actor(
+            return self._actor(
                 role,
                 SessionToken(str(logged_in["token"]), subject=username),
                 username=username,
@@ -128,13 +133,6 @@ class ActorFactory:
                 user_id=user_id,
             )
 
-        self._created.append(actor)
-        return actor
-
     def users(self, *roles: str) -> tuple[Actor, ...]:
         """Several accounts at once, one per named role."""
         return tuple(self.user(role) for role in roles)
-
-    @property
-    def created(self) -> list[Actor]:
-        return list(self._created)

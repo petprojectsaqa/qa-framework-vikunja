@@ -98,10 +98,16 @@ class Ledger:
         }
 
     def distinct_violations(self) -> list[dict[str, Any]]:
-        """New contract violations, once per operation, status and kind.
+        """New contract violations, once per distinct deviation.
 
         The same deviation is usually hit many times across workers; the
         report is for reading, so it lists each shape once.
+
+        The detail is part of what makes a deviation distinct, and leaving
+        it out of the key would undo the reason the validator reports one
+        violation per mismatch: two different mismatches on one operation
+        would collapse into one line, and the count above the list would
+        say one where there are two.
         """
         seen: set[tuple[Any, ...]] = set()
         distinct = []
@@ -111,6 +117,7 @@ class Ledger:
                 violation.get("operation"),
                 violation.get("status"),
                 violation.get("kind"),
+                violation.get("detail"),
             )
             if key not in seen:
                 seen.add(key)

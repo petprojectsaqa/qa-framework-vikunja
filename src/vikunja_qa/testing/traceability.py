@@ -52,7 +52,7 @@ CHECKS: dict[str, Check] = {
         Check("ERR", "Domain error codes are preserved", "P0"),
         Check("SCP", "API token scopes hold", "P0"),
         Check("ACL", "Access matrix", "P0"),
-        Check("INT", "Data integrity", "P0"),
+        Check("INT", "Data integrity, verified in the database", "P0"),
         Check("CVE", "Regressions for published vulnerabilities", "P0"),
         Check("FUN", "Business rules", "P1"),
         Check("NEG", "Boundaries and invalid input", "P1"),
@@ -61,7 +61,7 @@ CHECKS: dict[str, Check] = {
         Check("UI", "Behaviour only a browser can check", "P1"),
         Check("CNC", "Concurrency and idempotency", "P2"),
         Check("I18", "Languages, time zones and formats", "P2"),
-        Check("DAV", "Calendar protocol", "P2"),
+        Check("DAV", "Calendar protocol, a thin slice", "P2"),
         Check("RES", "Behaviour when a dependency fails", "P2"),
     )
 }

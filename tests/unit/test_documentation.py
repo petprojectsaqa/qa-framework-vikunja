@@ -129,6 +129,55 @@ def test_every_finding_a_test_names_is_either_written_up_or_deliberately_held() 
     assert not unwritten, f"tests name findings with no write-up: {unwritten}"
 
 
+def _matrix_row(matrix_name: str, check: traceability.Check) -> str:
+    matrix = (DOCS / matrix_name).read_text(encoding="utf-8")
+    anchor = f'<a id="{check.anchor}"></a>'
+    rows = [line for line in matrix.splitlines() if anchor in line]
+    assert len(rows) == 1, (
+        f"{check.code} should have exactly one row carrying {anchor} in {matrix_name}, "
+        f"and has {len(rows)}; a report link lands on that anchor"
+    )
+    return rows[0]
+
+
+@pytest.mark.parametrize("matrix_name", ["coverage-matrix.md", "coverage-matrix.ru.md"])
+@pytest.mark.parametrize("check", traceability.CHECKS.values(), ids=lambda check: check.code)
+def test_every_check_has_a_row_in_both_matrices(
+    check: traceability.Check, matrix_name: str
+) -> None:
+    """The connection `traceability` said it had, and did not.
+
+    That module's docstring has always claimed a test confirms every check
+    has an anchor in both language versions of the matrix. None did. So a
+    new check, or a renamed heading, produced a dead `tms` link in every
+    Allure report with nothing to catch it.
+    """
+    row = _matrix_row(matrix_name, check)
+
+    assert check.priority in row, (
+        f"{check.code} is {check.priority} in the code and the {matrix_name} row disagrees: {row}"
+    )
+
+
+@pytest.mark.parametrize("check", traceability.CHECKS.values(), ids=lambda check: check.code)
+def test_every_check_reads_the_same_in_the_code_and_in_the_matrix(
+    check: traceability.Check,
+) -> None:
+    """The English matrix only: the Russian one translates the titles, and
+    holding a translation to an English string would be a rule against
+    translating.
+
+    Two rows had already drifted when this was written, so the terminal
+    table printed one wording while the report linked to a row saying
+    another.
+    """
+    row = _matrix_row("coverage-matrix.md", check)
+
+    assert check.title in row, (
+        f"{check.code} reads {check.title!r} in the code and the matrix row says: {row}"
+    )
+
+
 def test_the_held_findings_are_not_quietly_published() -> None:
     """The other direction: a finding marked held here must have no folder,
     or the reason it was held has been lost."""

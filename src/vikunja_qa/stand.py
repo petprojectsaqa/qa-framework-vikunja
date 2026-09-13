@@ -23,8 +23,10 @@ from vikunja_qa.waiting import wait_until
 
 COMPOSE_FILE = Path(__file__).resolve().parent.parent.parent / "docker" / "docker-compose.yml"
 
-#: Never stop these. The product itself is the thing under test, and the
-#: database holds everything every other test has built.
+#: Never stop these. The product is the thing under test, so taking it away
+#: leaves nothing to ask a question of. Its dependencies are all fair game,
+#: the database included: its data lives in a volume that outlives a stop,
+#: which is what makes "take the database away" a test rather than a reset.
 PROTECTED = frozenset({"vikunja"})
 
 
@@ -77,15 +79,22 @@ def wait_until_ready(service: str, timeout: float = 120) -> None:
     Restarting a container is not the same as it being usable again, and
     handing a half-started dependency to the next test produces a failure
     that has nothing to do with what that test checks. The mail trap is
-    the clearest case: it comes back empty and a registration sent a
+    the clearest case: it comes back empty, and a registration sent a
     moment too early is simply gone.
+
+    Which is why `running` is not accepted as an answer. Compose reports
+    that the instant the container process exists, long before anything is
+    listening, so every service the suite stops carries a healthcheck in
+    docker-compose.yml and this waits for that. A service without one waits
+    for nothing, and this used to be exactly that: mailpit had no
+    healthcheck, so the helper written to stop the mail race returned true
+    on its first poll.
     """
 
     def ready() -> bool | None:
-        state = _state_of(service)
-        return True if state in ("healthy", "running") else None
+        return True if _state_of(service) == "healthy" else None
 
-    wait_until(ready, timeout=timeout, because=f"{service} is answering again")
+    wait_until(ready, timeout=timeout, because=f"{service} reports itself healthy again")
 
 
 def health_of(base_url: str, timeout: float = 5) -> requests.Response | None:

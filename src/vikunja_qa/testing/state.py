@@ -21,5 +21,12 @@ VALIDATOR = pytest.StashKey[ContractValidator]()
 #: What a matrix-bound test declared: read at collection, counted when it runs.
 DECLARED = pytest.StashKey[Declarations]()
 
+#: Set on an item once its coverage has been counted, so a test the rerun
+#: plugin runs a second time is not counted twice.
+COUNTED = pytest.StashKey[bool]()
+
 #: Checks the coverage gate found with no tests, kept for the terminal summary.
 UNCOVERED = pytest.StashKey[list[Check]]()
+
+#: New contract deviations the run ended with, kept for the terminal summary.
+NEW_DEVIATIONS = pytest.StashKey[int]()
