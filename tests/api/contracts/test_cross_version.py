@@ -116,7 +116,10 @@ class TestDeliberateDifferences:
     """Differences the product chose, pinned so a change is noticed."""
 
     @pytest.mark.covers("NEG")
+    @pytest.mark.usefixtures("contracts_ignore_requests")
     def test_validation_answers_with_different_statuses(self, scene: SceneBuilder) -> None:
+        """An empty title is the point, and the description forbids one, so
+        what this sends is not held to it. What comes back still is."""
         owner = scene.done().owner
 
         v1 = owner.v1.put("/projects", json={"title": ""})

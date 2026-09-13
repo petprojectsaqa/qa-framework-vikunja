@@ -149,6 +149,10 @@ Four families that nobody writes by hand.
 
 **CON, contract conformance.** The descriptions are fetched from the running instance: v1 serves Swagger 2.0, v2 serves OpenAPI 3.1 generated on the fly by Huma. Every response to every call made by any test is validated against the schema for its operation, in the transport layer rather than in a test of its own. On top of that, one sweep walks every read operation.
 
+Both directions, since a contract has two sides. What the suite *sends* is held to the description too, so a client that drifted — a field renamed, a type changed — is caught by the description rather than by a puzzling status code somewhere downstream. Tests whose subject is a malformed body stand that check down for themselves and keep the response check, because an endpoint handed nonsense still owes its caller the shape it promised.
+
+How much that catches depends on the description, and the two differ sharply. Of v2's 79 request schemas, 68 forbid properties they do not name, so a renamed field is reported at once. Of v1's 60, **none** names a required field and **none** forbids an extra one: a v1 body can carry anything as long as what it does name is the right type. That is the ceiling on this check for v1, and it is a property of the description rather than of the suite.
+
 **AUT, a credential is required.** Every operation, called with no authorization header. The expectation is 401 and nothing leaked in the body. The list of deliberate exceptions is explicit and is itself checked for staleness, so an endpoint that quietly becomes public cannot slip through.
 
 **SCP, the token scope matrix.** An API token carries permissions as a map of area to actions, and the product publishes the full set of valid keys on an endpoint of its own. So the matrix is built from the product's answer: for each area a token is issued with exactly one action, and what that action allows must pass while everything next to it is refused.

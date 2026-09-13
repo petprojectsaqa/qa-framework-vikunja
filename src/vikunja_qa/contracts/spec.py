@@ -41,6 +41,11 @@ class Operation:
     #: different claims, and conflating them made the suite report a
     #: description as wrong about a status it had got right.
     responses: dict[str, dict[str, Any] | None] = field(default_factory=dict)
+    #: The schema the description gives for the body a caller sends, or None
+    #: where it describes no body. Responses are what the product owes the
+    #: caller; this is what the caller owes the product, and until now the
+    #: suite held only one side of that to the contract.
+    request_schema: dict[str, Any] | None = None
 
     @property
     def key(self) -> str:
@@ -103,6 +108,7 @@ class SpecIndex:
                     path_template=template,
                     operation_id=str(definition.get("operationId") or ""),
                     responses=self._responses_of(definition),
+                    request_schema=self._request_schema_of(definition),
                 )
                 self._operations[(operation.method, template)] = operation
 
@@ -128,6 +134,26 @@ class SpecIndex:
                         break
             found[str(status)] = schema if isinstance(schema, dict) else None
         return found
+
+    @staticmethod
+    def _request_schema_of(definition: dict[str, Any]) -> dict[str, Any] | None:
+        """The schema for the body a caller sends, out of either spec shape.
+
+        Swagger 2.0 puts it in a parameter with `in: body`; OpenAPI 3.x gives
+        it a `requestBody` with a media type, the same as a response. Sixty
+        v1 operations describe one and eighty-nine v2 operations do.
+        """
+        for parameter in definition.get("parameters") or []:
+            if isinstance(parameter, dict) and parameter.get("in") == "body":
+                schema = parameter.get("schema")
+                return schema if isinstance(schema, dict) else None
+
+        content = (definition.get("requestBody") or {}).get("content") or {}
+        for media_type, media in content.items():
+            if "json" in media_type and isinstance(media, dict):
+                schema = media.get("schema")
+                return schema if isinstance(schema, dict) else None
+        return None
 
     # --- lookup -------------------------------------------------------------
 

@@ -122,6 +122,19 @@ def contracts_collect_only(contracts: ContractValidator) -> Iterator[ContractVal
 
 
 @pytest.fixture
+def contracts_ignore_requests(contracts: ContractValidator) -> Iterator[ContractValidator]:
+    """Stop checking what this test sends, and only that.
+
+    For tests whose subject is a malformed body. What comes back is still
+    held to the contract, which is the half worth keeping: an endpoint
+    handed nonsense still owes its caller an error in the shape it
+    promised.
+    """
+    with contracts.ignoring_requests():
+        yield contracts
+
+
+@pytest.fixture
 def contracts_suspended(contracts: ContractValidator) -> Iterator[ContractValidator]:
     """Check no contracts for this test.
 

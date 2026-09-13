@@ -20,7 +20,15 @@ from vikunja_qa.actors.actor import Actor
 from vikunja_qa.domain.permissions import Permission
 from vikunja_qa.scenes import Scene, SceneBuilder
 
-pytestmark = pytest.mark.covers("NEG")
+pytestmark = [
+    pytest.mark.covers("NEG"),
+    # Every request here carries a permission that is not a permission.
+    # Sending one is the subject, so holding what is sent to the
+    # description would be reporting the test rather than the product.
+    # What comes back is still checked, and that is the half worth
+    # keeping: a refusal still owes its caller the shape it promised.
+    pytest.mark.usefixtures("contracts_ignore_requests"),
+]
 
 #: Every shape that is not a permission level, with the name it goes by in
 #: a failure message.

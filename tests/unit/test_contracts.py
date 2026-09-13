@@ -486,3 +486,106 @@ def _response(body: object) -> ApiResponse:
         body=body,
         elapsed_ms=1.0,
     )
+
+
+class TestWhatTheSuiteSends:
+    """The other half of a contract.
+
+    A response check says the product kept its word. Nothing said the
+    caller asked for something the description admits — so a client that
+    drifted from the description, a field renamed or a type changed, went
+    on sending the wrong thing and the suite went on calling it a pass.
+
+    It fails in two directions and both are worth knowing. Usually it is
+    the suite that drifted. Sometimes it is the description omitting
+    something the product happily accepts, which is a defect in the
+    description of exactly the kind this project collects.
+    """
+
+    DOCUMENT = {
+        "swagger": "2.0",
+        "basePath": "/api/v1",
+        "paths": {
+            "/projects/{id}/users": {
+                "put": {
+                    "operationId": "addUser",
+                    "parameters": [
+                        {
+                            "in": "body",
+                            "name": "grant",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {"type": "string"},
+                                    "permission": {"type": "integer", "enum": [0, 1, 2]},
+                                },
+                            },
+                        }
+                    ],
+                    "responses": {"200": {"schema": {}}},
+                }
+            }
+        },
+    }
+
+    def _validator(self) -> ContractValidator:
+        spec = SpecIndex(self.DOCUMENT, label="v1", base_path="/api/v1")
+        return ContractValidator([spec], mode=Mode.COLLECT, baseline=Baseline(()))
+
+    @staticmethod
+    def _sent(body: object) -> ApiResponse:
+        return ApiResponse(
+            method="PUT",
+            url="http://host/api/v1/projects/7/users",
+            status=200,
+            headers={},
+            body={},
+            elapsed_ms=1.0,
+            request_body=body,
+        )
+
+    def test_a_body_the_description_admits_passes(self) -> None:
+        validator = self._validator()
+
+        validator(self._sent({"username": "someone", "permission": 1}))
+
+        assert validator.violations == []
+
+    def test_a_body_the_description_forbids_is_reported(self) -> None:
+        validator = self._validator()
+
+        validator(self._sent({"username": "someone", "permission": "1"}))
+
+        kinds = [violation.kind for violation in validator.violations]
+        assert "request body mismatch" in kinds, f"nothing was said about the body: {kinds}"
+
+    def test_the_check_can_be_stood_down_for_a_deliberate_malformation(self) -> None:
+        """Without this a test whose subject is a malformed body reports
+        itself, which is the surest way to have the whole check switched
+        off instead."""
+        validator = self._validator()
+
+        with validator.ignoring_requests():
+            validator(self._sent({"permission": [1]}))
+
+        assert validator.violations == []
+
+    def test_standing_it_down_leaves_the_answer_checked(self) -> None:
+        """The narrowness is the point: an endpoint handed nonsense still
+        owes its caller a response in the shape it promised."""
+        validator = self._validator()
+
+        with validator.ignoring_requests():
+            undocumented = self._sent({"permission": [1]})
+            validator(
+                ApiResponse(
+                    method="DELETE",
+                    url=undocumented.url,
+                    status=200,
+                    headers={},
+                    body={},
+                    elapsed_ms=1.0,
+                )
+            )
+
+        assert [violation.kind for violation in validator.violations] == ["undocumented operation"]

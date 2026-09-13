@@ -89,6 +89,9 @@ class ContractValidator:
         self._violations: list[Violation] = []
         self._accepted: list[tuple[Violation, Deviation]] = []
         self._called: Counter[str] = Counter()
+        #: Whether to hold what the suite *sends* to the description too.
+        #: Switched off around tests whose subject is a malformed body.
+        self._check_requests = True
 
     @contextmanager
     def collecting(self) -> Iterator[None]:
@@ -127,6 +130,26 @@ class ContractValidator:
         finally:
             self._mode = previous
 
+    @contextmanager
+    def ignoring_requests(self) -> Iterator[None]:
+        """Stop holding what the suite sends to the description, and only that.
+
+        For tests whose subject is a malformed body: a permission that is a
+        list, a field of the wrong type, a value outside its enum. Sending
+        one is the whole point, so reporting it as a deviation would be
+        reporting the test.
+
+        Narrower than `suspended` on purpose. What comes *back* from such a
+        call is still held to the contract, and that is often the more
+        interesting half — an endpoint handed nonsense still owes its caller
+        an error in the shape it promised.
+        """
+        previous, self._check_requests = self._check_requests, False
+        try:
+            yield
+        finally:
+            self._check_requests = previous
+
     # --- the hook -----------------------------------------------------------
 
     def __call__(self, response: ApiResponse) -> None:
@@ -154,7 +177,36 @@ class ContractValidator:
         with self._lock:
             self._called[f"{spec.label} {operation.key}"] += 1
 
+        self._check_sent(spec, operation, response)
         self._check(spec, operation, response)
+
+    def _check_sent(self, spec: SpecIndex, operation: Operation, response: ApiResponse) -> None:
+        """Hold the body the suite sent to the same description.
+
+        The other half of a contract, and the half that was missing. A
+        response check says the product kept its word; this says the caller
+        asked for something the description admits. Either side being wrong
+        is worth knowing, and they fail differently: a body the description
+        forbids is usually the suite drifting — a field renamed, a type
+        changed — but it is sometimes the description omitting something the
+        product happily accepts, which is a defect in the description.
+        """
+        if not self._check_requests or operation.request_schema is None:
+            return
+        if not isinstance(response.request_body, (dict, list)):
+            return
+
+        for error in self._validate(spec, operation.request_schema, response.request_body):
+            self._report(
+                Violation(
+                    spec=spec.label,
+                    operation=operation.key,
+                    status=response.status,
+                    kind="request body mismatch",
+                    detail=error,
+                    url=response.url,
+                )
+            )
 
     # --- checks -------------------------------------------------------------
 
