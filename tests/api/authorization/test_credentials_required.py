@@ -28,7 +28,7 @@ import pytest
 from vikunja_qa.actors.actor import Actor
 from vikunja_qa.actors.factory import ActorFactory
 from vikunja_qa.config import Settings
-from vikunja_qa.contracts.sweep import Call, unused_public_entries
+from vikunja_qa.contracts.sweep import Call, unused_public_entries, unused_substitutions
 from vikunja_qa.testing import discovery
 from vikunja_qa.transport.client import ResponseHook
 from vikunja_qa.transport.mailpit import MailpitClient
@@ -82,6 +82,19 @@ def test_no_stale_entries_in_the_public_allowlist() -> None:
     stale = unused_public_entries(list(discovery.described_specs()))
 
     assert not stale, f"these allowlist entries match no operation any more: {stale}"
+
+
+def test_no_stale_entries_in_the_parameter_substitutions() -> None:
+    """The other table the sweep is built on, held to the same rule.
+
+    These name the path parameters that are words rather than identifiers.
+    A key that stops matching means the parameter was renamed, and from
+    then on the sweep fills it with a number — which asks a different
+    question of each version and looks like the versions disagreeing.
+    """
+    stale = unused_substitutions(list(discovery.described_specs()))
+
+    assert not stale, f"these substitutions match no path parameter any more: {stale}"
 
 
 def test_the_sweep_covers_both_descriptions() -> None:

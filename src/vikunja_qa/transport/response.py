@@ -30,6 +30,12 @@ class ApiResponse:
     #: The body exactly as received. For binary payloads such as attachments,
     #: where decoding to text and back would not return the same bytes.
     content: bytes = field(default=b"", repr=False)
+    #: Whether the body parsed as JSON. `body` falls back to the raw text
+    #: when it did not, and the two cases look identical from the outside:
+    #: a product answering `"ok"` and a product answering an HTML error page
+    #: both leave a string behind. The contract check needs to tell them
+    #: apart, because only one of them is a body it can hold to a schema.
+    parsed: bool = True
 
     # --- reading the payload ------------------------------------------------
 

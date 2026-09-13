@@ -7,11 +7,19 @@ starts. A test tool with no tests of its own is not one.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
-from vikunja_qa.contracts.baseline import Baseline, Deviation
+from vikunja_qa.contracts.baseline import KNOWN, Baseline, Deviation
 from vikunja_qa.contracts.spec import SpecIndex, resolvable
-from vikunja_qa.contracts.validator import ContractValidator, Mode, Violation
+from vikunja_qa.contracts.validator import (
+    ContractValidator,
+    ContractViolationError,
+    Mode,
+    Violation,
+)
+from vikunja_qa.testing import traceability
 from vikunja_qa.transport.response import ApiResponse
 
 SWAGGER_2 = {
@@ -196,56 +204,183 @@ class TestBaseline:
 
     def test_every_entry_names_a_finding(self) -> None:
         """No entry may exist just to quieten the suite."""
-        for deviation in Baseline()._deviations:
+        assert KNOWN, "an empty baseline would make every rule below vacuous"
+        for deviation in KNOWN:
             assert deviation.finding.startswith("VKJ-"), deviation
             assert deviation.reason.strip(), deviation
 
+    def test_every_entry_resolves_to_a_finding_that_exists(self) -> None:
+        """The rule the baseline states about itself, checked.
 
-class TestOneViolationPerMismatch:
-    """A response is reported mismatch by mismatch.
+        A prefix test passes for `VKJ-999`. What the module promises is that
+        each entry names a finding in docs/findings, so each one is resolved
+        to its folder, or to the list of findings deliberately held back.
+        """
+        findings_root = Path(__file__).resolve().parents[2] / "docs" / "findings"
+        unresolved = [
+            deviation.finding
+            for deviation in KNOWN
+            if deviation.finding not in traceability.HELD_FINDINGS
+            and traceability.finding_folder(deviation.finding, findings_root) is None
+        ]
+        assert not unresolved, f"baseline entries naming no finding: {sorted(set(unresolved))}"
 
-    Reported whole, a body carrying a known deviation beside an unknown one
-    has both absorbed under the known finding, because the baseline matches
-    on the text of the report. That is the one thing the baseline must
-    never do, and it did: nullability, already written up as VKJ-002, was
-    hiding the string-typed subscription of VKJ-001 in the same task.
+    def test_no_entry_switches_a_whole_check_off(self) -> None:
+        """The one rule that keeps the baseline a baseline.
+
+        An entry matching any spec, any operation, any status and any detail
+        does not record a deviation, it disables a kind of check — and for a
+        year one of them did exactly that, accepting every undeclared status
+        on both descriptions, an unexpected 500 among them.
+        """
+        blanket = [deviation for deviation in KNOWN if deviation.is_blanket]
+        assert not blanket, (
+            "these entries accept a whole kind of violation rather than a known one: "
+            + ", ".join(f"{d.finding}/{d.kind}" for d in blanket)
+        )
+
+    def test_the_baseline_only_shrinks(self) -> None:
+        """Pinned, because "it only ever shrinks" is a promise nothing else
+        enforces.
+
+        Lower this number when an entry goes. Raising it means a deviation
+        was accepted rather than reported, and that should take a decision
+        and a line in a diff rather than happening by itself.
+
+        Counted in entries, so the number can go up when one entry is split
+        into several narrower ones — which is what happened when the single
+        blanket entry for undeclared statuses became nine that each name a
+        status. More entries, less accepted.
+        """
+        assert len(KNOWN) <= 16, f"the baseline has grown to {len(KNOWN)} entries"
+
+
+class TestAKnownDeviationNeverHidesAnUnknownOne:
+    """The one thing the baseline must never do, checked the way it happens.
+
+    Driven through `validator(response)` — the transport hook itself — not
+    through the pieces underneath it. That matters more than it looks. The
+    version of this test that called `_validate` directly and then sorted
+    the results with `Baseline.split` could not observe the defect it was
+    written for, because the masking had moved one layer up: the per-response
+    mismatch budget was counted over every mismatch, so a body carrying a
+    documented deviation on each of its elements spent the whole budget
+    before it reached an undocumented one further down. Production never
+    calls `split`, and that is exactly why this now does not either.
     """
 
-    SCHEMA = {
-        "type": "object",
-        "properties": {
-            "labels": {"type": "array"},
-            "subscription": {"type": "object", "properties": {"entity": {"type": "integer"}}},
+    DOCUMENT = {
+        "swagger": "2.0",
+        "basePath": "/api/v1",
+        "paths": {
+            "/tasks": {
+                "get": {
+                    "operationId": "listTasks",
+                    "responses": {
+                        "200": {
+                            "schema": {
+                                "type": "array",
+                                "items": {"$ref": "#/definitions/Task"},
+                            }
+                        }
+                    },
+                }
+            }
+        },
+        "definitions": {
+            "Task": {
+                "type": "object",
+                "properties": {
+                    "labels": {"type": "array"},
+                    "assignees": {"type": "array"},
+                    "id": {"type": "integer"},
+                },
+            }
         },
     }
 
+    #: Stands for VKJ-002: a nullability the product has, written up already.
     KNOWN = Deviation(
         finding="VKJ-002",
         spec="v1",
         kind="schema mismatch",
-        detail_pattern=r"None is not of type",
+        detail_pattern=r"(labels|assignees): None is not of type 'array'",
         reason="documented",
     )
 
-    def test_a_known_deviation_does_not_absorb_an_unknown_one_beside_it(
-        self, spec: SpecIndex
-    ) -> None:
-        validator = ContractValidator([spec], mode=Mode.COLLECT, baseline=Baseline((self.KNOWN,)))
-        body = {"labels": None, "subscription": {"entity": "task"}}
+    def _validator(self) -> ContractValidator:
+        spec = SpecIndex(self.DOCUMENT, label="v1", base_path="/api/v1")
+        return ContractValidator([spec], mode=Mode.COLLECT, baseline=Baseline((self.KNOWN,)))
 
-        errors = validator._validate(spec, self.SCHEMA, body)
+    @staticmethod
+    def _listing(length: int, *, unknown_at: int | None = None) -> list[dict[str, object]]:
+        """A task listing where every element carries the known deviation,
+        and one element optionally carries something nobody has seen."""
+        tasks: list[dict[str, object]] = []
+        for index in range(length):
+            tasks.append(
+                {
+                    "labels": None,
+                    "assignees": None,
+                    "id": "seven" if index == unknown_at else index,
+                }
+            )
+        return tasks
 
-        assert len(errors) == 2, f"the two mismatches were merged into {errors}"
-        new, accepted = Baseline((self.KNOWN,)).split(
-            [
-                Violation("v1", "GET /tasks/{id}", 200, "schema mismatch", error, "u")
-                for error in errors
-            ]
-        )
+    def test_one_violation_per_mismatch_rather_than_one_per_response(self) -> None:
+        validator = self._validator()
 
-        assert len(accepted) == 1, "the nullability mismatch should be the known one"
-        assert len(new) == 1, "the unknown mismatch has to survive on its own"
-        assert "subscription/entity" in new[0].detail
+        validator(_listing_of(self._listing(1, unknown_at=0)))
+
+        assert len(validator.accepted) == 2, "the two nullabilities were merged"
+        assert [violation.detail for violation, _ in validator.accepted] == [
+            "0/assignees: None is not of type 'array'",
+            "0/labels: None is not of type 'array'",
+        ]
+        assert len(validator.violations) == 1, "the unknown mismatch has to survive on its own"
+        assert "0/id" in validator.violations[0].detail
+
+    def test_a_deviation_on_every_element_does_not_spend_the_budget(self) -> None:
+        """Twenty elements, two documented mismatches each, and one unknown
+        mismatch buried at element fifteen. Forty known mismatches come
+        first, so a budget counted over all of them is long gone by then."""
+        validator = self._validator()
+
+        validator(_listing_of(self._listing(20, unknown_at=15)))
+
+        assert len(validator.accepted) == 40, "every element's known deviation is still recorded"
+        assert [violation.detail for violation in validator.violations] == [
+            "15/id: 'seven' is not of type 'integer'"
+        ]
+
+    def test_truncation_is_never_silent(self) -> None:
+        """The budget still applies to new mismatches, and says when it bit."""
+        validator = self._validator()
+        many = [{"labels": None, "assignees": None, "id": "seven"} for _ in range(30)]
+
+        validator(_listing_of(many))
+
+        details = [violation.detail for violation in validator.violations]
+        assert len(details) == ContractValidator.NEW_MISMATCHES_PER_RESPONSE + 1
+        assert details[-1] == "and 20 further new mismatches, not listed"
+
+    def test_strict_mode_fails_on_the_unknown_one_however_deep_it_sits(self) -> None:
+        validator = self._validator()
+        validator._mode = Mode.STRICT
+
+        with pytest.raises(ContractViolationError, match="15/id"):
+            validator(_listing_of(self._listing(20, unknown_at=15)))
+
+
+def _listing_of(body: object) -> ApiResponse:
+    return ApiResponse(
+        method="GET",
+        url="http://host/api/v1/tasks",
+        status=200,
+        headers={},
+        body=body,
+        elapsed_ms=1.0,
+    )
 
 
 def _response(body: object) -> ApiResponse:

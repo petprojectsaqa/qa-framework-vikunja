@@ -59,10 +59,19 @@ class Violation:
 class ContractValidator:
     """Validates responses against whichever specification covers them."""
 
-    #: How many mismatches one response may contribute. A body that
+    #: How many *new* mismatches one response may contribute. A body that
     #: disagrees with its schema in fifty places tells the reader the same
     #: thing as one that disagrees in ten.
-    MISMATCHES_PER_RESPONSE = 10
+    #:
+    #: New ones only, and that is the whole point. A cap on the total is
+    #: spent by whatever the validator happens to see first, and what it
+    #: sees first is sorted by position in the body: on v1 every element of
+    #: every task listing carries the nullability of VKJ-002, so a cap on
+    #: the total is exhausted by element one and an undocumented mismatch
+    #: in element five is never reached. That is the masking this whole
+    #: check exists to avoid, so the budget is spent only on what the
+    #: reader has not seen before.
+    NEW_MISMATCHES_PER_RESPONSE = 10
 
     #: Statuses that carry no content, whatever the description declares.
     WITHOUT_A_BODY = frozenset({204, 304})
@@ -80,7 +89,6 @@ class ContractValidator:
         self._violations: list[Violation] = []
         self._accepted: list[tuple[Violation, Deviation]] = []
         self._called: Counter[str] = Counter()
-        self._validators: dict[int, Validator] = {}
 
     @contextmanager
     def collecting(self) -> Iterator[None]:
@@ -151,8 +159,7 @@ class ContractValidator:
     # --- checks -------------------------------------------------------------
 
     def _check(self, spec: SpecIndex, operation: Operation, response: ApiResponse) -> None:
-        schema = operation.schema_for(response.status)
-        if schema is None:
+        if not operation.declares(response.status):
             self._report(
                 Violation(
                     spec=spec.label,
@@ -161,12 +168,19 @@ class ContractValidator:
                     kind="undeclared status",
                     detail=(
                         "the operation does not declare this status; declared: "
-                        + ", ".join(sorted(operation.responses))
-                        or "none"
+                        + (", ".join(sorted(operation.responses)) or "none")
                     ),
                     url=response.url,
                 )
             )
+            return
+
+        schema = operation.schema_for(response.status)
+        if schema is None:
+            # Declared, and declared to carry no JSON body: a 204, or a file
+            # download. There is no contract here to hold the answer to, and
+            # inventing one out of the operation's `default` error response
+            # would report every successful download as a deviation.
             return
 
         if response.status in self.WITHOUT_A_BODY:
@@ -175,9 +189,14 @@ class ContractValidator:
             # would report the standard as a defect.
             return
 
-        if not isinstance(response.body, (dict, list)):
-            # Some endpoints legitimately answer with plain text; only flag
-            # it when the contract promised a structured body.
+        if not response.parsed:
+            # The body did not parse as JSON at all. Some endpoints answer
+            # with plain text or with bytes quite legitimately, so this is
+            # only a deviation where the contract promised structure.
+            #
+            # Asked of the parse, not of the Python type: a body of `5` or
+            # `"ok"` is valid JSON and has a schema to answer to, and
+            # judging by type alone left every scalar response unchecked.
             if schema.get("type") in {"object", "array"} or "$ref" in schema:
                 self._report(
                     Violation(
@@ -196,33 +215,48 @@ class ContractValidator:
         # response carrying a known deviation beside an unknown one would
         # otherwise have both absorbed under the known finding, which is
         # exactly what the baseline must never do.
+        def mismatch(detail: str) -> Violation:
+            return Violation(
+                spec=spec.label,
+                operation=operation.key,
+                status=response.status,
+                kind="schema mismatch",
+                detail=detail,
+                url=response.url,
+            )
+
+        new_so_far = 0
+        suppressed = 0
         for error in self._validate(spec, schema, response.body):
-            self._report(
-                Violation(
-                    spec=spec.label,
-                    operation=operation.key,
-                    status=response.status,
-                    kind="schema mismatch",
-                    detail=error,
-                    url=response.url,
-                )
+            violation = mismatch(error)
+            known = self._known(violation)
+            if known is None:
+                if new_so_far >= self.NEW_MISMATCHES_PER_RESPONSE:
+                    suppressed += 1
+                    continue
+                new_so_far += 1
+            self._record(violation, known)
+
+        if suppressed:
+            # Truncation is never silent: the count is itself a violation,
+            # so a response nobody has looked at closely cannot quietly
+            # drop what it did not have room for.
+            self._record(
+                mismatch(f"and {suppressed} further new mismatches, not listed"), known=None
             )
 
     def _validate(self, spec: SpecIndex, schema: dict[str, Any], body: Any) -> list[str]:
         """Every mismatch between one body and its schema, one per entry.
 
-        Capped, because a response that disagrees with its schema in fifty
-        places says the same thing as one that disagrees in ten, and the
-        report has to stay readable.
+        Uncapped on purpose. Which of these are worth reporting is decided
+        one level up, where the baseline is, because only there is it known
+        which of them the reader has already seen.
         """
         validator = self._validator_for(spec, schema)
-        messages = []
-        for error in sorted(validator.iter_errors(body), key=lambda e: list(e.path)):
-            where = "/".join(str(p) for p in error.path) or "<root>"
-            messages.append(f"{where}: {error.message}")
-            if len(messages) >= self.MISMATCHES_PER_RESPONSE:
-                break
-        return messages
+        return [
+            f"{'/'.join(str(part) for part in error.path) or '<root>'}: {error.message}"
+            for error in sorted(validator.iter_errors(body), key=lambda e: list(e.path))
+        ]
 
     def _validator_for(self, spec: SpecIndex, schema: dict[str, Any]) -> Validator:
         composed = resolvable(schema, spec.document)
@@ -236,10 +270,21 @@ class ContractValidator:
                 return spec
         return None
 
+    def _known(self, violation: Violation) -> Deviation | None:
+        return self._baseline.known(violation) if self._baseline else None
+
     def _report(self, violation: Violation) -> None:
-        """Record a violation, and in strict mode fail on it unless the
-        baseline already accounts for it."""
-        known = self._baseline.known(violation) if self._baseline else None
+        """Record a violation, classifying it against the baseline."""
+        self._record(violation, self._known(violation))
+
+    def _record(self, violation: Violation, known: Deviation | None) -> None:
+        """File a violation under an already-decided verdict, and in strict
+        mode fail on it unless the baseline accounts for it.
+
+        The verdict is passed in rather than looked up, because the caller
+        that counts mismatches against the per-response budget has to know
+        it before deciding whether this one costs anything.
+        """
         with self._lock:
             if known is not None:
                 self._accepted.append((violation, known))
@@ -263,21 +308,6 @@ class ContractValidator:
         with self._lock:
             return list(self._accepted)
 
-    def coverage(self) -> dict[str, dict[str, int]]:
-        """Operations touched versus operations described, per specification."""
-        with self._lock:
-            called = dict(self._called)
-        summary = {}
-        for spec in self._specs:
-            total = len(spec.operations)
-            touched = sum(1 for key in called if key.startswith(f"{spec.label} "))
-            summary[spec.label] = {
-                "described": total,
-                "exercised": touched,
-                "percent": round(100 * touched / total) if total else 0,
-            }
-        return summary
-
     def snapshot(self) -> dict[str, Any]:
         """Everything this validator saw, as plain data.
 
@@ -300,14 +330,3 @@ class ContractValidator:
             "violations": violations,
             "accepted": accepted,
         }
-
-    def untouched(self, spec: SpecIndex) -> list[str]:
-        """Operations no test has called yet. This is the list the
-        generated sweep exists to close."""
-        with self._lock:
-            called = {key for key in self._called if key.startswith(f"{spec.label} ")}
-        return sorted(
-            operation.key
-            for operation in spec.operations
-            if f"{spec.label} {operation.key}" not in called
-        )

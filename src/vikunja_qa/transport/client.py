@@ -115,9 +115,6 @@ class HttpClient:
             hooks=self._hooks,
         )
 
-    def add_hook(self, hook: ResponseHook) -> None:
-        self._hooks.append(hook)
-
     @property
     def auth(self) -> AuthStrategy:
         return self._auth
@@ -182,7 +179,9 @@ class HttpClient:
         try:
             body: Any = raw.json()
         except ValueError:
-            body = raw.text
+            body, parsed = raw.text, False
+        else:
+            parsed = True
 
         response = ApiResponse(
             method=method.upper(),
@@ -195,6 +194,7 @@ class HttpClient:
             auth_label=self._auth.label,
             text=raw.text,
             content=raw.content,
+            parsed=parsed,
         )
 
         self._record(response)

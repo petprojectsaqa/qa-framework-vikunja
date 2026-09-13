@@ -31,24 +31,44 @@ class Operation:
     method: str
     path_template: str
     operation_id: str
-    responses: dict[str, dict[str, Any]] = field(default_factory=dict)
+    #: What the description promises per status: the JSON schema for the
+    #: body, or None where it declares the status and promises no JSON body
+    #: at all. 204 No Content is like that, and so is every binary
+    #: download. Keys include the `4XX` and `default` catch-alls both spec
+    #: formats use.
+    #:
+    #: Declaring a status without a schema and not declaring it are
+    #: different claims, and conflating them made the suite report a
+    #: description as wrong about a status it had got right.
+    responses: dict[str, dict[str, Any] | None] = field(default_factory=dict)
 
     @property
     def key(self) -> str:
         return f"{self.method} {self.path_template}"
 
-    def schema_for(self, status: int) -> dict[str, Any] | None:
-        """The declared schema for this status, falling back to a range
-        entry and then to `default`, which is how both specs express
-        catch-alls."""
-        for candidate in (str(status), f"{status // 100}XX", "default"):
-            schema = self.responses.get(candidate)
-            if schema is not None:
-                return schema
-        return None
+    def _candidates(self, status: int) -> tuple[str, str, str]:
+        """How this status can be declared, most specific first: itself, the
+        range it belongs to, and the catch-all."""
+        return str(status), f"{status // 100}XX", "default"
 
     def declares(self, status: int) -> bool:
-        return self.schema_for(status) is not None
+        """Whether the description mentions this status at all, directly or
+        through a range or `default` entry."""
+        return any(candidate in self.responses for candidate in self._candidates(status))
+
+    def schema_for(self, status: int) -> dict[str, Any] | None:
+        """The JSON schema this status has to satisfy, or None when there is
+        none to satisfy.
+
+        The first *declaration* wins, not the first schema. That matters
+        because v2 gives almost every operation a `default` response
+        carrying the error model: falling through to it would validate a
+        204, or a downloaded file, against the shape of an error.
+        """
+        for candidate in self._candidates(status):
+            if candidate in self.responses:
+                return self.responses[candidate]
+        return None
 
 
 class SpecIndex:
@@ -86,9 +106,16 @@ class SpecIndex:
                 )
                 self._operations[(operation.method, template)] = operation
 
-    def _responses_of(self, definition: dict[str, Any]) -> dict[str, dict[str, Any]]:
-        """Pull the JSON response schema out of either spec shape."""
-        found: dict[str, dict[str, Any]] = {}
+    def _responses_of(self, definition: dict[str, Any]) -> dict[str, dict[str, Any] | None]:
+        """Pull the JSON response schema out of either spec shape.
+
+        Every declared status is kept. One with no JSON schema is kept with
+        None rather than dropped, because dropping it loses the fact that
+        the description declared it: v2 declares 204 on twenty-nine
+        operations and a binary media type on six more, and a reader that
+        only keeps schemas sees all of those as undeclared.
+        """
+        found: dict[str, dict[str, Any] | None] = {}
         for status, described in (definition.get("responses") or {}).items():
             if not isinstance(described, dict):
                 continue
@@ -99,8 +126,7 @@ class SpecIndex:
                     if "json" in media_type and isinstance(media, dict):
                         schema = media.get("schema")
                         break
-            if isinstance(schema, dict):
-                found[str(status)] = schema
+            found[str(status)] = schema if isinstance(schema, dict) else None
         return found
 
     # --- lookup -------------------------------------------------------------

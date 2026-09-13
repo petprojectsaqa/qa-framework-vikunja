@@ -32,12 +32,15 @@ PUBLIC: dict[str, str] = {
     "POST /shares/{share}/auth": "trades a public hash for a scoped token",
 }
 
-#: Never call these. The product's test-support API empties every table,
-#: which would destroy the stand out from under the run.
-NEVER_CALL: tuple[str, ...] = (
-    "/test/all",
-    "/test/{table}",
-)
+#: Never call anything under this. The product's test-support API empties
+#: every table, which would destroy the stand out from under the run.
+#:
+#: Matched as the first segment of the path rather than as a literal
+#: template. `/test/{table}` names a parameter, and this module exists
+#: because the two descriptions spell their parameters differently: a
+#: denylist whose failure mode is "empty every table mid-run" must not
+#: depend on one of them spelling it `table`.
+NEVER_CALL_UNDER = "test"
 
 #: Path parameters, filled with values that match nothing.
 #: Authorization is decided before any lookup, so an identifier that
@@ -57,8 +60,6 @@ SUBSTITUTIONS: dict[str, str] = {
     "relationKind": "subtask",
     "provider": "none",
     "image": "none",
-    "hash": "nonexistenthash",
-    "table": "unused",
 }
 ABSENT_ID = "999999999"
 
@@ -92,7 +93,8 @@ def concrete_path(template: str) -> str:
 
 
 def is_callable(operation: Operation) -> bool:
-    return not any(forbidden in operation.path_template for forbidden in NEVER_CALL)
+    segments = [part for part in operation.path_template.strip("/").split("/") if part]
+    return bool(segments) and segments[0] != NEVER_CALL_UNDER
 
 
 def calls_for(spec: SpecIndex) -> list[Call]:
@@ -123,3 +125,23 @@ def unused_public_entries(specs: list[SpecIndex]) -> list[str]:
     """
     known = {operation.key for spec in specs for operation in spec.operations}
     return sorted(entry for entry in PUBLIC if entry not in known)
+
+
+def unused_substitutions(specs: list[SpecIndex]) -> list[str]:
+    """Substitution keys matching no path parameter in either description.
+
+    The same argument as the allowlist above, for the other table. These
+    keys name the path parameters that are words rather than identifiers,
+    and a key that stops matching means the parameter was renamed — at
+    which point the sweep starts filling a word-shaped parameter with a
+    number and asks a different question of each version, quietly. A stale
+    key is the only visible sign that has happened, so it is checked.
+    """
+    named = {
+        part[1:-1]
+        for spec in specs
+        for operation in spec.operations
+        for part in operation.path_template.split("/")
+        if part.startswith("{") and part.endswith("}")
+    }
+    return sorted(key for key in SUBSTITUTIONS if key not in named)

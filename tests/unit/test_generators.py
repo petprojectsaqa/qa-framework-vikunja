@@ -9,7 +9,13 @@ from __future__ import annotations
 
 from vikunja_qa.contracts.scopes import cases_for, parse_routes
 from vikunja_qa.contracts.spec import SpecIndex
-from vikunja_qa.contracts.sweep import PUBLIC, calls_for, concrete_path, unused_public_entries
+from vikunja_qa.contracts.sweep import (
+    PUBLIC,
+    calls_for,
+    concrete_path,
+    unused_public_entries,
+    unused_substitutions,
+)
 
 CATALOGUE = {
     "labels": {
@@ -35,15 +41,22 @@ class TestScopeCases:
         assert {action.name for action in labels.denied} == {"create", "update"}
 
     def test_an_area_without_a_read_is_left_out(self) -> None:
-        """Granting `create` to prove a scope works would leave data behind."""
-        assert all(case.area != "webhooks" for case in cases_for(CATALOGUE))
+        """Granting `create` to prove a scope works would leave data behind.
+
+        Asserted as the whole set rather than as `all(area != "webhooks")`,
+        which is also true of no cases at all: a generator that regressed to
+        producing nothing would have satisfied it.
+        """
+        assert {case.area for case in cases_for(CATALOGUE)} == {"labels"}
 
     def test_the_table_emptying_area_is_never_generated(self) -> None:
         """It would destroy the stand out from under the run."""
         assert "test" not in parse_routes(CATALOGUE)
 
     def test_every_path_parameter_is_filled(self) -> None:
-        for case in cases_for(CATALOGUE):
+        cases = cases_for(CATALOGUE)
+        assert cases, "no cases to inspect, so this rule checks nothing"
+        for case in cases:
             for action in (case.granted, *case.denied):
                 assert ":" not in action.concrete_path, action
 
@@ -57,17 +70,29 @@ def _spec(paths: dict[str, dict[str, dict[str, object]]]) -> SpecIndex:
 
 class TestSweepCalls:
     def test_the_test_support_api_is_never_called(self) -> None:
+        """Whatever its parameter happens to be called.
+
+        The guard used to be a list of literal templates, `/test/{table}`
+        among them, in a module that exists because the two descriptions
+        spell their parameters differently. A description renaming that
+        parameter would have put "empty every table" into the sweep.
+        """
         spec = _spec(
             {
                 "/test/all": {"delete": {"responses": {}}},
                 "/test/{table}": {"patch": {"responses": {}}},
+                "/test/{tableName}": {"patch": {"responses": {}}},
+                "/test/{anything}/at/all": {"put": {"responses": {}}},
                 "/tasks/{id}": {"get": {"responses": {}}},
+                # Not under it, and so not excluded: the word has to be the
+                # first segment, not merely somewhere in the path.
+                "/token/test": {"get": {"responses": {}}},
             }
         )
 
         paths = {call.path for call in calls_for(spec)}
 
-        assert paths == {"/tasks/999999999"}
+        assert paths == {"/tasks/999999999", "/token/test"}
 
     def test_identifiers_are_filled_with_values_that_match_nothing(self) -> None:
         assert (
@@ -92,3 +117,18 @@ class TestSweepCalls:
 
         assert "POST /login" not in stale
         assert "GET /health" in stale
+
+    def test_a_substitution_matching_no_parameter_is_reported(self) -> None:
+        """The same rule for the other table.
+
+        A key that stops matching means the parameter was renamed, and the
+        sweep then fills a word-shaped parameter with a number — asking one
+        question of v1 and a different one of v2, without saying so. One key
+        had already gone stale this way.
+        """
+        spec = _spec({"/{username}/avatar": {"get": {"responses": {}}}})
+
+        stale = unused_substitutions([spec])
+
+        assert "username" not in stale
+        assert "provider" in stale
