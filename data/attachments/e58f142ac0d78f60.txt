@@ -1,0 +1,12 @@
+PUT http://localhost:3456/api/v1/projects/137/users
+as: session:ownersedthenumberasastringgw7c1a03468
+sent: {
+  "username": "outsidersedthenumberasastringgw7efdc0d7d",
+  "permission": "1"
+}
+status: 400  (30 ms)
+domain code: 2004
+body: {
+  "code": 2004,
+  "message": "Invalid model provided: Bad Request"
+}

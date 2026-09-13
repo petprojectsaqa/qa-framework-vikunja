@@ -1,0 +1,65 @@
+GET http://localhost:3456/api/v1/projects/218/views
+as: session:owneroutrightsonitsprojectgw3ca423ee6
+status: 200  (38 ms)
+body: [
+  {
+    "id": 1551,
+    "title": "List",
+    "project_id": 218,
+    "view_kind": "list",
+    "filter": {
+      "s": "",
+      "sort_by": null,
+      "order_by": null,
+      "filter": "done = false",
+      "filter_include_nulls": false
+    },
+    "position": 100,
+    "bucket_configuration_mode": "none",
+    "bucket_configuration": null,
+    "default_bucket_id": 0,
+    "done_bucket_id": 0,
+    "updated": "2026-09-13T20:49:19Z",
+    "created": "2026-09-13T20:49:19Z"
+  },
+  {
+    "id": 1554,
+    "title": "Gantt",
+    "project_id": 218,
+    "view_kind": "gantt",
+    "filter": null,
+    "position": 200,
+    "bucket_configuration_mode": "none",
+    "bucket_configuration": null,
+    "default_bucket_id": 0,
+    "done_bucket_id": 0,
+    "updated": "2026-09-13T20:49:19Z",
+    "created": "2026-09-13T20:49:19Z"
+  },
+  {
+    "id": 1557,
+    "title": "Table",
+    "project_id": 218,
+    "view_kind": "table",
+    "filter": null,
+    "position": 300,
+    "bucket_configuration_mode": "none",
+    "bucket_configuration": null,
+    "default_bucket_id": 0,
+    "done_bucket_id": 0,
+    "updated": "2026-09-13T20:49:19Z",
+    "created": "2026-09-13T20:49:19Z"
+  },
+  {
+    "id": 1560,
+    "title": "Kanban",
+    "project_id": 218,
+    "view_kind": "kanban",
+    "filter": null,
+    "position": 400,
+    "bucket_configuration_mode": "manual",
+    "bucket_configuration": null,
+    "default_bucket_id": 1165,
+    "done_bucket_id": 1167,
+    "updated": "2026-09-13T20:49:19Z",
+    "created": "2026-09-13T20:49... [11 more characters]

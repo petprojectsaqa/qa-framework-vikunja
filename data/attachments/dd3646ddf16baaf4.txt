@@ -1,0 +1,40 @@
+POST http://localhost:3456/api/v1/tasks/83
+as: session:owneredateinsteadofclosinggw1e873c975
+sent: {
+  "title": "water the plants",
+  "repeat_after": 86400,
+  "due_date": "2026-09-20T20:49:22Z",
+  "done": true
+}
+status: 200  (46 ms)
+body: {
+  "id": 83,
+  "title": "water the plants",
+  "description": "",
+  "done": false,
+  "done_at": "2026-09-13T20:49:22.655768864Z",
+  "due_date": "2026-09-21T20:49:22Z",
+  "reminders": null,
+  "project_id": 253,
+  "repeat_after": 86400,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "0001-01-01T00:00:00Z",
+  "updated": "2026-09-13T20:49:22Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": null
+}

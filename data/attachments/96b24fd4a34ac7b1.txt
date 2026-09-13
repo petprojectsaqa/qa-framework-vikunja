@@ -1,0 +1,20 @@
+POST http://localhost:3456/api/v1/shares/sxoaVocsWF5sRRmKj7Ty22yLTXn5IynicPxOl2uK/auth
+as: session:ownertestaccessmatrixpygw070e66326
+sent: {
+  "hash": "sxoaVocsWF5sRRmKj7Ty22yLTXn5IynicPxOl2uK",
+  "password": "a-passphrase-the-link-carries"
+}
+status: 200  (295 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODk1OTE3MzcsImhhc2giOiJzeG9hVm9jc1dGNXNSUm1LajdUeTIyeUxUWG41SXluaWNQeE9sMnVLIiwiaWQiOjUsInBlcm1pc3Npb24iOjAsInByb2plY3RfaWQiOjIwLCJzaGFyZWRCeUlEIjoxNCwidHlwZSI6Mn0.MP7ZHLF-Y08uCs7-bnRUsOmkNhDd4tspbm8In3jAfyU",
+  "id": 5,
+  "hash": "sxoaVocsWF5sRRmKj7Ty22yLTXn5IynicPxOl2uK",
+  "name": "share_pwd",
+  "permission": 0,
+  "sharing_type": 2,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-13T20:48:57Z",
+  "updated": "2026-09-13T20:48:57Z",
+  "project_id": 20
+}

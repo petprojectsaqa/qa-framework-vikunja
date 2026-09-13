@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerhtshapenothexadecimalgw46af6e1b0",
+  "password": "VikunjaQA123!",
+  "email": "ownerhtshapenothexadecimalgw46af6e1b0@qa.local"
+}
+status: 200  (1071 ms)
+body: {
+  "id": 57,
+  "name": "",
+  "username": "ownerhtshapenothexadecimalgw46af6e1b0",
+  "created": "2026-09-13T20:49:02Z",
+  "updated": "2026-09-13T20:49:02.674232813Z"
+}

@@ -1,0 +1,27 @@
+PUT http://localhost:3456/api/v1/tasks/59/attachments
+as: session:ownerecordedagainstitstaskgw3dcb2c04c
+status: 200  (97 ms)
+body: {
+  "errors": null,
+  "success": [
+    {
+      "id": 1,
+      "task_id": 59,
+      "created_by": {
+        "id": 159,
+        "name": "",
+        "username": "ownerecordedagainstitstaskgw3dcb2c04c",
+        "created": "2026-09-13T20:49:16Z",
+        "updated": "2026-09-13T20:49:16Z"
+      },
+      "file": {
+        "id": 1,
+        "name": "note.txt",
+        "mime": "text/plain; charset=utf-8",
+        "size": 22,
+        "created": "2026-09-13T20:49:17.870336441Z"
+      },
+      "created": "2026-09-13T20:49:17.897288327Z"
+    }
+  ]
+}

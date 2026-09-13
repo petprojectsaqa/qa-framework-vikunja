@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/47/users
+as: session:ownerevelisrefusedanobjectgw6df2f19f7
+sent: {
+  "username": "outsiderevelisrefusedanobjectgw6f11955ac",
+  "permission": {
+    "permission": 1
+  }
+}
+status: 400  (8 ms)
+domain code: 2004
+body: {
+  "code": 2004,
+  "message": "Invalid model provided: Bad Request"
+}

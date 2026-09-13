@@ -1,0 +1,20 @@
+PUT http://localhost:3456/api/v1/tasks/71/relations
+as: session:ownerwsupontheothertasktoogw7932f5557
+sent: {
+  "other_task_id": 74,
+  "relation_kind": "subtask"
+}
+status: 201  (105 ms)
+body: {
+  "task_id": 71,
+  "other_task_id": 74,
+  "relation_kind": "subtask",
+  "created_by": {
+    "id": 182,
+    "name": "",
+    "username": "ownerwsupontheothertasktoogw7932f5557",
+    "created": "2026-09-13T20:49:20Z",
+    "updated": "2026-09-13T20:49:20Z"
+  },
+  "created": "2026-09-13T20:49:21.384746771Z"
+}

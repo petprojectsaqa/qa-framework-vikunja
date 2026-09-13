@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "owneresreachthesameproductgw350fb2c15",
+  "password": "VikunjaQA123!"
+}
+status: 200  (335 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkzMzMxNTQsImlkIjoxNDEsImlzX2FkbWluIjpmYWxzZSwianRpIjoiZWU4NjNjZDYtYWJjZC00NTg3LWE1NDItMGRiNzVhOWIyNmY5Iiwic2lkIjoiMzRjNzM3OWEtYmU3Yi00YTJlLTliZmEtNDc5ODFjMDE5ZDAwIiwidHlwZSI6MSwidXNlcm5hbWUiOiJvd25lcmVzcmVhY2h0aGVzYW1lcHJvZHVjdGd3MzUwZmIyYzE1In0._A9pJRt6PagrBHJaWi1Yqk7sGJCY4cIrZ_790hn0Wss"
+}

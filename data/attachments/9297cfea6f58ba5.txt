@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneredcredentialisrefusedgw4343dc19d",
+  "password": "VikunjaQA123!",
+  "email": "owneredcredentialisrefusedgw4343dc19d@qa.local"
+}
+status: 200  (1004 ms)
+body: {
+  "id": 145,
+  "name": "",
+  "username": "owneredcredentialisrefusedgw4343dc19d",
+  "created": "2026-09-13T20:49:14Z",
+  "updated": "2026-09-13T20:49:14.434469767Z"
+}

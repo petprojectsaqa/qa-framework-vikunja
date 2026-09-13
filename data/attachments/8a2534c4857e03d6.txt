@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/41/tasks
+as: session:ownertestcrossversionpygw38ea31969
+sent: {
+  "title": "task task"
+}
+status: 201  (92 ms)
+body: {
+  "id": 9,
+  "title": "task task",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 41,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-13T20:48:59.661622902Z",
+  "updated": "2026-09-13T20:48:59.661629692Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 30,
+    "name": "",
+    "username": "ownertestcrossversionpygw38ea31969",
+    "created": "2026-09-13T20:48:55Z",
+    "updated": "2026-09-13T20:48:56Z"
+  }
+}

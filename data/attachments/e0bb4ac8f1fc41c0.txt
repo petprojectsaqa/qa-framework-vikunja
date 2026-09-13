@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerneverstoredinthecleargw03becf87b",
+  "password": "VikunjaQA123!"
+}
+status: 200  (321 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkzMzMxNTcsImlkIjoxNTcsImlzX2FkbWluIjpmYWxzZSwianRpIjoiNjZjODNkMzEtOGU2Yi00YjhiLTg4N2UtZjNmMTEwZWE1ZGM0Iiwic2lkIjoiZWIwMWY4NmYtNmU3Mi00MjUxLWIyYjItNTI3NDQxMjU0ZGFlIiwidHlwZSI6MSwidXNlcm5hbWUiOiJvd25lcm5ldmVyc3RvcmVkaW50aGVjbGVhcmd3MDNiZWNmODdiIn0.48Gh7a8lmRdFIR_KhxXPKaldYQiI5c0Y_d0nO6uPti0"
+}

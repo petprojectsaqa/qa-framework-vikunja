@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v1/shares/fMatYBRVGexVZVMnKdGoAd052go5mo7i99XUpB4U/auth
+as: session:owneredforchromiumwritablegw0c48c4597
+sent: {
+  "hash": "fMatYBRVGexVZVMnKdGoAd052go5mo7i99XUpB4U"
+}
+status: 200  (3 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODk1OTE3NzYsImhhc2giOiJmTWF0WUJSVkdleFZaVk1uS2RHb0FkMDUyZ281bW83aTk5WFVwQjRVIiwiaWQiOjQsInBlcm1pc3Npb24iOjEsInByb2plY3RfaWQiOjQyLCJzaGFyZWRCeUlEIjoyMSwidHlwZSI6Mn0.ZVh54qaKIrXXcbaRi1gKgfWLxgeBQKZ9MVFR5-xi9hM",
+  "id": 4,
+  "hash": "fMatYBRVGexVZVMnKdGoAd052go5mo7i99XUpB4U",
+  "name": "guest",
+  "permission": 1,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-13T20:49:36Z",
+  "updated": "2026-09-13T20:49:36Z",
+  "project_id": 42
+}

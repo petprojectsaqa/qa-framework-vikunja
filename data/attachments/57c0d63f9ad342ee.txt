@@ -1,6 +1,0 @@
-GET http://localhost:3456/api/v1/migration/microsoft-todo/auth
-as: session:sweepersweepc4b2556a
-status: 404  (1 ms)
-body: {
-  "message": "Not Found"
-}
