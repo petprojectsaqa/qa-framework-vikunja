@@ -11,22 +11,19 @@ from __future__ import annotations
 import pytest
 
 from vikunja_qa.clients.calendar import CalendarClient
-from vikunja_qa.config import Settings
 from vikunja_qa.scenes import SceneBuilder
 from vikunja_qa.testing.fixtures import CalendarOpener
-from vikunja_qa.transport.client import HttpClient
 
 pytestmark = pytest.mark.covers("DAV")
 
 
 @pytest.mark.covers("AUT")
 def test_the_calendar_refuses_a_caller_without_credentials(
-    scene: SceneBuilder, settings: Settings
+    scene: SceneBuilder, calendar_anonymous: CalendarClient
 ) -> None:
     world = scene.project().task().done()
-    anonymous = CalendarClient(HttpClient(settings.dav_url))
 
-    answered = anonymous.calendar(world.project_id)
+    answered = calendar_anonymous.calendar(world.project_id)
 
     assert answered.status == 401, answered.describe()
     challenge = answered.headers.get("WWW-Authenticate", "")
@@ -117,7 +114,6 @@ def test_an_api_token_is_refused_under_another_accounts_username(
         "VKJ-012: GET and HEAD on the calendar home answer 500 with an empty body, "
         "while PROPFIND on the same collection works"
     ),
-    strict=False,
 )
 def test_the_calendar_home_answers_a_plain_get_without_a_server_error(
     scene: SceneBuilder, calendar_for: CalendarOpener

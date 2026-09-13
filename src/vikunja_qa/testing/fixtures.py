@@ -224,6 +224,12 @@ def calendar_for(settings: Settings) -> CalendarOpener:
     return open_door
 
 
+@pytest.fixture(scope="session")
+def calendar_anonymous(settings: Settings) -> CalendarClient:
+    """The CalDAV door with no credential offered at all."""
+    return CalendarClient.anonymous(settings)
+
+
 @pytest.fixture
 def outsider(actors: ActorFactory) -> Actor:
     """A fresh account with no relationship to the test's data: the actor

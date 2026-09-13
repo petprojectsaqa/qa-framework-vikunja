@@ -18,6 +18,7 @@ import requests
 
 from vikunja_qa.actors.factory import ActorFactory
 from vikunja_qa.config import Settings
+from vikunja_qa.db import Database
 from vikunja_qa.waiting import wait_until
 
 pytestmark = pytest.mark.covers("ASY")
@@ -39,11 +40,25 @@ def _scraped(settings: Settings, metric: str) -> float | None:
 
 
 @pytest.mark.smoke
-def test_registering_an_account_raises_the_user_counter(
-    actors: ActorFactory, settings: Settings
+def test_the_user_counter_tracks_the_accounts_that_exist(
+    actors: ActorFactory, settings: Settings, db: Database
 ) -> None:
-    """Three moving parts in one check: the product counts, it exposes the
-    count, and Prometheus collects it."""
+    """Four moving parts in one check: the product counts accounts, counts
+    them right, exposes the count, and Prometheus collects it.
+
+    Held against the table rather than against itself. "The gauge went up
+    after I registered someone" cannot be attributed under `-n 8`, where
+    seven other workers are registering accounts continuously: the gauge
+    rises within the budget whatever this test did, so the old version of
+    this check passed for a reason that had nothing to do with its name.
+
+    Two independent sources of truth instead. The gauge has to reach the
+    number of accounts that existed before this test added one — which it
+    cannot do without counting ours or someone else's, so a registration
+    path that forgets to count shows up as the gauge falling behind. And it
+    must never exceed the number of rows there are, which is what would
+    happen if it counted something twice or counted deletions wrongly.
+    """
     # Waits on presence rather than on the value itself: a gauge that reads
     # zero is falsy, and waiting on it directly would never return.
     wait_until(
@@ -51,13 +66,24 @@ def test_registering_an_account_raises_the_user_counter(
         timeout=SCRAPE_BUDGET,
         because="Prometheus has scraped the user counter at least once",
     )
-    before = _scraped(settings, USERS)
-    assert before is not None
+    rows_before = db.count("select count(*) from users")
 
     actors.user("counted")
 
-    def risen() -> bool:
-        now = _scraped(settings, USERS)
-        return now is not None and now > before
+    def caught_up() -> bool:
+        scraped = _scraped(settings, USERS)
+        return scraped is not None and scraped > rows_before
 
-    wait_until(risen, timeout=SCRAPE_BUDGET, because=f"the user counter rises above {before:g}")
+    wait_until(
+        caught_up,
+        timeout=SCRAPE_BUDGET,
+        because=f"the gauge counts more than the {rows_before} accounts that existed before",
+    )
+
+    scraped = _scraped(settings, USERS)
+    assert scraped is not None, "the gauge stopped being scraped mid-test"
+    rows_now = db.count("select count(*) from users")
+    assert scraped <= rows_now, (
+        f"the gauge reports {scraped} accounts while the table holds {rows_now}, "
+        "so it is counting something that is not there"
+    )

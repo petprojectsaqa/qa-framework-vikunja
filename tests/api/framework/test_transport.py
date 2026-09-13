@@ -90,6 +90,21 @@ def test_version_indexed_access(owner: Actor, version: str) -> None:
     assert response.status == 200, response.describe()
 
 
-def test_settings_point_at_the_stand(settings: Settings) -> None:
-    assert settings.api_v1.endswith("/api/v1")
-    assert settings.api_v2.endswith("/api/v2")
+def test_both_version_prefixes_reach_the_same_product(owner: Actor, settings: Settings) -> None:
+    """The two prefixes the suite is built on are both served, by one
+    instance.
+
+    What this replaced asserted that `settings.api_v1` ends with `/api/v1`,
+    which is an f-string three lines long in config.py and could not fail.
+    The claim worth making is about the stand: both prefixes answer, and the
+    account is the same on each, which is what every cross-version check
+    below assumes without saying so.
+    """
+    on_v1 = owner.v1.get("/user")
+    on_v2 = owner.v2.get("/user")
+
+    assert on_v1.status == on_v2.status == 200, f"{on_v1.describe()}\n{on_v2.describe()}"
+    assert on_v1["username"] == on_v2["username"] == owner.username, (
+        f"{settings.api_v1} and {settings.api_v2} do not answer for the same account: "
+        f"{on_v1.get('username')} and {on_v2.get('username')}"
+    )

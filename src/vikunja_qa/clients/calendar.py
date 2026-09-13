@@ -42,6 +42,21 @@ class CalendarClient:
         )
         return cls(http)
 
+    @classmethod
+    def anonymous(cls, settings: Settings) -> CalendarClient:
+        """The door with nobody knocking.
+
+        Its own case, and worth building here rather than in a test: what an
+        unauthenticated caller is told is the first thing a CalDAV client
+        ever sees, and it has to be a Basic challenge.
+        """
+        http = HttpClient(
+            settings.dav_url,
+            timeout=settings.request_timeout,
+            attach_traffic=settings.attach_traffic,
+        )
+        return cls(http)
+
     @property
     def http(self) -> HttpClient:
         return self._http

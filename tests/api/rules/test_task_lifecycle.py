@@ -8,7 +8,7 @@ a task carries a number of its own inside its project.
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -53,7 +53,12 @@ def test_a_repeating_task_moves_its_due_date_instead_of_closing(scene: SceneBuil
     """The point of a repeating task: finishing this occurrence schedules
     the next one, and the task stays open."""
     world = scene.project().done()
-    due = datetime(2026, 10, 1, 9, 0, tzinfo=UTC)
+    # Taken from the clock rather than written down. The product advances a
+    # repeating due date and keeps advancing while the result is still in the
+    # past, so the answer is a function of now: a date fixed in the source is
+    # a test with an expiry date on it, which then fails as though the product
+    # had regressed. A week out is far enough ahead to need one step only.
+    due = (datetime.now(UTC) + timedelta(days=7)).replace(microsecond=0)
     created = world.owner.api.tasks.create(
         world.project_id, "water the plants", repeat_after=DAY_IN_SECONDS, due_date=_iso(due)
     )
@@ -69,8 +74,8 @@ def test_a_repeating_task_moves_its_due_date_instead_of_closing(scene: SceneBuil
     assert finished.ok, finished.describe()
 
     assert finished["done"] is False, "a repeating task closed instead of coming back"
-    assert finished["due_date"] == _iso(datetime(2026, 10, 2, 9, 0, tzinfo=UTC)), (
-        f"the next occurrence is not a day later: {finished['due_date']}"
+    assert finished["due_date"] == _iso(due + timedelta(seconds=DAY_IN_SECONDS)), (
+        f"the next occurrence is not a day after {_iso(due)}: {finished['due_date']}"
     )
 
 
@@ -137,6 +142,11 @@ def test_an_archived_project_refuses_writes_and_still_reads(scene: SceneBuilder)
 
     assert not created.ok, f"an archived project accepted a new task\n{created.describe()}"
     assert not updated.ok, f"an archived project accepted an edit\n{updated.describe()}"
+    # Asked for before they are compared. `error_code` is None when the body
+    # carries no code, and None equals None, so the comparison below held just
+    # as well when neither refusal carried one — leaving the property it is
+    # about, that a client can recognise this refusal, unchecked.
+    assert created.error_code, f"the refusal carried no domain code\n{created.describe()}"
     assert created.error_code == updated.error_code, (
         "the two refusals carry different domain codes: "
         f"{created.error_code} and {updated.error_code}"

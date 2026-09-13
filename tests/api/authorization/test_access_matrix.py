@@ -35,6 +35,9 @@ if TYPE_CHECKING:
 
 pytestmark = pytest.mark.covers("ACL")
 
+#: An identifier no task can have on this stand.
+ABSENT_TASK = 99_999_999
+
 
 def row(role: str, expected: int, *, smoke: bool = False) -> ParameterSet:
     return pytest.param(role, expected, id=role, marks=[pytest.mark.smoke] if smoke else [])
@@ -186,8 +189,22 @@ def test_deleting_a_project_is_allowed(scene: SceneBuilder, role: str) -> None:
 
 def test_a_reader_is_refused_rather_than_told_it_is_missing(world: Scene) -> None:
     """The distinction the matrix rests on: someone who may read but not
-    write is refused, not told the task is absent, because they already
-    know it is there."""
-    response = world.actor("reader").api.tasks.update(world.tasks["readable"]["id"], title="nope")
+    write is refused, not told the task is absent, because they can see that
+    it is there.
 
-    assert response.status == 403, response.describe()
+    Asked as a pair, and that is the point of it. `WRITE_TASK` above already
+    has a reader row expecting 403, so asserting 403 once more says nothing
+    new. What no row can say is that the two situations get *different*
+    answers, which is the property the reader row is written the way it is
+    for.
+    """
+    reader = world.actor("reader")
+
+    refused = reader.api.tasks.update(world.tasks["readable"]["id"], title="nope")
+    absent = reader.api.tasks.update(ABSENT_TASK, title="nope")
+
+    assert (refused.status, absent.status) == (403, 404), (
+        "a reader has to be able to tell 'you may not' from 'there is nothing there'; got "
+        f"{refused.status} for a task they can read and {absent.status} for one that does "
+        f"not exist\n{refused.describe()}\n{absent.describe()}"
+    )

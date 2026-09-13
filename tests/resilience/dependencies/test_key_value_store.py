@@ -24,6 +24,12 @@ ANSWER_BUDGET_S = 25
         "hang rather than fail, so the connection pool drains and one dependency's outage "
         "becomes the product's"
     ),
+    # Not strict, unlike every other xfail in the suite, and this is the
+    # exception rather than the default: what it measures is how long an
+    # answer takes. A machine that happens to answer inside the budget once
+    # would make an unexpected pass, and a red run for that reason says
+    # nothing about the product. `xfail_strict` in pyproject.toml is what
+    # makes the rest of them strict.
     strict=False,
 )
 def test_losing_redis_degrades_requests_instead_of_hanging_them(scene: SceneBuilder) -> None:

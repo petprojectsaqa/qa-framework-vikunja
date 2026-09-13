@@ -42,6 +42,17 @@ def _modules(root: Path) -> list[Path]:
     return sorted(path for path in root.rglob("*.py") if "__pycache__" not in path.parts)
 
 
+def _layer_modules(layer: str) -> list[Path]:
+    """The modules one layer is made of, whether it is a package or a module.
+
+    `scenes` is a single file while every other layer is a directory, and
+    `rglob` over a directory that does not exist yields nothing quite
+    silently: the rule for `scenes` was checking zero modules and passing.
+    """
+    directory = PACKAGE / layer
+    return _modules(directory) if directory.is_dir() else [PACKAGE / f"{layer}.py"]
+
+
 def _imported_names(module: Path) -> set[str]:
     """Every `vikunja_qa.<part>` this module imports, as the part name."""
     tree = ast.parse(module.read_text(encoding="utf-8"))
@@ -60,7 +71,7 @@ def _imported_names(module: Path) -> set[str]:
 
 def _top_level_imports(module: Path) -> set[str]:
     tree = ast.parse(module.read_text(encoding="utf-8"))
-    found = set()
+    found: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             found.update(alias.name.split(".")[0] for alias in node.names)
@@ -72,8 +83,15 @@ def _top_level_imports(module: Path) -> set[str]:
 @pytest.mark.parametrize("layer", sorted(FORBIDDEN_IMPORTS), ids=lambda name: name)
 def test_a_layer_never_reaches_upwards(layer: str) -> None:
     forbidden = set(FORBIDDEN_IMPORTS[layer])
+    modules = _layer_modules(layer)
+    assert modules, f"the rule for {layer!r} resolves to no module, so it checks nothing"
+    assert all(module.exists() for module in modules), (
+        f"the rule for {layer!r} names a module that is not there: "
+        f"{[m.name for m in modules if not m.exists()]}"
+    )
+
     offences = []
-    for module in _modules(PACKAGE / layer):
+    for module in modules:
         reached = _imported_names(module) & forbidden
         if reached:
             offences.append(
@@ -116,33 +134,61 @@ def test_nothing_below_the_tests_asserts() -> None:
     assert not offences, "assertions below the tests layer:\n" + "\n".join(offences)
 
 
+#: Transport a test may not build for itself. A client assembled by hand
+#: carries no contract hook and writes nothing to the report, so it looks
+#: like a client and skips two of the three things one is for.
+BUILT_BY_HAND = frozenset({"HttpClient", "Session", "CalendarClient"})
+
+
+def _speaks_http_directly(node: ast.Call) -> str | None:
+    """What this call does behind the clients' backs, if anything."""
+    func = node.func
+    if (
+        isinstance(func, ast.Attribute)
+        and isinstance(func.value, ast.Name)
+        and func.value.id == "requests"
+        and func.attr in HTTP_VERBS
+    ):
+        return f"calls requests.{func.attr}"
+    name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", None)
+    if name in BUILT_BY_HAND:
+        return f"builds its own {name}"
+    return None
+
+
 def test_no_test_speaks_http_directly() -> None:
     """Tests reach the product through the clients, so that every call is
     stamped with a credential, recorded in the report and validated against
-    the contract. A bare `requests.get` in a test skips all three.
+    the contract. A bare `requests.get` in a test skips all three, and a
+    hand-built `HttpClient` skips two.
 
-    Naming the exception rather than hiding it: the metrics check reads
-    Prometheus, which is part of the stand and not the product, and has no
-    client of its own.
+    The exceptions are named rather than hidden. The metrics check reads
+    Prometheus, which is part of the stand and not the product and has no
+    client of its own; the transport self-tests are about the client itself,
+    so building one is their subject.
     """
-    allowed = {TESTS / "api" / "side_effects" / "test_metrics.py"}
+    allowed = {
+        TESTS / "api" / "side_effects" / "test_metrics.py",
+        TESTS / "api" / "framework" / "test_transport.py",
+        TESTS / "unit" / "test_transport.py",
+    }
     offences = []
     for module in _modules(TESTS):
         if module in allowed:
             continue
         tree = ast.parse(module.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
-            if (
-                isinstance(node, ast.Call)
-                and isinstance(node.func, ast.Attribute)
-                and isinstance(node.func.value, ast.Name)
-                and node.func.value.id == "requests"
-                and node.func.attr in HTTP_VERBS
-            ):
+            if not isinstance(node, ast.Call):
+                continue
+            what = _speaks_http_directly(node)
+            if what is not None:
                 where = module.relative_to(REPOSITORY).as_posix()
-                offences.append(f"{where}:{node.lineno} calls requests.{node.func.attr}")
+                offences.append(f"{where}:{node.lineno} {what}")
 
-    assert not offences, "\n".join(offences)
+    assert not offences, (
+        "tests reach the product through the clients:\n" + "\n".join(offences) + "\n"
+        "use the `anon` / `owner` / `actors` fixtures, or name an exception here with a reason"
+    )
 
 
 def test_the_suite_contains_no_fixed_pause_in_place_of_waiting() -> None:

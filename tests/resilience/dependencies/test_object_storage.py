@@ -16,7 +16,6 @@ pytestmark = pytest.mark.covers("RES")
         "VKJ-010: a failed upload answers 200 and hides the failure in an errors array, "
         "so a caller reading the status code concludes the file was saved"
     ),
-    strict=False,
 )
 def test_a_failed_upload_says_so_in_its_status_code(scene: SceneBuilder) -> None:
     """Written as an expected failure rather than asserting what the product

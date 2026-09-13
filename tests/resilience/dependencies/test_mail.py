@@ -15,10 +15,11 @@ from collections.abc import Iterator
 import pytest
 
 from vikunja_qa import stand
+from vikunja_qa.actors.actor import Actor
 from vikunja_qa.config import Settings
 from vikunja_qa.scenes import SceneBuilder
-from vikunja_qa.transport.client import HttpClient
 from vikunja_qa.transport.mailpit import MailNotFoundError, MailpitClient
+from vikunja_qa.waiting import wait_until
 
 pytestmark = pytest.mark.covers("RES")
 
@@ -31,13 +32,18 @@ _STEADY_INTERVAL_S = 5
 _RECOVERY_WINDOW_S = 25
 
 
-def _request_a_mail(settings: Settings) -> str:
+def _request_a_mail(anon: Actor, settings: Settings) -> str:
     """Register a throwaway account and return its address. Registration
-    sends a confirmation message, which is a mail we can then wait for."""
-    anonymous = HttpClient(settings.api_v1, attach_traffic=False)
+    sends a confirmation message, which is a mail we can then wait for.
+
+    Sent through the suite's own anonymous actor rather than a client built
+    here. A hand-built client carries no contract hook and writes nothing to
+    the report, which is the whole reason tests/unit/test_layers.py refuses
+    one; this module used to be the single place in the suite that did it.
+    """
     username = f"resmail{uuid.uuid4().hex[:10]}"
     email = f"{username}@qa.local"
-    registered = anonymous.post(
+    registered = anon.v1.post(
         "/register",
         json={"username": username, "password": settings.user_password, "email": email},
     )
@@ -45,8 +51,8 @@ def _request_a_mail(settings: Settings) -> str:
     return email
 
 
-def _mail_is_flowing(settings: Settings, mailpit: MailpitClient) -> bool:
-    email = _request_a_mail(settings)
+def _mail_is_flowing(anon: Actor, settings: Settings, mailpit: MailpitClient) -> bool:
+    email = _request_a_mail(anon, settings)
     try:
         mailpit.wait_for_message(email, timeout=15)
     except MailNotFoundError:
@@ -55,17 +61,28 @@ def _mail_is_flowing(settings: Settings, mailpit: MailpitClient) -> bool:
 
 
 @pytest.fixture(autouse=True)
-def _heal_mail(settings: Settings, mailpit: MailpitClient) -> Iterator[None]:
+def _heal_mail(anon: Actor, settings: Settings, mailpit: MailpitClient) -> Iterator[None]:
     """Leave the mail daemon delivering again, whatever the test did to it.
 
     The daemon reconnects only after an idle gap (VKJ-013), so recovery is a
     wait with no traffic, then a probe. Sending the probe first would reset
     the very timer being waited on, so the order matters.
+
+    Tried more than once, and that is not belt and braces. The probe is
+    itself traffic, so a probe that comes a moment too early both fails and
+    restarts the idle timer — a single attempt would leave the daemon
+    freshly wedged and announce that the stand is broken, having helped
+    break it. `wait_until` sleeps before re-probing, so every attempt gets
+    its own idle gap.
     """
     yield
-    time.sleep(QUEUE_TIMEOUT_S + _IDLE_MARGIN_S)
-    assert _mail_is_flowing(settings, mailpit), (
-        "mail did not recover even after an idle gap; the stand is left unhealthy for the next test"
+    idle_gap = QUEUE_TIMEOUT_S + _IDLE_MARGIN_S
+    time.sleep(idle_gap)  # the first gap, before any traffic of our own
+    wait_until(
+        lambda: _mail_is_flowing(anon, settings, mailpit) or None,
+        timeout=2 * idle_gap,
+        because="the mail daemon reconnected and is delivering again",
+        interval=idle_gap,
     )
 
 
@@ -90,20 +107,24 @@ def test_a_password_reset_is_accepted_while_the_mail_server_is_down(scene: Scene
         "connection and only reconnects after a 30s idle gap, so steady traffic loses every "
         "message until it pauses"
     ),
+    # Not strict, for the same reason as the Redis one: this waits out a
+    # thirty-second idle timer in the product and asks what happened within a
+    # window, so a slow or a fast machine can change the answer without the
+    # product having changed at all.
     strict=False,
 )
 def test_mail_recovers_after_the_server_returns_even_under_traffic(
-    settings: Settings, mailpit: MailpitClient
+    anon: Actor, settings: Settings, mailpit: MailpitClient
 ) -> None:
     """Once the server is back, mail should resume within a bound that does
     not depend on the traffic falling silent."""
     with stand.stopped("mailpit"):
-        _request_a_mail(settings)  # attempted during the outage; poisons the connection
+        _request_a_mail(anon, settings)  # during the outage; poisons the connection
 
     sent = []
     deadline = time.monotonic() + _RECOVERY_WINDOW_S
     while time.monotonic() < deadline:
-        sent.append(_request_a_mail(settings))
+        sent.append(_request_a_mail(anon, settings))
         time.sleep(_STEADY_INTERVAL_S)
 
     delivered = any(mailpit.messages_for(email) for email in sent)

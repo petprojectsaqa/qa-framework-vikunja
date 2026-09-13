@@ -49,7 +49,6 @@ def world(scene: SceneBuilder) -> Scene:
         "VKJ-015: tasks created in one project at the same moment collide on the per-project "
         "index, and every caller but one gets a 500 with its task not created"
     ),
-    strict=False,
 )
 def test_tasks_created_at_the_same_moment_are_all_created(world: Scene) -> None:
     """Two people adding a task to a shared project at the same second is
@@ -69,27 +68,46 @@ def test_tasks_created_at_the_same_moment_are_all_created(world: Scene) -> None:
     )
 
 
-def test_simultaneous_creation_never_gives_two_tasks_the_same_number(world: Scene) -> None:
-    """Whatever the product does with the callers it refuses, the tasks it
-    does accept must stay distinguishable: the per-project number is what
-    people quote to each other.
+def test_simultaneous_creation_leaves_nothing_half_written(world: Scene) -> None:
+    """Whatever the product does with the callers it refuses, what ends up in
+    the project has to match what it told them.
+
+    Two claims, and the note that one of them is waiting on VKJ-015. A
+    refusal must leave no row behind, and the tasks that were accepted must
+    keep distinct per-project numbers, since that number is what people
+    quote to each other.
+
+    While VKJ-015 stands the product accepts exactly one of six callers, so
+    the second claim has a single row to compare and is trivially true. The
+    first is the one this test earns today, and it is the stronger of the
+    two: it is what says the five 500s did not each half-write a task. The
+    assertion below says out loud how many were compared, so nobody reads a
+    green result as proof of more than it is.
     """
     callers = _callers(world.owner, CALLERS)
 
-    at_the_same_time(
+    answers = at_the_same_time(
         [
             (lambda caller=caller, n=n: caller.api.tasks.create(world.project_id, f"numbered {n}"))
             for n, caller in enumerate(callers)
         ]
     )
+    accepted = [answer for answer in answers if answer.ok]
 
     listed = world.owner.api.tasks.all()
     assert listed.ok, listed.describe()
     stored: list[dict[str, Any]] = [
         task for task in listed.json if task["project_id"] == world.project_id
     ]
+
+    assert len(stored) == len(accepted), (
+        f"{len(accepted)} of {CALLERS} creations were accepted but the project holds "
+        f"{len(stored)} tasks, so a refusal left one behind: {_statuses(answers)}"
+    )
     numbers = [task["index"] for task in stored]
-    assert len(numbers) == len(set(numbers)), f"two tasks share a number: {sorted(numbers)}"
+    assert len(numbers) == len(set(numbers)), (
+        f"two of the {len(numbers)} accepted tasks share a number: {sorted(numbers)}"
+    )
 
 
 def test_the_same_task_updated_at_the_same_moment_keeps_one_of_the_writes(world: Scene) -> None:

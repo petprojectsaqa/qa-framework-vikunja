@@ -38,6 +38,13 @@ pytestmark = [
 #: What the product answers a token reaching outside its scope.
 OUT_OF_SCOPE = 401
 
+#: Every way a call can be turned away. Used for the positive half of the
+#: matrix, where "not refused" is the claim: ruling out only 401 there let a
+#: 403 or a 405 on the very action a token was granted read as success.
+#: Granted actions here are reads of identifiers that cannot exist, so the
+#: honest answers are 200 and 404 and nothing else.
+REFUSALS = frozenset({401, 403, 405})
+
 CASES = discovery.scope_cases()
 
 
@@ -71,8 +78,9 @@ def test_a_scoped_token_reaches_what_it_was_granted(
 ) -> None:
     response = scoped_client(case).request(case.granted.method, case.granted.concrete_path)
 
-    assert response.status != OUT_OF_SCOPE, (
-        f"a token granted {case.granted.label} was refused that very action\n{response.describe()}"
+    assert response.status not in REFUSALS, (
+        f"a token granted {case.granted.label} was refused that very action with "
+        f"{response.status}\n{response.describe()}"
     )
 
 

@@ -29,6 +29,28 @@ ABSENT = 99_999_999
 #: read, rather than failing hundreds of tests one by one.
 CASES = discovery.error_cases()
 
+#: Operations where the two versions knowingly answer an absent object with
+#: different statuses, and why. Everything else has to agree.
+#:
+#: The list may only shrink, and it enforces that itself: an entry whose
+#: operation starts answering alike fails and says so, so a divergence that
+#: gets fixed cannot leave a stale note behind.
+KNOWN_DIVERGENCES: dict[str, str] = {
+    "DELETE /user/settings/token/caldav/{}": (
+        "VKJ-016. Both versions report success for a token that does not exist; "
+        "they differ only in how they spell it, v1 with 200 and v2 with 204. "
+        "The defect is the false success, not the disagreement."
+    ),
+    "DELETE /user/settings/webhooks/{}": (
+        "v1 answers 404 for a webhook that does not exist and v2 answers 403. "
+        "v2 has the better of it: settling permission before existence tells "
+        "the caller nothing about which identifiers are real. This is the one "
+        "operation where the two versions take opposite sides on that, and it "
+        "is the held finding VKJ-006 seen from the other end, so it is recorded "
+        "here rather than written up twice."
+    ),
+}
+
 
 @pytest.fixture(scope="module")
 def world(module_scene: SceneBuilder) -> Scene:
@@ -63,6 +85,14 @@ def test_a_refusal_carries_no_usable_code(world: Scene) -> None:
     refused_v1 = outsider.v1.get(f"/tasks/{world.task_id}")
     refused_v2 = outsider.v2.get(f"/tasks/{world.task_id}")
 
+    # Pinned first, because the finding is about a refusal. Were the product
+    # to start answering 404 here instead, a real code would appear and the
+    # assertions below would announce that VKJ-005 may be fixed, which would
+    # be the wrong diagnosis of a different change entirely.
+    assert refused_v1.status == refused_v2.status == 403, (
+        f"this is no longer a refusal, so it is not the case VKJ-005 is about\n"
+        f"{refused_v1.describe()}\n{refused_v2.describe()}"
+    )
     assert not refused_v1.error_code, (
         f"v1 now sends a code on a refusal, so VKJ-005 may be fixed\n{refused_v1.describe()}"
     )
@@ -84,12 +114,29 @@ def test_both_versions_name_the_same_failure(case: ErrorCase, owner: Actor) -> N
     """
     first = owner.raw("v1").request(case.method, case.v1_path)
     second = owner.raw("v2").request(case.method, case.v2_path)
+    operation = f"{case.method} {case.operation}"
+    divergence = KNOWN_DIVERGENCES.get(operation)
 
-    assert first.ok == second.ok, (
-        "the versions disagree about whether this failed at all: v1 answered "
-        f"{first.status} and v2 answered {second.status}\n{first.describe()}\n{second.describe()}"
-    )
+    # The status, compared whatever it is. Comparing only whether each call
+    # failed said almost nothing: every case in this family asks about an
+    # identifier that cannot exist, so both sides fail, and one version
+    # answering 403 where the other answers 404 read as agreement.
+    if divergence is None:
+        assert first.status == second.status, (
+            f"the versions answer the same absent object differently: v1 with {first.status} "
+            f"and v2 with {second.status}. A client cannot branch on status across the two.\n"
+            f"{first.describe()}\n{second.describe()}"
+        )
+    else:
+        assert first.status != second.status, (
+            f"{operation} now answers alike on both versions, so this entry in "
+            f"KNOWN_DIVERGENCES is stale and should go: {divergence}"
+        )
 
+    # The code, where there is one to compare. v1 sends 0 on a refusal
+    # (VKJ-005), and 0 is not a code a client can translate, so those cases
+    # have nothing to hold the versions to. Seven of the current forty-six
+    # are like that; the status above is what covers them.
     if first.error_code:
         assert first.error_code == second.error_code, (
             f"the same failure is code {first.error_code} on v1 and "
@@ -98,13 +145,24 @@ def test_both_versions_name_the_same_failure(case: ErrorCase, owner: Actor) -> N
         )
 
 
+def test_the_paired_operations_yield_cases() -> None:
+    """Guards against the pairing quietly producing nothing.
+
+    An empty parameter set is one silent skip, and the three hand-written
+    tests above keep the ERR row of the matrix non-zero, so `--fail-uncovered`
+    would not notice either. The two sibling generated families carry the same
+    guard; this one did not, and was the only family that could vanish without
+    turning anything red.
+    """
+    assert len(CASES) >= 30, f"only {len(CASES)} operations paired across the two versions"
+
+
 @pytest.mark.finding("VKJ-016")
 @pytest.mark.xfail(
     reason=(
         "VKJ-016: revoking a CalDAV token answers 'deleted successfully' for a token that "
         "does not exist and for one belonging to another account, which goes on working"
     ),
-    strict=False,
 )
 def test_revoking_a_token_that_was_not_revoked_says_so(actors: ActorFactory) -> None:
     """Revoking a credential is a security action, so the answer has to

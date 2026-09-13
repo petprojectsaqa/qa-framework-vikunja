@@ -33,7 +33,7 @@ def world(module_scene: SceneBuilder) -> Scene:
     return module_scene.project().outsider().task().done()
 
 
-@pytest.mark.xfail(reason=REASON, strict=False)
+@pytest.mark.xfail(reason=REASON)
 def test_a_task_that_exists_is_indistinguishable_from_one_that_does_not(world: Scene) -> None:
     outsider = world.actor("outsider")
 
@@ -47,7 +47,7 @@ def test_a_task_that_exists_is_indistinguishable_from_one_that_does_not(world: S
     )
 
 
-@pytest.mark.xfail(reason=REASON, strict=False)
+@pytest.mark.xfail(reason=REASON)
 def test_a_project_that_exists_is_indistinguishable_from_one_that_does_not(
     world: Scene,
 ) -> None:

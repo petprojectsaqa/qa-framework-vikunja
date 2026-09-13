@@ -120,10 +120,24 @@ def test_a_token_is_never_stored_in_the_clear(scene: SceneBuilder, db: Database)
     stored = db.one("select * from api_tokens where id = %(id)s", {"id": int(minted["id"])})
     assert stored is not None, "the token was not recorded at all"
 
+    # Both spellings. The secret is shown as `tk_<hex>`, and a column holding
+    # the hex body without its prefix would satisfy a search for the whole
+    # string while leaving the token fully recoverable.
+    prefix, _, body = secret.partition("_")
+    recoverable = {secret, body} if body else {secret}
     for column, value in stored.items():
-        assert secret not in str(value), (
-            f"the cleartext token is recoverable from column {column!r}"
-        )
+        for form in recoverable:
+            assert form not in str(value), (
+                f"the cleartext token is recoverable from column {column!r}"
+            )
+
+    # And something has to be stored, or the loop above passes on an empty
+    # row while the product has quietly stopped keeping a hash to check
+    # against.
+    assert any(len(str(value)) >= len(body or secret) for value in stored.values()), (
+        f"no column is long enough to hold a hash of the token: {sorted(stored)}"
+    )
+    assert prefix, f"the token no longer carries a prefix, so it is stored as {secret[:4]}..."
 
 
 def test_reading_a_token_back_never_returns_the_secret(scene: SceneBuilder) -> None:
