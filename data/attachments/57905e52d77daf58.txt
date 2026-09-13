@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/67
+as: link-share:559lL1ib
+status: 403  (11 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "You don't have the permission to see this"
+}

@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/projects/999999999/views/999999999/buckets/999999999
+as: session:ownereprojectsviewsbucketsgw36a4127b0
+status: 404  (81 ms)
+domain code: 10001
+body: {
+  "code": 10001,
+  "message": "This bucket does not exist."
+}

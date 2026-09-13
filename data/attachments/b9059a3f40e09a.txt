@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneresamefailuregetlabelsgw0d78416ce",
+  "password": "VikunjaQA123!",
+  "email": "owneresamefailuregetlabelsgw0d78416ce@qa.local"
+}
+status: 200  (581 ms)
+body: {
+  "id": 67,
+  "name": "",
+  "username": "owneresamefailuregetlabelsgw0d78416ce",
+  "created": "2026-09-13T22:40:21Z",
+  "updated": "2026-09-13T22:40:21.389160382Z"
+}

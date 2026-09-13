@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/999999999/attachments/999999999
+as: session:ownerregettasksattachmentsgw5d112d14d
+status: 404  (39 ms)
+domain code: 4002
+body: {
+  "code": 4002,
+  "message": "This task does not exist"
+}

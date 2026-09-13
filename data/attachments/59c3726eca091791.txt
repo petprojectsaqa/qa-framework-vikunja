@@ -1,0 +1,6 @@
+GET http://localhost:3456/dav/projects/167
+as: basic:outsiderotheraccountsusernamegw41846a0fd
+status: 401  (23 ms)
+body: {
+  "message": "Unauthorized"
+}

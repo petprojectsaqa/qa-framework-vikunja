@@ -1,9 +1,0 @@
-POST http://localhost:3456/api/v1/user/confirm
-as: anonymous
-sent: {
-  "token": "oiqxoLgv81KzNh7jBfB7TnkdJMG3iC0dqdm0ahud7DsMXLXYyRm2GLP1IjZ4zWM7"
-}
-status: 200  (7 ms)
-body: {
-  "message": "The email was confirmed successfully."
-}

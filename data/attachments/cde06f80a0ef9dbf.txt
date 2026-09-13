@@ -1,0 +1,31 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:owneravpermissionwithoutitgw4724a21ce
+sent: {
+  "title": "calendar door",
+  "permissions": {
+    "projects": [
+      "read_all"
+    ],
+    "tasks": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-13T22:40:29Z"
+}
+status: 201  (25 ms)
+body: {
+  "id": 39,
+  "title": "calendar door",
+  "token": "tk_a9c04de8f11d57da9c81ee009a4ecb5bc9954de4",
+  "permissions": {
+    "projects": [
+      "read_all"
+    ],
+    "tasks": [
+      "read_all"
+    ]
+  },
+  "expires_at": "2026-10-13T22:40:29Z",
+  "created": "2026-09-13T22:40:29.038661836Z",
+  "owner_id": 121
+}

@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "outsiderexistencedisclosurepygw398b9f532",
+  "password": "VikunjaQA123!"
+}
+status: 200  (416 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkzMzk4MTQsImlkIjozNCwiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiI1ZDNhMGU3ZS0zZjRlLTQxMTgtYjBlOS0wOTUwYWIxZTEwZjQiLCJzaWQiOiIwN2YzYjE2YS05OThiLTQ1Y2MtODJiZi1jNjFiZTY2NzE0YjIiLCJ0eXBlIjoxLCJ1c2VybmFtZSI6Im91dHNpZGVyZXhpc3RlbmNlZGlzY2xvc3VyZXB5Z3czOThiOWY1MzIifQ.n_zh6Z7dGIYWyXAjbVWgAoS54u0pJ1EG0Wb-d1u0t_g"
+}

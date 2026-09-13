@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/19/users
+as: session:ownertestaccessmatrixpygw122830ea7
+sent: {
+  "username": "readertestaccessmatrixpygw1fe71c42c",
+  "permission": 0
+}
+status: 201  (91 ms)
+body: {
+  "id": 5,
+  "username": "readertestaccessmatrixpygw1fe71c42c",
+  "permission": 0,
+  "created": "2026-09-13T22:40:12.559293744Z",
+  "updated": "2026-09-13T22:40:12.55929818Z"
+}

@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/tasks/999999999/assignees/999999999
+as: session:owneredeletetasksassigneesgw03443eb96
+status: 404  (8 ms)
+domain code: 3001
+body: {
+  "code": 3001,
+  "message": "This project does not exist."
+}

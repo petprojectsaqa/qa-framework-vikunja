@@ -1,0 +1,11 @@
+PUT http://localhost:3456/api/v1/projects/61/tasks
+as: session:outsidersanexistinggrantalonegw435498d74
+sent: {
+  "title": "writing after a refused change"
+}
+status: 403  (21 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "Forbidden"
+}

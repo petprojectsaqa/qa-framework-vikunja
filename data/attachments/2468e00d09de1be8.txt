@@ -1,6 +1,0 @@
-GET http://localhost:3456/dav/projects/103
-as: anonymous
-status: 401  (12 ms)
-body: {
-  "message": "Unauthorized"
-}

@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "owneredforchromiumwritablegw0ed9e1a9c",
+  "password": "VikunjaQA123!"
+}
+status: 200  (176 ms)
+body: {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3ODkzMzk4NjIsImlkIjoyMiwiaXNfYWRtaW4iOmZhbHNlLCJqdGkiOiIwNTQ3ZGNiOS03ODZkLTRmZmItOGQ2OS1kNWI4Y2E5ODM2OWUiLCJzaWQiOiJmODI0MWNlNS04YjRlLTQ1MWItOTFjYS1iYjBhNmI0NDAwZDYiLCJ0eXBlIjoxLCJ1c2VybmFtZSI6Im93bmVyZWRmb3JjaHJvbWl1bXdyaXRhYmxlZ3cwZWQ5ZTFhOWMifQ.NgGnDXlp9dbRlzEMA8eyKvIX2bkl82crnNE5sOdVtsk"
+}

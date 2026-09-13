@@ -1,6 +1,0 @@
-DELETE http://localhost:3456/api/v1/tasks/26
-as: session:teammatetestaccessmatrixpygw2c993e003
-status: 200  (122 ms)
-body: {
-  "message": "Successfully deleted."
-}

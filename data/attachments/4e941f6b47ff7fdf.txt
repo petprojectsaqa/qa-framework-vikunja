@@ -1,0 +1,11 @@
+PUT http://localhost:3456/api/v1/projects/257/tasks
+as: session:ownereswritesandstillreadsgw715ee8ae3
+sent: {
+  "title": "after archiving"
+}
+status: 412  (4 ms)
+domain code: 3008
+body: {
+  "code": 3008,
+  "message": "This project is archived. Editing or creating new tasks is not possible."
+}
