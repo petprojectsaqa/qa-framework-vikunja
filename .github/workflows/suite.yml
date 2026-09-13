@@ -149,6 +149,33 @@ jobs:
           name: browser-traces
           path: test-results
 
+  # The promise every finding makes, kept honest. Its own job and its own
+  # stand, so it runs beside the suites rather than after them and costs the
+  # pipeline no wall-clock time — three of these reproductions stop a
+  # container, which is exactly why they cannot share one.
+  reproductions:
+    name: the findings still reproduce
+    runs-on: ubuntu-latest
+    needs: [static, self-test]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --extra dev
+      - name: bring the stand up
+        run: docker compose -f docker/docker-compose.yml up -d --quiet-pull
+      - name: wait for the stand
+        run: uv run python scripts/check_stand.py
+      # Every report in docs/findings says it can be reproduced in about two
+      # minutes without trusting the author. Nothing ran these, so a script
+      # that stopped reproducing — because the product was fixed, or because
+      # it rotted — would have gone unnoticed until a reader tried it.
+      - run: uv run python scripts/verify_findings.py
+      - name: stand logs on failure
+        if: failure()
+        run: docker compose -f docker/docker-compose.yml logs --tail 300
+
   resilience:
     name: dependency outages
     runs-on: ubuntu-latest

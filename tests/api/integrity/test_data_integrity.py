@@ -28,6 +28,48 @@ from vikunja_qa.scenes import SceneBuilder, build
 pytestmark = pytest.mark.covers("INT")
 
 
+@pytest.mark.finding("VKJ-017")
+@pytest.mark.xfail(
+    reason=(
+        "VKJ-017: updating one project rewrites `position` and `updated` on every project "
+        "row in the database, including projects owned by unrelated accounts, and takes "
+        "time in proportion to how many there are"
+    ),
+)
+def test_a_write_by_one_account_leaves_another_accounts_projects_alone(
+    scene: SceneBuilder, actors: ActorFactory, db: Database
+) -> None:
+    """The property the whole isolation argument rests on, asked of the rows.
+
+    Isolation by ownership says two accounts that have never met cannot see
+    each other's data. That is about reading. This is the other half, and
+    the half nothing else here checks: one account's write must not *modify*
+    another's rows.
+
+    It cannot be asked through the API — a stranger's project is not
+    readable by definition — so it is asked of the database, by identifier,
+    the way everything else in this file is.
+    """
+    mine = scene.project(title="mine to rename").done()
+    stranger = build(actors).project(title="not mine to touch").done()
+    untouched_id = stranger.project_id
+
+    query = "select updated, position from projects where id = %(id)s"
+    before = db.one(query, {"id": untouched_id})
+    assert before is not None, "the stranger's project was not recorded"
+
+    renamed = mine.owner.api.projects.update(mine.project_id, title="renamed by someone else")
+    assert renamed.ok, renamed.describe()
+
+    after = db.one(query, {"id": untouched_id})
+    assert after is not None, "the stranger's project disappeared"
+    assert (after["updated"], after["position"]) == (before["updated"], before["position"]), (
+        "renaming one account's project rewrote another account's project: "
+        f"updated {before['updated']} -> {after['updated']}, "
+        f"position {before['position']} -> {after['position']}"
+    )
+
+
 def test_deleting_a_project_leaves_no_orphaned_tasks(scene: SceneBuilder, db: Database) -> None:
     world = scene.project().task("a").task("b").task("c").done()
     project_id = world.project_id

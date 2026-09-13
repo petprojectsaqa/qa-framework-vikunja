@@ -2,7 +2,7 @@
 
 <p align="center">
   <b>A reference API, browser and CalDAV test framework in Python, run against a real product.</b><br>
-  Not a sandbox exercise: an eight-container stand, a thousand checks in under a minute, and sixteen real defects found.
+  Not a sandbox exercise: an eight-container stand, a thousand checks in under a minute, and seventeen real defects found.
 </p>
 
 <p align="center">
@@ -104,7 +104,7 @@ Every response the suite receives, from any test, is validated against the schem
 
 ## How it was built
 
-**AI-first engineering.** This framework was built the way I work: with AI in the loop. AI speeds up implementation and widens the search for defects, while the architecture, the test strategy and every trade-off are engineering decisions, each written down in [docs/strategy.md](docs/strategy.md) with the alternatives it was chosen over. That combination is what lets one engineer deliver this depth of coverage: most of the suite is generated from the product's own API descriptions, and it has already found sixteen real defects.
+**AI-first engineering.** This framework was built the way I work: with AI in the loop. AI speeds up implementation and widens the search for defects, while the architecture, the test strategy and every trade-off are engineering decisions, each written down in [docs/strategy.md](docs/strategy.md) with the alternatives it was chosen over. That combination is what lets one engineer deliver this depth of coverage: most of the suite is generated from the product's own API descriptions, and it has already found seventeen real defects.
 
 ## Status
 
@@ -116,7 +116,7 @@ Every response the suite receives, from any test, is validated against the schem
 | API operations exercised | 99% of both versions |
 | The framework's own tests, no stand needed | 253 in 15 seconds |
 | Resilience layer, run on its own | 6 |
-| Defects found in the product | 16 |
+| Defects found in the product | 17 |
 
 Every row of the [coverage matrix](docs/coverage-matrix.md) has tests behind it, and the run prints the table at the end so a gap cannot open quietly. Three things end a run red beyond a failing test: a response that deviates from its contract in a way the baseline does not already account for, a matrix check of the required priority that ran nothing at all, and a module that breaks the suite's conventions.
 

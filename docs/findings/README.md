@@ -24,6 +24,7 @@ Every finding reproduces in two minutes and asks for no trust in the author: eac
 | VKJ-014 | held until the product's maintainers respond | low | CalDAV slice |
 | [VKJ-015](VKJ-015-simultaneous-task-creation-500/) | two tasks created in one project at the same moment: one caller gets a 500 | high | simultaneous writes |
 | [VKJ-016](VKJ-016-caldav-token-revocation-false-success/) | revoking a CalDAV token reports success when nothing was revoked | medium | generated error sweep |
+| [VKJ-017](VKJ-017-project-update-rewrites-every-project/) | updating one project rewrites `position` and `updated` on every project on the instance, across every account | high | chasing a flake under parallel load |
 
 ## Running the reproductions
 
