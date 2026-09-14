@@ -344,6 +344,26 @@ Report fields: summary, severity, affected version, environment, steps, expected
 
 ---
 
+## 17b. Rules checked against inputs nobody chose <a id="properties"></a>
+
+Every other test here is an example: someone picked the input and said what should come back. That only checks what its author thought of, and what an author thinks of is what they already had in mind while writing the code.
+
+`tests/unit/test_properties.py` states rules instead, and lets Hypothesis look for something that breaks them. Aimed at three places where examples are known to miss.
+
+| Rule | Why a generator finds what a person does not |
+|---|---|
+| unescaping what was escaped gives back what went in | escaping is where the awkward inputs live: a lone backslash, a string ending in one, a line break in the middle. [CVE-2026-35601] in this product was exactly that |
+| no folded line exceeds 75 octets, and unfolding gives the line back | folding counts octets while Python counts characters, so a Cyrillic title is twice as long as it looks and an emoji four times |
+| a summary reads back as it was written, and introduces no property of its own | the whole write-and-read path in one rule, which is the path the CVE broke |
+| a credential never survives into what the report renders, however deeply it is buried | a redaction that holds for the shapes someone listed is not a redaction |
+| a filled path template carries no placeholder | `/projects/{id}` sent literally is a request for a project called `{id}` |
+
+Two of the rules were wrong when first written, and both corrections are left in the file rather than tidied away, because they are the argument for the technique. `unescape(escape(x)) == x` is false — Hypothesis shrank the reason to a single carriage return, since the standard stores any of the three line breaks as a line feed. And the rule about credentials put the token beside a generated structure instead of inside it, so a redaction that looked only at the top level passed it; that was caught by breaking the redaction on purpose and finding the rule did not notice.
+
+Which is the check on the checks: each of these rules was verified by breaking the function it guards — forgetting to escape semicolons, escaping the backslash last, folding by characters, redacting only the top level. All four are caught.
+
+---
+
 ## 17a. What grows with the instance <a id="scaling"></a>
 
 Every assertion in this suite passes as well at ten rows as at ten thousand. A correctness check cannot see an operation whose cost follows the size of the table — that only shows as a clock, and it showed here as a flaky test, which is how [VKJ-017](findings/VKJ-017-project-update-rewrites-every-project/) was found.

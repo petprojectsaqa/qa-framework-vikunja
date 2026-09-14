@@ -114,7 +114,7 @@ Every response the suite receives, from any test, is validated against the schem
 | Generated from the product's own descriptions | 791 of 940 matrix-bound tests |
 | Run time on eight workers | about 50 seconds |
 | API operations exercised | 99% of both versions |
-| The framework's own tests, no stand needed | 253 in 15 seconds |
+| The framework's own tests, no stand needed | 280 in 22 seconds |
 | Resilience layer, run on its own | 6 |
 | Defects found in the product | 17 |
 

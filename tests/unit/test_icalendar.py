@@ -130,3 +130,23 @@ class TestWriting:
         due_property = written.first("DUE")
         assert due_property is not None
         assert icalendar.parse_utc(due_property.value) == due
+
+
+#: A lone surrogate, built rather than written: a source file holding one
+#: cannot itself be saved as UTF-8, which is the whole point of the case.
+LONE_SURROGATE = chr(0xD800)
+
+
+def test_a_line_that_cannot_be_written_as_utf8_is_refused_by_name() -> None:
+    """Found by a property test that left surrogates in its alphabet.
+
+    A lone surrogate is not a character and no UTF-8 decode produces one, so
+    it cannot arrive inside a document. It can arrive in JSON: `json.loads`
+    hands back this character for the escape sequence without complaint, so a
+    server can put one in a task title and a test can carry it here. What
+    happened then was a UnicodeEncodeError thrown from the middle of the
+    folding loop, saying nothing about what had gone wrong or where it came
+    from.
+    """
+    with pytest.raises(icalendar.ICalendarError, match="cannot be written as UTF-8"):
+        icalendar.fold(f"a title with {LONE_SURROGATE} in it")

@@ -217,7 +217,21 @@ def fold(line: str) -> str:
 
     Octets rather than characters, as the standard counts them: a Cyrillic
     title is twice as long on the wire as it looks.
+
+    A string that cannot be written as UTF-8 is refused here, by name. Only
+    one kind can: a lone surrogate, which is not a character and which no
+    UTF-8 decode can produce — but `json.loads` will hand one over happily
+    if a server sends `"\\ud800"`, so it can reach this from the product.
+    Without this the failure is a codec error thrown from the middle of a
+    loop, which says nothing about what went wrong or where it came from.
     """
+    try:
+        line.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ICalendarError(
+            f"this line cannot be written as UTF-8, so it cannot be folded: {exc}"
+        ) from exc
+
     pieces: list[str] = []
     current = ""
     budget = FOLD_AT_OCTETS
