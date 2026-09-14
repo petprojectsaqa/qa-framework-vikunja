@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/245/users
+as: session:ownerdtosomeonewhocanseeitgw035e066a5
+sent: {
+  "username": "outsiderdtosomeonewhocanseeitgw00c710a7b",
+  "permission": 1
+}
+status: 201  (39 ms)
+body: {
+  "id": 14,
+  "username": "outsiderdtosomeonewhocanseeitgw00c710a7b",
+  "permission": 1,
+  "created": "2026-09-14T08:16:00.819950631Z",
+  "updated": "2026-09-14T08:16:00.819953306Z"
+}

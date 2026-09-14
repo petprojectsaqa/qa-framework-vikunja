@@ -1,0 +1,8 @@
+POST http://localhost:3456/api/v2/user/export/request
+as: anonymous
+status: 401  (8 ms)
+domain code: 11
+body: {
+  "code": 11,
+  "message": "missing, malformed, expired or otherwise invalid token provided"
+}

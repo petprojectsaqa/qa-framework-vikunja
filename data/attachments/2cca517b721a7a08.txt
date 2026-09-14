@@ -1,0 +1,6 @@
+DELETE http://localhost:3456/api/v2/admin/users/999999999
+as: session:owneriluredeleteadminusersgw249db09ba
+status: 404  (11 ms)
+body: {
+  "message": "Not Found"
+}

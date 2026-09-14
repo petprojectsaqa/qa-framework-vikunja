@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneraredforwebkitwritablegw164da2c64",
+  "password": "<redacted, 13 characters>",
+  "email": "owneraredforwebkitwritablegw164da2c64@qa.local"
+}
+status: 200  (215 ms)
+body: {
+  "id": 22,
+  "name": "",
+  "username": "owneraredforwebkitwritablegw164da2c64",
+  "created": "2026-09-14T08:16:27Z",
+  "updated": "2026-09-14T08:16:27.926558763Z"
+}

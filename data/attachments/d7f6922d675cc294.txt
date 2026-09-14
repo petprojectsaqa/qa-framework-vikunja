@@ -1,5 +1,0 @@
-PUT http://localhost:3456/dav/projects/240/a178ccb3-f1b2-429c-a304-a028d7a4b42e.ics
-as: basic:ownerclientappearsintheapigw721a123da
-sent: b'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//vikunja-qa//tests//EN\r\nBEGIN:VTODO\r\nUID:a178ccb3-f1b2-429c-a304-a028d7a4b42e\r\nDTSTAMP:20260914T001426Z\r\nSUMMARY:book the venue\r\nEND:VTODO\r\nEND:VCALENDAR\r\n'
-status: 201  (402 ms)
-body: 

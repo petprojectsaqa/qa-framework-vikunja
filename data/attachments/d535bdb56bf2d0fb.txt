@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerionislistedbytheothergw1a3fc3129",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerionislistedbytheothergw1a3fc3129@qa.local"
+}
+status: 200  (555 ms)
+body: {
+  "id": 136,
+  "name": "",
+  "username": "ownerionislistedbytheothergw1a3fc3129",
+  "created": "2026-09-14T08:15:52Z",
+  "updated": "2026-09-14T08:15:52.528252457Z"
+}

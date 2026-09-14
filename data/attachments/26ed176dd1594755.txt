@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownereleteprojectswebhooksgw5b601d209",
+  "password": "<redacted, 13 characters>",
+  "email": "ownereleteprojectswebhooksgw5b601d209@qa.local"
+}
+status: 200  (952 ms)
+body: {
+  "id": 101,
+  "name": "",
+  "username": "ownereleteprojectswebhooksgw5b601d209",
+  "created": "2026-09-14T08:15:47Z",
+  "updated": "2026-09-14T08:15:47.500320822Z"
+}

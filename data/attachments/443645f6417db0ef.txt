@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/40/tasks
+as: session:ownerhatliststaskschromiumgw32522e13a
+sent: {
+  "title": "review the draft"
+}
+status: 201  (30 ms)
+body: {
+  "id": 42,
+  "title": "review the draft",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 40,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#2",
+  "index": 2,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-14T08:16:03.975043974Z",
+  "updated": "2026-09-14T08:16:03.975048402Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 20,
+    "name": "",
+    "username": "ownerhatliststaskschromiumgw32522e13a",
+    "created": "2026-09-14T08:16:03Z",
+    "updated": "2026-09-14T08:16:03Z"
+  }
+}
