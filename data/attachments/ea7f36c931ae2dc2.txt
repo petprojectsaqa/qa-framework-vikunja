@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/23/tasks
+as: session:ownerredforfirefoxreadonlygw0cb7979de
+sent: {
+  "title": "write the report"
+}
+status: 201  (49 ms)
+body: {
+  "id": 24,
+  "title": "write the report",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 23,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-14T00:14:31.322850289Z",
+  "updated": "2026-09-14T00:14:31.322854767Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 12,
+    "name": "",
+    "username": "ownerredforfirefoxreadonlygw0cb7979de",
+    "created": "2026-09-14T00:14:30Z",
+    "updated": "2026-09-14T00:14:31Z"
+  }
+}

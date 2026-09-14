@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/7/users
+as: session:ownereaddtaskcontrolwebkitgw2257ffddc
+sent: {
+  "username": "readereaddtaskcontrolwebkitgw24d0a86f5",
+  "permission": 0
+}
+status: 201  (12 ms)
+body: {
+  "id": 1,
+  "username": "readereaddtaskcontrolwebkitgw24d0a86f5",
+  "permission": 0,
+  "created": "2026-09-14T00:14:27.031181833Z",
+  "updated": "2026-09-14T00:14:27.03118635Z"
+}

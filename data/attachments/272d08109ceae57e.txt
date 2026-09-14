@@ -1,1 +1,0 @@
-{'id': 3, 'name': 'note.txt', 'mime': 'text/plain; charset=utf-8', 'size': 22, 'created': datetime.datetime(2026, 9, 13, 23, 51, 45), 'created_by_id': 174}

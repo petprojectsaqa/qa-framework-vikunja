@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/81/tasks
+as: session:ownerlerwithoutcredentialsgw7b4405359
+sent: {
+  "title": "task task"
+}
+status: 201  (153 ms)
+body: {
+  "id": 43,
+  "title": "task task",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 81,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-14T00:14:08.771734952Z",
+  "updated": "2026-09-14T00:14:08.77173918Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 62,
+    "name": "",
+    "username": "ownerlerwithoutcredentialsgw7b4405359",
+    "created": "2026-09-14T00:14:07Z",
+    "updated": "2026-09-14T00:14:08Z"
+  }
+}

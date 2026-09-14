@@ -1,6 +1,0 @@
-GET http://localhost:3456/dav/projects/150
-as: basic:owneravpermissionwithoutitgw2f0e776a8
-status: 401  (60 ms)
-body: {
-  "message": "Unauthorized"
-}

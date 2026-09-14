@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v1/shares/6c9Nw7LaS1tY2dedDVL3VuGz1Qp0KepGrqmM0eOF/auth
+as: session:ownerctitwasmadeforfirefoxgw24fad6186
+sent: {
+  "hash": "6c9Nw7LaS1tY2dedDVL3VuGz1Qp0KepGrqmM0eOF"
+}
+status: 200  (6 ms)
+body: {
+  "token": "<redacted, 256 characters>",
+  "id": 2,
+  "hash": "6c9Nw7LaS1tY2dedDVL3VuGz1Qp0KepGrqmM0eOF",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-14T00:14:36Z",
+  "updated": "2026-09-14T00:14:36Z",
+  "project_id": 26
+}

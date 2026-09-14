@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerhtshapenothexadecimalgw4e2245f9f",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerhtshapenothexadecimalgw4e2245f9f@qa.local"
+}
+status: 200  (558 ms)
+body: {
+  "id": 59,
+  "name": "",
+  "username": "ownerhtshapenothexadecimalgw4e2245f9f",
+  "created": "2026-09-14T00:14:07Z",
+  "updated": "2026-09-14T00:14:07.383060086Z"
+}

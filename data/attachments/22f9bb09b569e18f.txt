@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/projects/31/shares
+as: session:ownersswordisgivenchromiumgw08de7a065
+sent: {
+  "permission": 0,
+  "password": "<redacted, 19 characters>",
+  "name": "locked"
+}
+status: 201  (153 ms)
+body: {
+  "id": 3,
+  "hash": "LW3Rp9obTAPkpnPjKrrtBl34IyrDtapeXgrFhqTE",
+  "name": "locked",
+  "permission": 0,
+  "sharing_type": 2,
+  "password": "",
+  "shared_by": {
+    "id": 15,
+    "name": "",
+    "username": "ownersswordisgivenchromiumgw08de7a065",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-14T00:14:53.958806674Z",
+  "updated": "2026-09-14T00:14:53.958811773Z"
+}

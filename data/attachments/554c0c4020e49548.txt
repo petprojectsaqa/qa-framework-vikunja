@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerbleinthebrowserwebkitgw0496cbe0c",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerbleinthebrowserwebkitgw0496cbe0c@qa.local"
+}
+status: 200  (537 ms)
+body: {
+  "id": 5,
+  "name": "",
+  "username": "ownerbleinthebrowserwebkitgw0496cbe0c",
+  "created": "2026-09-14T00:14:25Z",
+  "updated": "2026-09-14T00:14:25.998807191Z"
+}

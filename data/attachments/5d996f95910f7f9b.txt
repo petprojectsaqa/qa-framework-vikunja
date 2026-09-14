@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/242/users
+as: session:ownertalevelisrefusedalistgw689dfc19d
+sent: {
+  "username": "outsidertalevelisrefusedalistgw6f1c457a7",
+  "permission": [
+    1
+  ]
+}
+status: 400  (3 ms)
+domain code: 2004
+body: {
+  "code": 2004,
+  "message": "Invalid model provided: Bad Request"
+}

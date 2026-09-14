@@ -1,0 +1,67 @@
+GET http://localhost:3456/api/v1/projects/37/views
+as: session:ownerinishesthetaskfirefoxgw3909aef7e
+status: 200  (40 ms)
+body: [
+  {
+    "id": 219,
+    "title": "List",
+    "project_id": 37,
+    "view_kind": "list",
+    "filter": {
+      "s": "",
+      "sort_by": null,
+      "order_by": null,
+      "filter": "done = false",
+      "filter_include_nulls": false
+    },
+    "position": 100,
+    "bucket_configuration_mode": "none",
+    "bucket_configuration": null,
+    "default_bucket_id": 0,
+    "done_bucket_id": 0,
+    "updated": "2026-09-14T00:14:46Z",
+    "created": "2026-09-14T00:14:46Z"
+  },
+  {
+    "id": 221,
+    "title": "Gantt",
+    "project_id": 37,
+    "view_kind": "gantt",
+    "filter": null,
+    "position": 200,
+    "bucket_configuration_mode": "none",
+    "bucket_configuration": null,
+    "default_bucket_id": 0,
+    "done_bucket_id": 0,
+    "updated": "2026-09-14T00:14:46Z",
+    "created": "2026-09-14T00:14:46Z"
+  },
+  {
+    "id": 223,
+    "title": "Table",
+    "project_id": 37,
+    "view_kind": "table",
+    "filter": null,
+    "position": 300,
+    "bucket_configuration_mode": "none",
+    "bucket_configuration": null,
+    "default_bucket_id": 0,
+    "done_bucket_id": 0,
+    "updated": "2026-09-14T00:14:46Z",
+    "created": "2026-09-14T00:14:46Z"
+  },
+  {
+    "id": 224,
+    "title": "Kanban",
+    "project_id": 37,
+    "view_kind": "kanban",
+    "filter": null,
+    "position": 400,
+    "bucket_configuration_mode": "manual",
+    "bucket_configuration": null,
+    "default_bucket_id": 166,
+    "done_bucket_id": 168,
+    "updated": "2026-09-14T00:14:46Z",
+    "created": "2026-09-14T00:14:46Z"
+  }
+... [1 more characters]

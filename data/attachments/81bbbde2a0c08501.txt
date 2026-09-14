@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/projects/163
+as: session:outsidernotdeterminedsentinelgw62a2e0da1
+status: 403  (35 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "You don't have the permission to see this"
+}

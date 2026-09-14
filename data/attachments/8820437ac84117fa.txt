@@ -1,0 +1,24 @@
+PUT http://localhost:3456/api/v1/projects/20/shares
+as: session:ownertestaccessmatrixpygw039fc23dc
+sent: {
+  "permission": 1,
+  "name": "share_write"
+}
+status: 201  (53 ms)
+body: {
+  "id": 5,
+  "hash": "yurcPyeeBOZgVI4nh27r7UYXw2wejSNRy9g3Asid",
+  "name": "share_write",
+  "permission": 1,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": {
+    "id": 11,
+    "name": "",
+    "username": "ownertestaccessmatrixpygw039fc23dc",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-14T00:14:02.61655091Z",
+  "updated": "2026-09-14T00:14:02.616554466Z"
+}

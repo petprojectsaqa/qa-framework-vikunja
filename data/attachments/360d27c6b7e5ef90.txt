@@ -1,0 +1,67 @@
+PUT http://localhost:3456/api/v1/projects
+as: session:ownerrlandssignedinfirefoxgw2a143dd8e
+sent: {
+  "title": "browser scenario"
+}
+status: 201  (34 ms)
+body: {
+  "id": 4,
+  "title": "browser scenario",
+  "description": "",
+  "identifier": "",
+  "hex_color": "",
+  "parent_project_id": 0,
+  "owner": {
+    "id": 2,
+    "name": "",
+    "username": "ownerrlandssignedinfirefoxgw2a143dd8e",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "is_archived": false,
+  "background_information": null,
+  "background_blur_hash": "",
+  "is_favorite": false,
+  "position": 262144,
+  "views": [
+    {
+      "id": 21,
+      "title": "List",
+      "project_id": 4,
+      "view_kind": "list",
+      "filter": {
+        "s": "",
+        "sort_by": null,
+        "order_by": null,
+        "filter": "done = false",
+        "filter_include_nulls": false
+      },
+      "position": 100,
+      "bucket_configuration_mode": "none",
+      "bucket_configuration": null,
+      "default_bucket_id": 0,
+      "done_bucket_id": 0,
+      "updated": "2026-09-14T00:14:12.207013351Z",
+      "created": "2026-09-14T00:14:12.206651565Z"
+    },
+    {
+      "id": 22,
+      "title": "Gantt",
+      "project_id": 4,
+      "view_kind": "gantt",
+      "filter": null,
+      "position": 200,
+      "bucket_configuration_mode": "none",
+      "bucket_configuration": null,
+      "default_bucket_id": 0,
+      "done_bucket_id": 0,
+      "updated": "2026-09-14T00:14:12.211873381Z",
+      "created": "2026-09-14T00:14:12.21148218Z"
+    },
+    {
+      "id": 23,
+      "title": "Table",
+      "project_id": 4,
+      "view_kind": "table",
+      "filter": null,
+      "po... [773 more characters]

@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "teammatetestaccessmatrixpygw03acd8288",
+  "password": "<redacted, 13 characters>",
+  "email": "teammatetestaccessmatrixpygw03acd8288@qa.local"
+}
+status: 200  (867 ms)
+body: {
+  "id": 30,
+  "name": "",
+  "username": "teammatetestaccessmatrixpygw03acd8288",
+  "created": "2026-09-14T00:14:01Z",
+  "updated": "2026-09-14T00:14:01.466896329Z"
+}

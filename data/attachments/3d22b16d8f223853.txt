@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/projects/35
+as: session:outsiderexistencedisclosurepygw20d58ee4b
+status: 403  (7 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "You don't have the permission to see this"
+}

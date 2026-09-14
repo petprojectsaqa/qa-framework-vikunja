@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerneverstoredinthecleargw2508d5107",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerneverstoredinthecleargw2508d5107@qa.local"
+}
+status: 200  (633 ms)
+body: {
+  "id": 165,
+  "name": "",
+  "username": "ownerneverstoredinthecleargw2508d5107",
+  "created": "2026-09-14T00:14:22Z",
+  "updated": "2026-09-14T00:14:22.82810112Z"
+}
