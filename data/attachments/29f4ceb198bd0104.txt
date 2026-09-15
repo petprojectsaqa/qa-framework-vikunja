@@ -1,0 +1,11 @@
+PUT http://localhost:3456/api/v1/tasks/76/labels
+as: session:ownernnotbeputonatasktwicegw7e1c2b5b0
+sent: {
+  "label_id": 2
+}
+status: 400  (36 ms)
+domain code: 8001
+body: {
+  "code": 8001,
+  "message": "This label already exists on the task."
+}

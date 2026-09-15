@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v1/shares/br1Smsj3ADSoXipataP8wmYsHzcP3uhtwsbcGTLY/auth
+as: session:owneredforchromiumreadonlygw1d8637c84
+sent: {
+  "hash": "br1Smsj3ADSoXipataP8wmYsHzcP3uhtwsbcGTLY"
+}
+status: 200  (7 ms)
+body: {
+  "token": "<redacted, 256 characters>",
+  "id": 1,
+  "hash": "br1Smsj3ADSoXipataP8wmYsHzcP3uhtwsbcGTLY",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-15T08:09:43Z",
+  "updated": "2026-09-15T08:09:43Z",
+  "project_id": 21
+}

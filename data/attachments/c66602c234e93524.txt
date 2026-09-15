@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/45
+as: session:owneramemomentisnotanerrorgw5db3c7a56
+status: 404  (22 ms)
+domain code: 4002
+body: {
+  "code": 4002,
+  "message": "This task does not exist"
+}

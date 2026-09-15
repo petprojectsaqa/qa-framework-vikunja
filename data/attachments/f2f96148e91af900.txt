@@ -1,0 +1,20 @@
+GET http://localhost:3456/api/v1/tasks/76/labels
+as: session:ownernnotbeputonatasktwicegw7e1c2b5b0
+status: 200  (73 ms)
+body: [
+  {
+    "id": 2,
+    "title": "label urgent",
+    "description": "",
+    "hex_color": "",
+    "created_by": {
+      "id": 187,
+      "name": "",
+      "username": "ownernnotbeputonatasktwicegw7e1c2b5b0",
+      "created": "2026-09-15T08:09:36Z",
+      "updated": "2026-09-15T08:09:37Z"
+    },
+    "created": "2026-09-15T08:09:38Z",
+    "updated": "2026-09-15T08:09:38Z"
+  }
+]

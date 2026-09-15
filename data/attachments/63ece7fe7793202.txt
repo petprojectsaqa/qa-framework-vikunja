@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/projects/23
-as: session:ownerletestheprojectwebkitgw0376f103c
-status: 404  (45 ms)
-domain code: 3001
-body: {
-  "code": 3001,
-  "message": "This project does not exist."
-}

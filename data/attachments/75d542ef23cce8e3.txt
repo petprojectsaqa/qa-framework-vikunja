@@ -1,0 +1,24 @@
+PUT http://localhost:3456/api/v1/projects/21/shares
+as: session:owneredforchromiumreadonlygw1d8637c84
+sent: {
+  "permission": 0,
+  "name": "guest"
+}
+status: 201  (7 ms)
+body: {
+  "id": 1,
+  "hash": "br1Smsj3ADSoXipataP8wmYsHzcP3uhtwsbcGTLY",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": {
+    "id": 11,
+    "name": "",
+    "username": "owneredforchromiumreadonlygw1d8637c84",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-15T08:09:43.983131383Z",
+  "updated": "2026-09-15T08:09:43.983134599Z"
+}

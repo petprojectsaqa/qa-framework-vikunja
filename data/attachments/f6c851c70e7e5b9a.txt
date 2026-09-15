@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneresreachthesameproductgw46528cc7e",
+  "password": "<redacted, 13 characters>",
+  "email": "owneresreachthesameproductgw46528cc7e@qa.local"
+}
+status: 200  (826 ms)
+body: {
+  "id": 145,
+  "name": "",
+  "username": "owneresreachthesameproductgw46528cc7e",
+  "created": "2026-09-15T08:09:30Z",
+  "updated": "2026-09-15T08:09:31.067474803Z"
+}

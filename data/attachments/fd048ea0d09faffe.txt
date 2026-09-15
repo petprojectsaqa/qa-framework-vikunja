@@ -1,0 +1,24 @@
+PUT http://localhost:3456/api/v1/projects/212/shares
+as: session:ownerchesonlyitsownprojectgw1546ccba3
+sent: {
+  "permission": 0,
+  "name": "guest"
+}
+status: 201  (15 ms)
+body: {
+  "id": 7,
+  "hash": "s9gT3NJ1piiF79tAAbVf6sAGjgw8iwgqYgLWd5c8",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": {
+    "id": 166,
+    "name": "",
+    "username": "ownerchesonlyitsownprojectgw1546ccba3",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-15T08:09:34.259155359Z",
+  "updated": "2026-09-15T08:09:34.259158034Z"
+}

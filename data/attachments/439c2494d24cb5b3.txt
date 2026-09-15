@@ -1,0 +1,17 @@
+GET http://localhost:3456/api/v1/tokens
+as: session:ownerorrevokedbyanyoneelsegw50ac3846b
+status: 200  (17 ms)
+body: [
+  {
+    "id": 43,
+    "title": "victim token",
+    "permissions": {
+      "labels": [
+        "read_all"
+      ]
+    },
+    "expires_at": "2026-10-15T08:09:34Z",
+    "created": "2026-09-15T08:09:34Z",
+    "owner_id": 169
+  }
+]

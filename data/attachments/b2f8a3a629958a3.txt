@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/teams/999999999
-as: session:owneramefailuredeleteteamsgw376216497
-status: 404  (14 ms)
-domain code: 6002
-body: {
-  "code": 6002,
-  "message": "This team does not exist."
-}

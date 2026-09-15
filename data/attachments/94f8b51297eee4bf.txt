@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/238/tasks
+as: session:ownerwsupontheothertasktoogw5586b6ef8
+sent: {
+  "title": "parent task"
+}
+status: 201  (76 ms)
+body: {
+  "id": 70,
+  "title": "parent task",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 238,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-15T08:09:36.890929264Z",
+  "updated": "2026-09-15T08:09:36.890932741Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 182,
+    "name": "",
+    "username": "ownerwsupontheothertasktoogw5586b6ef8",
+    "created": "2026-09-15T08:09:35Z",
+    "updated": "2026-09-15T08:09:36Z"
+  }
+}

@@ -1,0 +1,11 @@
+GET http://localhost:3456/api/v2/tasks/999999999/labels
+as: session:ownerfailuregettaskslabelsgw7c9e35437
+status: 404  (4 ms)
+domain code: 4002
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "This task does not exist",
+  "code": 4002
+}
