@@ -1,0 +1,56 @@
+GET http://localhost:3456/api/v1/projects/215/views/1539/buckets
+as: session:owneroutrightsonitsprojectgw0df9922fc
+status: 200  (21 ms)
+body: [
+  {
+    "id": 1150,
+    "title": "To-Do",
+    "project_view_id": 1539,
+    "limit": 0,
+    "count": 0,
+    "position": 100,
+    "created": "2026-09-16T08:02:23Z",
+    "updated": "2026-09-16T08:02:23Z",
+    "created_by": {
+      "id": 168,
+      "name": "",
+      "username": "owneroutrightsonitsprojectgw0df9922fc",
+      "created": "2026-09-16T08:02:22Z",
+      "updated": "2026-09-16T08:02:22Z"
+    }
+  },
+  {
+    "id": 1151,
+    "title": "Doing",
+    "project_view_id": 1539,
+    "limit": 0,
+    "count": 0,
+    "position": 200,
+    "created": "2026-09-16T08:02:23Z",
+    "updated": "2026-09-16T08:02:23Z",
+    "created_by": {
+      "id": 168,
+      "name": "",
+      "username": "owneroutrightsonitsprojectgw0df9922fc",
+      "created": "2026-09-16T08:02:22Z",
+      "updated": "2026-09-16T08:02:22Z"
+    }
+  },
+  {
+    "id": 1152,
+    "title": "Done",
+    "project_view_id": 1539,
+    "limit": 0,
+    "count": 0,
+    "position": 300,
+    "created": "2026-09-16T08:02:23Z",
+    "updated": "2026-09-16T08:02:23Z",
+    "created_by": {
+      "id": 168,
+      "name": "",
+      "username": "owneroutrightsonitsprojectgw0df9922fc",
+      "created": "2026-09-16T08:02:22Z",
+      "updated": "2026-09-16T08:02:22Z"
+    }
+  }
+]

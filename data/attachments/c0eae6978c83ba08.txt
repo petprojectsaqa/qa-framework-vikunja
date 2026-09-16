@@ -1,0 +1,9 @@
+POST http://localhost:3456/api/v1/user/password/token
+as: session:ownerethemailserverisdownmain41e1e023
+sent: {
+  "email": "ownerethemailserverisdownmain41e1e023@qa.local"
+}
+status: 200  (8 ms)
+body: {
+  "message": "Token was sent."
+}

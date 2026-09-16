@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/notifications
-as: api-token:labels.read_all
-status: 401  (163 ms)
-domain code: 11
-body: {
-  "code": 11,
-  "message": "missing, malformed, expired or otherwise invalid token provided"
-}

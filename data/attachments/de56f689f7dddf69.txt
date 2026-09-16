@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "readereaddtaskcontrolwebkitgw218610443",
+  "password": "<redacted, 13 characters>",
+  "email": "readereaddtaskcontrolwebkitgw218610443@qa.local"
+}
+status: 200  (441 ms)
+body: {
+  "id": 6,
+  "name": "",
+  "username": "readereaddtaskcontrolwebkitgw218610443",
+  "created": "2026-09-16T08:02:19Z",
+  "updated": "2026-09-16T08:02:19.602147104Z"
+}

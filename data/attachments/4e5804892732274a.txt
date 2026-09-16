@@ -1,6 +1,0 @@
-DELETE http://localhost:3456/api/v1/tasks/35
-as: session:ownertestaccessmatrixpygw08334bb0b
-status: 200  (211 ms)
-body: {
-  "message": "Successfully deleted."
-}

@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneredforchromiumreadonlygw231e18de9",
+  "password": "<redacted, 13 characters>",
+  "email": "owneredforchromiumreadonlygw231e18de9@qa.local"
+}
+status: 200  (178 ms)
+body: {
+  "id": 11,
+  "name": "",
+  "username": "owneredforchromiumreadonlygw231e18de9",
+  "created": "2026-09-16T08:02:13Z",
+  "updated": "2026-09-16T08:02:13.561452553Z"
+}

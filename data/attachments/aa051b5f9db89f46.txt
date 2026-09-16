@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/193/tasks
+as: session:ownerleavesnoorphanedtasksgw58616579c
+sent: {
+  "title": "task b"
+}
+status: 201  (109 ms)
+body: {
+  "id": 57,
+  "title": "task b",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 193,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#2",
+  "index": 2,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-16T08:02:21.237673505Z",
+  "updated": "2026-09-16T08:02:21.23767626Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 152,
+    "name": "",
+    "username": "ownerleavesnoorphanedtasksgw58616579c",
+    "created": "2026-09-16T08:02:20Z",
+    "updated": "2026-09-16T08:02:20Z"
+  }
+}

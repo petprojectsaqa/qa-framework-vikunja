@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerlevelisrefusedbooleangw4359d9c7f",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerlevelisrefusedbooleangw4359d9c7f@qa.local"
+}
+status: 200  (442 ms)
+body: {
+  "id": 172,
+  "name": "",
+  "username": "ownerlevelisrefusedbooleangw4359d9c7f",
+  "created": "2026-09-16T08:02:23Z",
+  "updated": "2026-09-16T08:02:23.353383725Z"
+}

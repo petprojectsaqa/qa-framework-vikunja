@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/projects/30/shares
+as: session:ownerpasswordisgivenwebkitgw11830287c
+sent: {
+  "permission": 0,
+  "password": "<redacted, 19 characters>",
+  "name": "locked"
+}
+status: 201  (180 ms)
+body: {
+  "id": 3,
+  "hash": "d0b3F0kKc1uNSmK7XfDECd8j6beLpPY7hB19B7yM",
+  "name": "locked",
+  "permission": 0,
+  "sharing_type": 2,
+  "password": "",
+  "shared_by": {
+    "id": 15,
+    "name": "",
+    "username": "ownerpasswordisgivenwebkitgw11830287c",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-16T08:02:45.582508983Z",
+  "updated": "2026-09-16T08:02:45.582517249Z"
+}

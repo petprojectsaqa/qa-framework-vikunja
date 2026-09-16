@@ -1,0 +1,6 @@
+DELETE http://localhost:3456/api/v1/projects/65
+as: session:ownerprojectisallowedownergw393b31889
+status: 200  (122 ms)
+body: {
+  "message": "Successfully deleted."
+}

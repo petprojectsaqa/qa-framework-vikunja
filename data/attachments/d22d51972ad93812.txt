@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerhatliststaskschromiumgw0173af279",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerhatliststaskschromiumgw0173af279@qa.local"
+}
+status: 200  (234 ms)
+body: {
+  "id": 20,
+  "name": "",
+  "username": "ownerhatliststaskschromiumgw0173af279",
+  "created": "2026-09-16T08:02:21Z",
+  "updated": "2026-09-16T08:02:21.272089743Z"
+}

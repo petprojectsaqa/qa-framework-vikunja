@@ -1,6 +1,0 @@
-DELETE http://localhost:3456/api/v1/user/settings/token/caldav/93
-as: session:ownerongeropensthecalendargw34e52f6ad
-status: 200  (5 ms)
-body: {
-  "message": "The token was deleted successfully."
-}

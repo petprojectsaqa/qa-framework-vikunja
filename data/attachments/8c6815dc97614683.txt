@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/999999999/reactions
+as: session:ownermefailuregetreactionsgw57e6fa1b9
+status: 404  (15 ms)
+domain code: 4002
+body: {
+  "code": 4002,
+  "message": "This task does not exist"
+}

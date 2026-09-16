@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/projects/999999999/views/999999999
-as: session:ownerredeleteprojectsviewsgw64ab0727e
-status: 404  (43 ms)
-domain code: 3014
-body: {
-  "code": 3014,
-  "message": "This project view does not exist."
-}

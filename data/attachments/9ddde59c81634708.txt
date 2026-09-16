@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/projects/999999999/webhooks/999999999
-as: session:ownereleteprojectswebhooksgw1069e38e8
-status: 403  (39 ms)
-domain code: 0
-body: {
-  "code": 0,
-  "message": "Forbidden"
-}

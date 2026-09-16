@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerluregetprojectssharesgw5b6e667cc",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerluregetprojectssharesgw5b6e667cc@qa.local"
+}
+status: 200  (722 ms)
+body: {
+  "id": 94,
+  "name": "",
+  "username": "ownerluregetprojectssharesgw5b6e667cc",
+  "created": "2026-09-16T08:02:12Z",
+  "updated": "2026-09-16T08:02:12.987926371Z"
+}

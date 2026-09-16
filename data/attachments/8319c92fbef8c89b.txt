@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v1/shares/nrKyrunL4EfVcxB8jXR2C5YLEVPm2FsZiLhuwsYu/auth
+as: session:ownerectitwasmadeforwebkitgw0c5f09ecc
+sent: {
+  "hash": "nrKyrunL4EfVcxB8jXR2C5YLEVPm2FsZiLhuwsYu"
+}
+status: 200  (14 ms)
+body: {
+  "token": "<redacted, 256 characters>",
+  "id": 2,
+  "hash": "nrKyrunL4EfVcxB8jXR2C5YLEVPm2FsZiLhuwsYu",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-16T08:02:39Z",
+  "updated": "2026-09-16T08:02:39Z",
+  "project_id": 23
+}

@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/tokens/999999999
-as: session:ownermefailuredeletetokensgw78fa24015
-status: 403  (22 ms)
-domain code: 0
-body: {
-  "code": 0,
-  "message": "Forbidden"
-}

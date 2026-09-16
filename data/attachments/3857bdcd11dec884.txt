@@ -1,0 +1,20 @@
+POST http://localhost:3456/api/v1/shares/d0b3F0kKc1uNSmK7XfDECd8j6beLpPY7hB19B7yM/auth
+as: session:ownerpasswordisgivenwebkitgw11830287c
+sent: {
+  "hash": "d0b3F0kKc1uNSmK7XfDECd8j6beLpPY7hB19B7yM",
+  "password": "<redacted, 19 characters>"
+}
+status: 200  (160 ms)
+body: {
+  "token": "<redacted, 256 characters>",
+  "id": 3,
+  "hash": "d0b3F0kKc1uNSmK7XfDECd8j6beLpPY7hB19B7yM",
+  "name": "locked",
+  "permission": 0,
+  "sharing_type": 2,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-16T08:02:45Z",
+  "updated": "2026-09-16T08:02:45Z",
+  "project_id": 30
+}

@@ -1,9 +1,0 @@
-POST http://localhost:3456/api/v1/user/password/token
-as: session:ownerethemailserverisdownmained1c6f32
-sent: {
-  "email": "ownerethemailserverisdownmained1c6f32@qa.local"
-}
-status: 200  (7 ms)
-body: {
-  "message": "Token was sent."
-}
