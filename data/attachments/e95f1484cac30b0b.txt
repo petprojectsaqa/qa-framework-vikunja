@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/projects/20
-as: session:teammatetestaccessmatrixpygw3c866a7f2
-status: 403  (38 ms)
-domain code: 0
-body: {
-  "code": 0,
-  "message": "Forbidden"
-}

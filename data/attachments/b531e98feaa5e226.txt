@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownereteprojectsbackgroundgw3bc67fb9a",
+  "password": "<redacted, 13 characters>",
+  "email": "ownereteprojectsbackgroundgw3bc67fb9a@qa.local"
+}
+status: 200  (533 ms)
+body: {
+  "id": 72,
+  "name": "",
+  "username": "ownereteprojectsbackgroundgw3bc67fb9a",
+  "created": "2026-09-17T08:07:23Z",
+  "updated": "2026-09-17T08:07:23.601964465Z"
+}

@@ -1,0 +1,24 @@
+PUT http://localhost:3456/api/v1/projects/23/shares
+as: session:ownertitwasmadeforchromiumgw08d26cbc7
+sent: {
+  "permission": 0,
+  "name": "guest"
+}
+status: 201  (10 ms)
+body: {
+  "id": 2,
+  "hash": "N1NLj4Azijm47pgBxcEV99Fns6xMwSFP5hWX8icD",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": {
+    "id": 12,
+    "name": "",
+    "username": "ownertitwasmadeforchromiumgw08d26cbc7",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-17T08:08:07.905619545Z",
+  "updated": "2026-09-17T08:08:07.905622109Z"
+}

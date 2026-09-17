@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownersamefailuregetfiltersgw53d111d17",
+  "password": "<redacted, 13 characters>",
+  "email": "ownersamefailuregetfiltersgw53d111d17@qa.local"
+}
+status: 200  (430 ms)
+body: {
+  "id": 71,
+  "name": "",
+  "username": "ownersamefailuregetfiltersgw53d111d17",
+  "created": "2026-09-17T08:07:23Z",
+  "updated": "2026-09-17T08:07:23.546218915Z"
+}

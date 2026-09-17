@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/42/tasks
+as: session:ownerserlanguagewebkitrurugw372752160
+sent: {
+  "title": "review the draft"
+}
+status: 201  (34 ms)
+body: {
+  "id": 45,
+  "title": "review the draft",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 42,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#2",
+  "index": 2,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-17T08:08:33.584555862Z",
+  "updated": "2026-09-17T08:08:33.584559097Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 21,
+    "name": "",
+    "username": "ownerserlanguagewebkitrurugw372752160",
+    "created": "2026-09-17T08:08:32Z",
+    "updated": "2026-09-17T08:08:33Z"
+  }
+}

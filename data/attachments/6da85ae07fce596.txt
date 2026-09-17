@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v1/shares/MLmThJwXercyHy530knrbDRgJlyAyPzf82ljMSVZ/auth
+as: session:ownerctitwasmadeforfirefoxgw034bd8e9b
+sent: {
+  "hash": "MLmThJwXercyHy530knrbDRgJlyAyPzf82ljMSVZ"
+}
+status: 200  (4 ms)
+body: {
+  "token": "<redacted, 256 characters>",
+  "id": 3,
+  "hash": "MLmThJwXercyHy530knrbDRgJlyAyPzf82ljMSVZ",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-17T08:07:55Z",
+  "updated": "2026-09-17T08:07:55Z",
+  "project_id": 27
+}

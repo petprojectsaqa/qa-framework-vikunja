@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/tasks/99999999
-as: session:ownertestcrossversionpygw2492932dc
-status: 404  (19 ms)
-domain code: 4002
-body: {
-  "code": 4002,
-  "message": "This task does not exist"
-}
