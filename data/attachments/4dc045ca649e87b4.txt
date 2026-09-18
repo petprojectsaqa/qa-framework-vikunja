@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/tasks/70/attachments/3
+as: link-share:wK8QhznV
+status: 403  (13 ms)
+domain code: 1
+body: {
+  "code": 1,
+  "message": "You're not allowed to do this."
+}

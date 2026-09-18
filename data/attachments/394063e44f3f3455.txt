@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/tasks/999999999/relations/subtask/999999999
-as: session:owneredeletetasksrelationsgw1b9aeede4
-status: 404  (28 ms)
-domain code: 4002
-body: {
-  "code": 4002,
-  "message": "This task does not exist"
-}

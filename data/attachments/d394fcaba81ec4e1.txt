@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerethemailserverisdownmain3dc17991",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerethemailserverisdownmain3dc17991@qa.local"
+}
+status: 200  (165 ms)
+body: {
+  "id": 3,
+  "name": "",
+  "username": "ownerethemailserverisdownmain3dc17991",
+  "created": "2026-09-18T07:42:09Z",
+  "updated": "2026-09-18T07:42:09.943168146Z"
+}

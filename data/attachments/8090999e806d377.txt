@@ -1,0 +1,24 @@
+PUT http://localhost:3456/api/v1/projects/44/shares
+as: session:owneraredforwebkitwritablegw0192e94d3
+sent: {
+  "permission": 1,
+  "name": "guest"
+}
+status: 201  (11 ms)
+body: {
+  "id": 4,
+  "hash": "MPLHJgj1jySQ0CfHWf7euq83KJGyu4a2peKV0djN",
+  "name": "guest",
+  "permission": 1,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": {
+    "id": 22,
+    "name": "",
+    "username": "owneraredforwebkitwritablegw0192e94d3",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-18T07:45:37.843642874Z",
+  "updated": "2026-09-18T07:45:37.843646962Z"
+}

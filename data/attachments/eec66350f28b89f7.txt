@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/6/users
+as: session:owneraddtaskcontrolfirefoxgw363272522
+sent: {
+  "username": "readeraddtaskcontrolfirefoxgw37554bef3",
+  "permission": 0
+}
+status: 201  (17 ms)
+body: {
+  "id": 1,
+  "username": "readeraddtaskcontrolfirefoxgw37554bef3",
+  "permission": 0,
+  "created": "2026-09-18T07:44:28.518584052Z",
+  "updated": "2026-09-18T07:44:28.518588799Z"
+}

@@ -1,0 +1,27 @@
+PUT http://localhost:3456/api/v1/tasks/70/attachments
+as: session:ownerchesonlyitsownprojectgw07b2e37a9
+status: 200  (58 ms)
+body: {
+  "errors": null,
+  "success": [
+    {
+      "id": 3,
+      "task_id": 70,
+      "created_by": {
+        "id": 183,
+        "name": "",
+        "username": "ownerchesonlyitsownprojectgw07b2e37a9",
+        "created": "2026-09-18T07:44:36Z",
+        "updated": "2026-09-18T07:44:37Z"
+      },
+      "file": {
+        "id": 3,
+        "name": "private.txt",
+        "mime": "text/plain; charset=utf-8",
+        "size": 17,
+        "created": "2026-09-18T07:44:37.452420862Z"
+      },
+      "created": "2026-09-18T07:44:37.477095652Z"
+    }
+  ]
+}

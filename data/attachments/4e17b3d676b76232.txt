@@ -1,0 +1,24 @@
+PUT http://localhost:3456/api/v1/projects/23/shares
+as: session:ownerctitwasmadeforfirefoxgw271af88d3
+sent: {
+  "permission": 0,
+  "name": "guest"
+}
+status: 201  (10 ms)
+body: {
+  "id": 1,
+  "hash": "SoLlCxxZmuf0imFMfExfMqEWscaNno9ceK5nyeNa",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": {
+    "id": 12,
+    "name": "",
+    "username": "ownerctitwasmadeforfirefoxgw271af88d3",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-18T07:44:49.237077111Z",
+  "updated": "2026-09-18T07:44:49.237080997Z"
+}

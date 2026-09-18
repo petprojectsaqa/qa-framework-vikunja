@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneramefailuredeletetasksgw004391096",
+  "password": "<redacted, 13 characters>",
+  "email": "owneramefailuredeletetasksgw004391096@qa.local"
+}
+status: 200  (940 ms)
+body: {
+  "id": 111,
+  "name": "",
+  "username": "owneramefailuredeletetasksgw004391096",
+  "created": "2026-09-18T07:44:27Z",
+  "updated": "2026-09-18T07:44:27.600076167Z"
+}

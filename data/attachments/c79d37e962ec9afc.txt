@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/filters/999999999
+as: session:ownerefailuredeletefiltersgw7dbdd20d3
+status: 404  (5 ms)
+domain code: 11001
+body: {
+  "code": 11001,
+  "message": "This saved filter does not exist."
+}

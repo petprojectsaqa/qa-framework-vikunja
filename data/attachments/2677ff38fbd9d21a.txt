@@ -1,0 +1,12 @@
+PUT http://localhost:3456/api/v1/projects/206/users
+as: session:ownerlevelisrefusedbooleangw5ff5413ac
+sent: {
+  "username": "outsiderlevelisrefusedbooleangw5705f7c8d",
+  "permission": true
+}
+status: 400  (7 ms)
+domain code: 2004
+body: {
+  "code": 2004,
+  "message": "Invalid model provided: Bad Request"
+}

@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/projects/226/views/1617/buckets/1210
+as: session:owneroutrightsonitsprojectgw2ed7b8dca
+status: 403  (16 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "Forbidden"
+}

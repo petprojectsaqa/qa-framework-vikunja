@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "readerddtaskcontrolchromiumgw3be149bc9",
+  "password": "<redacted, 13 characters>",
+  "email": "readerddtaskcontrolchromiumgw3be149bc9@qa.local"
+}
+status: 200  (454 ms)
+body: {
+  "id": 6,
+  "name": "",
+  "username": "readerddtaskcontrolchromiumgw3be149bc9",
+  "created": "2026-09-18T07:45:04Z",
+  "updated": "2026-09-18T07:45:05.113552908Z"
+}
