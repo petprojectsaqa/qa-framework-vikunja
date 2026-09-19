@@ -1,0 +1,13 @@
+PUT http://localhost:3456/api/v1/teams/2/members
+as: session:ownertestaccessmatrixpygw3c9c5778f
+sent: {
+  "username": "teammatetestaccessmatrixpygw3a831fee2",
+  "admin": false
+}
+status: 201  (20 ms)
+body: {
+  "id": 4,
+  "username": "teammatetestaccessmatrixpygw3a831fee2",
+  "admin": false,
+  "created": "2026-09-19T07:39:15.212103392Z"
+}

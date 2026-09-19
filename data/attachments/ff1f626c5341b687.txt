@@ -1,0 +1,66 @@
+PUT http://localhost:3456/api/v1/projects
+as: session:alicettwoactorsareisolatedgw3107be3f2
+sent: {
+  "title": "alice's project"
+}
+status: 201  (50 ms)
+body: {
+  "id": 180,
+  "title": "alice's project",
+  "description": "",
+  "identifier": "",
+  "hex_color": "",
+  "parent_project_id": 0,
+  "owner": {
+    "id": 137,
+    "name": "",
+    "username": "alicettwoactorsareisolatedgw3107be3f2",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "is_archived": false,
+  "background_information": null,
+  "background_blur_hash": "",
+  "is_favorite": false,
+  "position": 11796480,
+  "views": [
+    {
+      "id": 1305,
+      "title": "List",
+      "project_id": 180,
+      "view_kind": "list",
+      "filter": {
+        "s": "",
+        "sort_by": null,
+        "order_by": null,
+        "filter": "done = false",
+        "filter_include_nulls": false
+      },
+      "position": 100,
+      "bucket_configuration_mode": "none",
+      "bucket_configuration": null,
+      "default_bucket_id": 0,
+      "done_bucket_id": 0,
+      "updated": "2026-09-19T07:39:26.311608238Z",
+      "created": "2026-09-19T07:39:26.311255725Z"
+    },
+    {
+      "id": 1306,
+      "title": "Gantt",
+      "project_id": 180,
+      "view_kind": "gantt",
+      "filter": null,
+      "position": 200,
+      "bucket_configuration_mode": "none",
+      "bucket_configuration": null,
+      "default_bucket_id": 0,
+      "done_bucket_id": 0,
+      "updated": "2026-09-19T07:39:26.317484552Z",
+      "created": "2026-09-19T07:39:26.316104909Z"
+    },
+    {
+      "id": 1308,
+      "title": "Table",
+      "project_id": 180,
+      "view_kind": "table",
+      "filter... [797 more characters]

@@ -1,5 +1,0 @@
-PUT http://localhost:3456/dav/projects/271/cc535352-c011-452b-8a10-cdbe83946873.ics
-as: basic:ownerdarclientleavestheapigw493c14afc
-sent: b'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//vikunja-qa//tests//EN\r\nBEGIN:VTODO\r\nUID:cc535352-c011-452b-8a10-cdbe83946873\r\nDTSTAMP:20260918T074441Z\r\nSUMMARY:cancel the order\r\nEND:VTODO\r\nEND:VCALENDAR\r\n'
-status: 201  (189 ms)
-body: 

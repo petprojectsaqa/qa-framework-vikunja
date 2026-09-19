@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v1/shares/IhcMRcwXgyi2BmVGLvoXORYIevYHKNbrGYH16jIq/auth
+as: session:ownertestaccessmatrixpygw3c9c5778f
+sent: {
+  "hash": "IhcMRcwXgyi2BmVGLvoXORYIevYHKNbrGYH16jIq"
+}
+status: 200  (7 ms)
+body: {
+  "token": "<redacted, 256 characters>",
+  "id": 4,
+  "hash": "IhcMRcwXgyi2BmVGLvoXORYIevYHKNbrGYH16jIq",
+  "name": "share_write",
+  "permission": 1,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-19T07:39:15Z",
+  "updated": "2026-09-19T07:39:15Z",
+  "project_id": 20
+}

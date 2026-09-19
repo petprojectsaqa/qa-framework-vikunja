@@ -1,9 +1,0 @@
-DELETE http://localhost:3456/api/v2/projects/999999999/webhooks/999999999
-as: session:ownereleteprojectswebhooksgw20f3123e5
-status: 403  (4 ms)
-body: {
-  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
-  "title": "Forbidden",
-  "status": 403,
-  "detail": "Forbidden"
-}

@@ -1,0 +1,4 @@
+DELETE http://localhost:3456/api/v2/user/settings/token/caldav/999999999
+as: session:ownerersettingstokencaldavgw07f7e8f47
+status: 204  (4 ms)
+body: 

@@ -1,0 +1,9 @@
+GET http://localhost:3456/api/v2/tasks/42
+as: session:outsidertesterrorcodespygw7a5b7bea0
+status: 403  (23 ms)
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "You don't have the permission to see this"
+}

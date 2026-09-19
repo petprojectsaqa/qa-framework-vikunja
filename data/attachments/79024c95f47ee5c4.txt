@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/152/users
+as: session:ownertestcrossversionpygw6f7980d65
+sent: {
+  "username": "readertestcrossversionpygw67623980c",
+  "permission": 0
+}
+status: 201  (37 ms)
+body: {
+  "id": 12,
+  "username": "readertestcrossversionpygw67623980c",
+  "permission": 0,
+  "created": "2026-09-19T07:39:24.592035769Z",
+  "updated": "2026-09-19T07:39:24.592038704Z"
+}

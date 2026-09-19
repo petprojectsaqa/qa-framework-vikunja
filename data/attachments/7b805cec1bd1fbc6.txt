@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/tasks/999999999/attachments
-as: api-token:tasks_attachments.read_all
-status: 404  (112 ms)
-domain code: 4002
-body: {
-  "code": 4002,
-  "message": "This task does not exist"
-}

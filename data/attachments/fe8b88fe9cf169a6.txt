@@ -1,0 +1,24 @@
+GET http://localhost:3456/api/v1/tasks/83/attachments
+as: session:ownerentsurvivesaroundtripgw4118697bd
+status: 200  (7 ms)
+body: [
+  {
+    "id": 4,
+    "task_id": 83,
+    "created_by": {
+      "id": 196,
+      "name": "",
+      "username": "ownerentsurvivesaroundtripgw4118697bd",
+      "created": "2026-09-19T07:39:31Z",
+      "updated": "2026-09-19T07:39:31Z"
+    },
+    "file": {
+      "id": 4,
+      "name": "payload.bin",
+      "mime": "application/octet-stream",
+      "size": 40,
+      "created": "2026-09-19T07:39:31Z"
+    },
+    "created": "2026-09-19T07:39:31Z"
+  }
+]

@@ -1,0 +1,62 @@
+GET http://localhost:3456/api/v1/projects
+as: session:bobttwoactorsareisolatedgw37f54de26
+status: 200  (130 ms)
+body: [
+  {
+    "id": 172,
+    "title": "Inbox",
+    "description": "",
+    "identifier": "",
+    "hex_color": "",
+    "parent_project_id": 0,
+    "owner": {
+      "id": 142,
+      "name": "",
+      "username": "bobttwoactorsareisolatedgw37f54de26",
+      "created": "2026-09-19T07:39:25Z",
+      "updated": "2026-09-19T07:39:26Z"
+    },
+    "is_archived": false,
+    "background_information": null,
+    "background_blur_hash": "",
+    "is_favorite": false,
+    "position": 11272192,
+    "views": [
+      {
+        "id": 1249,
+        "title": "List",
+        "project_id": 172,
+        "view_kind": "list",
+        "filter": {
+          "s": "",
+          "sort_by": null,
+          "order_by": null,
+          "filter": "done = false",
+          "filter_include_nulls": false
+        },
+        "position": 100,
+        "bucket_configuration_mode": "none",
+        "bucket_configuration": null,
+        "default_bucket_id": 0,
+        "done_bucket_id": 0,
+        "updated": "2026-09-19T07:39:25Z",
+        "created": "2026-09-19T07:39:25Z"
+      },
+      {
+        "id": 1251,
+        "title": "Gantt",
+        "project_id": 172,
+        "view_kind": "gantt",
+        "filter": null,
+        "position": 200,
+        "bucket_configuration_mode": "none",
+        "bucket_configuration": null,
+        "default_bucket_id": 0,
+        "done_bucket_id": 0,
+        "updated": "2026-09-19T07:39:25Z",
+        "created": "2026-09-19T07:39:25Z"
+      },
+      {
+        "id": 1254,
+        "title": "Table",
+  ... [3075 more characters]

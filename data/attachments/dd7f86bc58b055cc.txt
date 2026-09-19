@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerfailuregettaskslabelsgw021c2c1ca",
+  "password": "<redacted, 13 characters>"
+}
+status: 200  (148 ms)
+body: {
+  "token": "<redacted, 340 characters>"
+}

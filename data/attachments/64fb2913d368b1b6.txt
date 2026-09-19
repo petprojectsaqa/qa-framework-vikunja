@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/projects/241
-as: link-share:wK8QhznV
-status: 403  (19 ms)
-domain code: 0
-body: {
-  "code": 0,
-  "message": "You don't have the permission to see this"
-}
