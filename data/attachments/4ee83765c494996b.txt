@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerctitwasmadeforfirefoxgw2d3b5ec42",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerctitwasmadeforfirefoxgw2d3b5ec42@qa.local"
+}
+status: 200  (286 ms)
+body: {
+  "id": 12,
+  "name": "",
+  "username": "ownerctitwasmadeforfirefoxgw2d3b5ec42",
+  "created": "2026-09-20T08:02:37Z",
+  "updated": "2026-09-20T08:02:37.060986229Z"
+}

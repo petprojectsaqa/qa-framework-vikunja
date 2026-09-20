@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/tokens
+as: session:ownertestaccessmatrixpygw0fe53fd70
+sent: {
+  "title": "narrow",
+  "permissions": {
+    "tasks": [
+      "read_one"
+    ]
+  },
+  "expires_at": "2026-10-20T08:01:54Z"
+}
+status: 201  (38 ms)
+body: {
+  "id": 32,
+  "title": "narrow",
+  "token": "<redacted, 43 characters>",
+  "permissions": {
+    "tasks": [
+      "read_one"
+    ]
+  },
+  "expires_at": "2026-10-20T08:01:54Z",
+  "created": "2026-09-20T08:01:54.446034327Z",
+  "owner_id": 12
+}

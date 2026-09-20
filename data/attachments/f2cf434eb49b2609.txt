@@ -1,6 +1,0 @@
-DELETE http://localhost:3456/api/v1/user/settings/webhooks/999999999
-as: session:ownereusersettingswebhooksgw1744af6bc
-status: 404  (3 ms)
-body: {
-  "message": "Not Found"
-}

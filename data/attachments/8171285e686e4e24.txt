@@ -1,0 +1,8 @@
+PUT http://localhost:3456/api/v1/999999999/999999999/reactions
+as: api-token:reactions.read_all
+status: 401  (28 ms)
+domain code: 11
+body: {
+  "code": 11,
+  "message": "missing, malformed, expired or otherwise invalid token provided"
+}

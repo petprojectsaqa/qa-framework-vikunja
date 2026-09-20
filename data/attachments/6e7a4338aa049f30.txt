@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerfailuregettaskslabelsgw4190f6d45",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerfailuregettaskslabelsgw4190f6d45@qa.local"
+}
+status: 200  (455 ms)
+body: {
+  "id": 118,
+  "name": "",
+  "username": "ownerfailuregettaskslabelsgw4190f6d45",
+  "created": "2026-09-20T08:02:05Z",
+  "updated": "2026-09-20T08:02:06.058213187Z"
+}

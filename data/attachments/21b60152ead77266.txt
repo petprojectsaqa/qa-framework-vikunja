@@ -1,9 +1,0 @@
-GET http://localhost:3456/api/v2/teams/999999999
-as: session:ownerhesamefailuregetteamsgw283b175df
-status: 403  (8 ms)
-body: {
-  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
-  "title": "Forbidden",
-  "status": 403,
-  "detail": "You don't have the permission to see this"
-}

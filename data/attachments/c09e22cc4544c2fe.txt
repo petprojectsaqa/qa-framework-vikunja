@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneretwithoutaservererrorgw5a6e5d2f8",
+  "password": "<redacted, 13 characters>",
+  "email": "owneretwithoutaservererrorgw5a6e5d2f8@qa.local"
+}
+status: 200  (713 ms)
+body: {
+  "id": 144,
+  "name": "",
+  "username": "owneretwithoutaservererrorgw5a6e5d2f8",
+  "created": "2026-09-20T08:02:08Z",
+  "updated": "2026-09-20T08:02:09.153712412Z"
+}

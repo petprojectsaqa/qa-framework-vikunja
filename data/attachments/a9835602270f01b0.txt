@@ -1,0 +1,24 @@
+PUT http://localhost:3456/api/v1/projects/22/shares
+as: session:owneraredforwebkitreadonlygw34644341a
+sent: {
+  "permission": 0,
+  "name": "guest"
+}
+status: 201  (14 ms)
+body: {
+  "id": 1,
+  "hash": "8wnGKDC3lN7jZtSd791RYMW9SvALRISe6OuVhCr2",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": {
+    "id": 11,
+    "name": "",
+    "username": "owneraredforwebkitreadonlygw34644341a",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-20T08:03:00.766465544Z",
+  "updated": "2026-09-20T08:03:00.766468019Z"
+}

@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownereapileavesthecalendargw56f4f90b3",
+  "password": "<redacted, 13 characters>"
+}
+status: 200  (302 ms)
+body: {
+  "token": "<redacted, 340 characters>"
+}

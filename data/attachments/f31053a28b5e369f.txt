@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "tokenstesttokenscopespygw4568a09bf",
+  "password": "<redacted, 13 characters>"
+}
+status: 200  (283 ms)
+body: {
+  "token": "<redacted, 335 characters>"
+}
