@@ -1,0 +1,30 @@
+PUT http://localhost:3456/api/v1/projects/266/webhooks
+as: session:ownerataskdeliversawebhookgw1b4e56fe6
+sent: {
+  "target_url": "http://webhook-receiver:8080/hook/test_creating_a_task_delivers_a_webhook-gw1",
+  "events": [
+    "task.created"
+  ]
+}
+status: 201  (8 ms)
+body: {
+  "id": 2,
+  "target_url": "http://webhook-receiver:8080/hook/test_creating_a_task_delivers_a_webhook-gw1",
+  "events": [
+    "task.created"
+  ],
+  "project_id": 266,
+  "user_id": 0,
+  "secret": "",
+  "basic_auth_user": "",
+  "basic_auth_password": "",
+  "created_by": {
+    "id": 199,
+    "name": "",
+    "username": "ownerataskdeliversawebhookgw1b4e56fe6",
+    "created": "2026-09-21T08:21:25Z",
+    "updated": "2026-09-21T08:21:26Z"
+  },
+  "created": "2026-09-21T08:21:26.54756441Z",
+  "updated": "2026-09-21T08:21:26.547567464Z"
+}

@@ -1,0 +1,9 @@
+POST http://localhost:3456/api/v2/user/token/refresh
+as: anonymous
+status: 401  (9 ms)
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "No refresh token provided."
+}

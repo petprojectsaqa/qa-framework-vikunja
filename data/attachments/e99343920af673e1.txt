@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v1/tasks/6
+as: link-share:3iPLsQQx
+status: 403  (28 ms)
+domain code: 0
+body: {
+  "code": 0,
+  "message": "Forbidden"
+}

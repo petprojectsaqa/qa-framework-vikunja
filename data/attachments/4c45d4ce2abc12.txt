@@ -1,0 +1,43 @@
+PUT http://localhost:3456/api/v1/projects/226/tasks
+as: session:ownereapileavesthecalendargw7bb252b15
+sent: {
+  "title": "keep me"
+}
+status: 201  (37 ms)
+body: {
+  "id": 66,
+  "title": "keep me",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 226,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-21T08:21:22.551131583Z",
+  "updated": "2026-09-21T08:21:22.551135489Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 174,
+    "name": "",
+    "username": "ownereapileavesthecalendargw7bb252b15",
+    "created": "2026-09-21T08:21:21Z",
+    "updated": "2026-09-21T08:21:22Z"
+  }
+}

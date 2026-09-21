@@ -1,0 +1,46 @@
+GET http://localhost:3456/api/v1/tasks/79
+as: session:ownereswritesandstillreadsgw55328a912
+status: 200  (36 ms)
+body: {
+  "id": 79,
+  "title": "before archiving",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "0001-01-01T00:00:00Z",
+  "reminders": null,
+  "project_id": 259,
+  "repeat_after": 0,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": null,
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": {},
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "subscription": {
+    "id": 70,
+    "entity": "task",
+    "entity_id": 79,
+    "created": "2026-09-21T08:21:25Z"
+  },
+  "created": "2026-09-21T08:21:25Z",
+  "updated": "2026-09-21T08:21:25Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 193,
+    "name": "",
+    "username": "ownereswritesandstillreadsgw55328a912",
+    "created": "2026-09-21T08:21:24Z",
+    "updated": "2026-09-21T08:21:25Z"
+  }
+}

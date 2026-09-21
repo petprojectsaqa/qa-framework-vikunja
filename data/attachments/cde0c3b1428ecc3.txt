@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/tasks/2
-as: session:outsiderexistencedisclosurepygw626867423
-status: 403  (49 ms)
-domain code: 0
-body: {
-  "code": 0,
-  "message": "You don't have the permission to see this"
-}

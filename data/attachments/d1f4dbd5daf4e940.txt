@@ -1,0 +1,20 @@
+POST http://localhost:3456/api/v1/shares/yxiNXPPDvq7p4XvrBFCpKBM3yJ6JH6i56V7iX7wJ/auth
+as: session:ownerasswordisgivenfirefoxgw134c7fbaa
+sent: {
+  "hash": "yxiNXPPDvq7p4XvrBFCpKBM3yJ6JH6i56V7iX7wJ",
+  "password": "<redacted, 19 characters>"
+}
+status: 200  (243 ms)
+body: {
+  "token": "<redacted, 256 characters>",
+  "id": 3,
+  "hash": "yxiNXPPDvq7p4XvrBFCpKBM3yJ6JH6i56V7iX7wJ",
+  "name": "locked",
+  "permission": 0,
+  "sharing_type": 2,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-21T08:21:32Z",
+  "updated": "2026-09-21T08:21:32Z",
+  "project_id": 28
+}

@@ -1,6 +1,0 @@
-DELETE http://localhost:3456/api/v1/tasks/71
-as: session:ownereapileavesthecalendargw56f4f90b3
-status: 200  (59 ms)
-body: {
-  "message": "Successfully deleted."
-}

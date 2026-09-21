@@ -1,0 +1,6 @@
+DELETE http://localhost:3456/api/v1/tasks/24
+as: session:writertestaccessmatrixpygw09207313f
+status: 200  (106 ms)
+body: {
+  "message": "Successfully deleted."
+}

@@ -1,9 +1,0 @@
-POST http://localhost:3456/api/v1/projects
-as: session:ownerionusesdifferentverbsgw69758c9e5
-sent: {
-  "title": "x"
-}
-status: 405  (3 ms)
-body: {
-  "message": "Method Not Allowed"
-}

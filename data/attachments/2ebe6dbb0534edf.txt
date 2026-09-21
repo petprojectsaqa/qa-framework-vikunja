@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/tasks/999999999
-as: session:owneramefailuredeletetasksgw4d59c862f
-status: 404  (8 ms)
-domain code: 4002
-body: {
-  "code": 4002,
-  "message": "This task does not exist"
-}

@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "owneriluregetprojectsteamsgw316aa2cdc",
+  "password": "<redacted, 13 characters>",
+  "email": "owneriluregetprojectsteamsgw316aa2cdc@qa.local"
+}
+status: 200  (626 ms)
+body: {
+  "id": 80,
+  "name": "",
+  "username": "owneriluregetprojectsteamsgw316aa2cdc",
+  "created": "2026-09-21T08:21:07Z",
+  "updated": "2026-09-21T08:21:07.448886128Z"
+}
