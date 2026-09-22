@@ -1,0 +1,10 @@
+POST http://localhost:3456/api/v1/login
+as: anonymous
+sent: {
+  "username": "ownerserlanguagewebkitrurugw3500d7e06",
+  "password": "<redacted, 13 characters>"
+}
+status: 200  (151 ms)
+body: {
+  "token": "<redacted, 339 characters>"
+}

@@ -1,6 +1,0 @@
-GET http://localhost:3456/api/v1/nobody999/avatar
-as: session:sweepersweep0fade586
-status: 404  (3 ms)
-body: {
-  "message": "Not Found"
-}

@@ -1,0 +1,17 @@
+GET http://localhost:3456/api/v1/tokens
+as: session:ownerneverreturnsthesecretgw1b0427817
+status: 200  (22 ms)
+body: [
+  {
+    "id": 41,
+    "title": "read back probe",
+    "permissions": {
+      "labels": [
+        "read_all"
+      ]
+    },
+    "expires_at": "2026-10-22T08:04:20Z",
+    "created": "2026-09-22T08:04:20Z",
+    "owner_id": 159
+  }
+]

@@ -1,0 +1,8 @@
+DELETE http://localhost:3456/api/v2/projects/999999999/background
+as: anonymous
+status: 401  (23 ms)
+domain code: 11
+body: {
+  "code": 11,
+  "message": "missing, malformed, expired or otherwise invalid token provided"
+}

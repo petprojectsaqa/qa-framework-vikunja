@@ -1,0 +1,14 @@
+PUT http://localhost:3456/api/v1/projects/203/users
+as: session:ownerissioniswrittenasarowgw5827be129
+sent: {
+  "username": "readerissioniswrittenasarowgw50d7da0b8",
+  "permission": 0
+}
+status: 201  (201 ms)
+body: {
+  "id": 13,
+  "username": "readerissioniswrittenasarowgw50d7da0b8",
+  "permission": 0,
+  "created": "2026-09-22T08:04:20.933636499Z",
+  "updated": "2026-09-22T08:04:20.933639825Z"
+}

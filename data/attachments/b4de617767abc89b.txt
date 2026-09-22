@@ -1,0 +1,20 @@
+POST http://localhost:3456/api/v1/shares/oWrNOvGIcVGmJb2xjiaCEW10GZzzb7ZouOZT1K6E/auth
+as: session:ownersswordisgivenchromiumgw2892463e0
+sent: {
+  "hash": "oWrNOvGIcVGmJb2xjiaCEW10GZzzb7ZouOZT1K6E",
+  "password": "<redacted, 19 characters>"
+}
+status: 200  (197 ms)
+body: {
+  "token": "<redacted, 256 characters>",
+  "id": 3,
+  "hash": "oWrNOvGIcVGmJb2xjiaCEW10GZzzb7ZouOZT1K6E",
+  "name": "locked",
+  "permission": 0,
+  "sharing_type": 2,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-22T08:05:01Z",
+  "updated": "2026-09-22T08:05:01Z",
+  "project_id": 30
+}

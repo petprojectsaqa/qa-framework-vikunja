@@ -1,0 +1,13 @@
+PUT http://localhost:3456/api/v1/projects/45/users
+as: session:ownerantstheleastprivilegegw69f20d2b0
+sent: {
+  "username": "outsiderantstheleastprivilegegw6a1b383f8"
+}
+status: 201  (94 ms)
+body: {
+  "id": 7,
+  "username": "outsiderantstheleastprivilegegw6a1b383f8",
+  "permission": 0,
+  "created": "2026-09-22T08:04:06.409638731Z",
+  "updated": "2026-09-22T08:04:06.409642076Z"
+}

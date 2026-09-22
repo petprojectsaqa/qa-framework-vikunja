@@ -1,0 +1,11 @@
+GET http://localhost:3456/api/v2/projects/999999999/views
+as: session:owneriluregetprojectsviewsgw17b95c27b
+status: 404  (17 ms)
+domain code: 3001
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "This project does not exist.",
+  "code": 3001
+}

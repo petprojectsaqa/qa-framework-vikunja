@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "outsidertestaccessmatrixpygw42cd1ce59",
+  "password": "<redacted, 13 characters>",
+  "email": "outsidertestaccessmatrixpygw42cd1ce59@qa.local"
+}
+status: 200  (441 ms)
+body: {
+  "id": 43,
+  "name": "",
+  "username": "outsidertestaccessmatrixpygw42cd1ce59",
+  "created": "2026-09-22T08:04:06Z",
+  "updated": "2026-09-22T08:04:06.113547286Z"
+}

@@ -1,0 +1,45 @@
+PUT http://localhost:3456/api/v1/projects/250/tasks
+as: session:owneredateinsteadofclosinggw51966658f
+sent: {
+  "title": "water the plants",
+  "repeat_after": 86400,
+  "due_date": "2026-09-29T08:04:23Z"
+}
+status: 201  (113 ms)
+body: {
+  "id": 75,
+  "title": "water the plants",
+  "description": "",
+  "done": false,
+  "done_at": "0001-01-01T00:00:00Z",
+  "due_date": "2026-09-29T08:04:23Z",
+  "reminders": null,
+  "project_id": 250,
+  "repeat_after": 86400,
+  "repeat_mode": 0,
+  "priority": 0,
+  "start_date": "0001-01-01T00:00:00Z",
+  "end_date": "0001-01-01T00:00:00Z",
+  "assignees": [],
+  "labels": null,
+  "hex_color": "",
+  "percent_done": 0,
+  "identifier": "#1",
+  "index": 1,
+  "related_tasks": null,
+  "attachments": null,
+  "cover_image_attachment_id": 0,
+  "is_favorite": false,
+  "created": "2026-09-22T08:04:23.125765808Z",
+  "updated": "2026-09-22T08:04:23.125767581Z",
+  "bucket_id": 0,
+  "position": 0,
+  "reactions": null,
+  "created_by": {
+    "id": 185,
+    "name": "",
+    "username": "owneredateinsteadofclosinggw51966658f",
+    "created": "2026-09-22T08:04:22Z",
+    "updated": "2026-09-22T08:04:22Z"
+  }
+}

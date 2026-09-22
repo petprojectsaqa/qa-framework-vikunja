@@ -1,0 +1,11 @@
+POST http://localhost:3456/api/v1/tasks/84
+as: session:ownereswritesandstillreadsgw3d1c05f34
+sent: {
+  "title": "renamed"
+}
+status: 412  (5 ms)
+domain code: 3008
+body: {
+  "code": 3008,
+  "message": "This project is archived. Editing or creating new tasks is not possible."
+}
