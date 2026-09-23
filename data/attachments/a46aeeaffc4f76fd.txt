@@ -1,8 +1,0 @@
-GET http://localhost:3456/api/v1/projects/33
-as: session:outsiderevelisrefusedanobjectgw6fc7a0fb8
-status: 403  (23 ms)
-domain code: 0
-body: {
-  "code": 0,
-  "message": "You don't have the permission to see this"
-}

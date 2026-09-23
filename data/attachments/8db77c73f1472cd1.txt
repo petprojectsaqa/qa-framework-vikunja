@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/projects/999999999/tasks/by-index/999999999
+as: session:ownertprojectstasksbyindexgw66dc74fa6
+status: 404  (13 ms)
+domain code: 4002
+body: {
+  "code": 4002,
+  "message": "This task does not exist"
+}

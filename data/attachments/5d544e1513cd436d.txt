@@ -1,0 +1,19 @@
+POST http://localhost:3456/api/v1/shares/9jfUoSwGvj4gZgFGmYGMeaVhiKeRdSIS3TDlEG3H/auth
+as: session:owneraredforwebkitwritablegw270a0bf06
+sent: {
+  "hash": "9jfUoSwGvj4gZgFGmYGMeaVhiKeRdSIS3TDlEG3H"
+}
+status: 200  (3 ms)
+body: {
+  "token": "<redacted, 256 characters>",
+  "id": 4,
+  "hash": "9jfUoSwGvj4gZgFGmYGMeaVhiKeRdSIS3TDlEG3H",
+  "name": "guest",
+  "permission": 1,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": null,
+  "created": "2026-09-23T08:08:19Z",
+  "updated": "2026-09-23T08:08:19Z",
+  "project_id": 44
+}

@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerotalevelisrefusednullgw0199f8b01",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerotalevelisrefusednullgw0199f8b01@qa.local"
+}
+status: 200  (561 ms)
+body: {
+  "id": 75,
+  "name": "",
+  "username": "ownerotalevelisrefusednullgw0199f8b01",
+  "created": "2026-09-23T08:07:05Z",
+  "updated": "2026-09-23T08:07:06.021045283Z"
+}

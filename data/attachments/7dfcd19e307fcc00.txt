@@ -1,0 +1,11 @@
+POST http://localhost:3456/api/v1/projects/92/users/outsidersanexistinggrantalonegw457ffc420
+as: session:ownersanexistinggrantalonegw491cd2347
+sent: {
+  "permission": 99
+}
+status: 400  (8 ms)
+domain code: 2004
+body: {
+  "code": 2004,
+  "message": "Invalid model provided: Bad Request"
+}

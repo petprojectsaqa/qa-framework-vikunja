@@ -1,0 +1,8 @@
+GET http://localhost:3456/api/v1/projects/23
+as: session:owneretestheprojectfirefoxgw208749202
+status: 404  (11 ms)
+domain code: 3001
+body: {
+  "code": 3001,
+  "message": "This project does not exist."
+}

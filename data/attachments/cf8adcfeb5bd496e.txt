@@ -1,0 +1,25 @@
+PUT http://localhost:3456/api/v1/projects/26/shares
+as: session:ownerasswordisgivenfirefoxgw342bb26b4
+sent: {
+  "permission": 0,
+  "password": "<redacted, 19 characters>",
+  "name": "locked"
+}
+status: 201  (196 ms)
+body: {
+  "id": 3,
+  "hash": "hgLhntxrTrQX90OKLihfIGxXvTn7KjxODAu62x9T",
+  "name": "locked",
+  "permission": 0,
+  "sharing_type": 2,
+  "password": "",
+  "shared_by": {
+    "id": 13,
+    "name": "",
+    "username": "ownerasswordisgivenfirefoxgw342bb26b4",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-23T08:07:42.554051367Z",
+  "updated": "2026-09-23T08:07:42.554057499Z"
+}
