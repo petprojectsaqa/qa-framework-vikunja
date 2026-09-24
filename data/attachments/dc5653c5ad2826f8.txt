@@ -1,0 +1,24 @@
+PUT http://localhost:3456/api/v1/projects/44/shares
+as: session:ownerredforfirefoxwritablegw126749a02
+sent: {
+  "permission": 1,
+  "name": "guest"
+}
+status: 201  (11 ms)
+body: {
+  "id": 4,
+  "hash": "9aLqtjwcbq28728MaViA4RNN8NsZfLHI1JWebCXN",
+  "name": "guest",
+  "permission": 1,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": {
+    "id": 22,
+    "name": "",
+    "username": "ownerredforfirefoxwritablegw126749a02",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-24T07:57:19.745078859Z",
+  "updated": "2026-09-24T07:57:19.745081804Z"
+}

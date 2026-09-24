@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownernwithcaldavpermissiongw0d2144117",
+  "password": "<redacted, 13 characters>",
+  "email": "ownernwithcaldavpermissiongw0d2144117@qa.local"
+}
+status: 200  (536 ms)
+body: {
+  "id": 101,
+  "name": "",
+  "username": "ownernwithcaldavpermissiongw0d2144117",
+  "created": "2026-09-24T07:56:25Z",
+  "updated": "2026-09-24T07:56:25.480537741Z"
+}

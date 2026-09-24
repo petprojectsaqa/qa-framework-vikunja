@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "ownerersionindexedaccessv2gw593ee3ff4",
+  "password": "<redacted, 13 characters>",
+  "email": "ownerersionindexedaccessv2gw593ee3ff4@qa.local"
+}
+status: 200  (526 ms)
+body: {
+  "id": 143,
+  "name": "",
+  "username": "ownerersionindexedaccessv2gw593ee3ff4",
+  "created": "2026-09-24T07:56:29Z",
+  "updated": "2026-09-24T07:56:29.800889052Z"
+}

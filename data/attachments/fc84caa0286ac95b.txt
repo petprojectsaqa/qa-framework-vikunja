@@ -1,0 +1,11 @@
+POST http://localhost:3456/api/v1/tasks/99999999
+as: session:readertestaccessmatrixpygw4a2706461
+sent: {
+  "title": "nope"
+}
+status: 404  (6 ms)
+domain code: 4002
+body: {
+  "code": 4002,
+  "message": "This task does not exist"
+}

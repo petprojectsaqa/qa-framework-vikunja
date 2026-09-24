@@ -1,4 +1,0 @@
-GET http://localhost:3456/api/v1/notifications
-as: api-token:notifications.read_all
-status: 200  (125 ms)
-body: []

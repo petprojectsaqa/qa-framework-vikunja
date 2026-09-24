@@ -1,0 +1,9 @@
+GET http://localhost:3456/api/v2/tasks/62
+as: session:outsidertestcrossversionpygw7112d06a8
+status: 403  (43 ms)
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "You don't have the permission to see this"
+}

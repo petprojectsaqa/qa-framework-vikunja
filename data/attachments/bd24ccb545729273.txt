@@ -1,9 +1,0 @@
-DELETE http://localhost:3456/api/v2/tokens/999999999
-as: session:ownermefailuredeletetokensgw20e2fb9e2
-status: 403  (19 ms)
-body: {
-  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
-  "title": "Forbidden",
-  "status": 403,
-  "detail": "Forbidden"
-}

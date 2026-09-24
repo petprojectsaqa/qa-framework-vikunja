@@ -1,8 +1,0 @@
-PUT http://localhost:3456/api/v1/user/settings/token/caldav
-as: session:aliceatwasnotrevokedsayssogw21139aa74
-status: 201  (454 ms)
-body: {
-  "id": 157,
-  "token": "<redacted, 64 characters>",
-  "created": "2026-09-23T08:07:16.484447134Z"
-}

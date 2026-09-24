@@ -1,0 +1,15 @@
+POST http://localhost:3456/api/v1/register
+as: anonymous
+sent: {
+  "username": "tokenstesttokenscopespygw27ec3840f",
+  "password": "<redacted, 13 characters>",
+  "email": "tokenstesttokenscopespygw27ec3840f@qa.local"
+}
+status: 200  (437 ms)
+body: {
+  "id": 23,
+  "name": "",
+  "username": "tokenstesttokenscopespygw27ec3840f",
+  "created": "2026-09-24T07:56:14Z",
+  "updated": "2026-09-24T07:56:14.733883741Z"
+}

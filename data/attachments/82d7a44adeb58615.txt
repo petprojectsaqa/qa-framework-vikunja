@@ -1,0 +1,9 @@
+POST http://localhost:3456/api/v2/user/password/token
+as: anonymous
+status: 400  (50 ms)
+body: {
+  "$schema": "http://localhost:3456/api/v2/schemas/VikunjaErrorModel.json",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "request body is required"
+}

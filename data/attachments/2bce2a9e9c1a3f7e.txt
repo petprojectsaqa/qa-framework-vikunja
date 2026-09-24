@@ -1,0 +1,24 @@
+PUT http://localhost:3456/api/v1/projects/23/shares
+as: session:ownerectitwasmadeforwebkitgw02202c247
+sent: {
+  "permission": 0,
+  "name": "guest"
+}
+status: 201  (26 ms)
+body: {
+  "id": 2,
+  "hash": "hv2e9Ap4X6C0VhcXCZcVoszF8yxb23taFbGRYDQZ",
+  "name": "guest",
+  "permission": 0,
+  "sharing_type": 1,
+  "password": "",
+  "shared_by": {
+    "id": 12,
+    "name": "",
+    "username": "ownerectitwasmadeforwebkitgw02202c247",
+    "created": "0001-01-01T00:00:00Z",
+    "updated": "0001-01-01T00:00:00Z"
+  },
+  "created": "2026-09-24T07:56:50.195052164Z",
+  "updated": "2026-09-24T07:56:50.195055931Z"
+}
