@@ -1,8 +1,0 @@
-DELETE http://localhost:3456/api/v1/projects/999999999
-as: session:ownerfailuredeleteprojectsgw1c7d91a06
-status: 404  (6 ms)
-domain code: 3001
-body: {
-  "code": 3001,
-  "message": "This project does not exist."
-}
